@@ -13,13 +13,13 @@ ctrlData carCtrlData=
 	.Rail=0x00,
 	.Brake=0x00,
 };
-/*·¢ËÍ¿ØÖÆÃüÁîÈÎÎñ*/
+/*å‘é€æ§åˆ¶å‘½ä»¤ä»»åŠ¡*/
 void vCtrldataTask(void *param)
 {
 	while (1)
 	{
 		radioReceivePacketBlocking(&carCtrlData);
-		//TO DO ½â°ücarCtrlData
+		//TO DO è§£åŒ…carCtrlData
 		vTaskDelay(1);
 	}
 }

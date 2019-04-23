@@ -1,5 +1,6 @@
 #include "task_changerail.h"
 #include "task_ctrldata.h"
+#include "task_radio.h"
 #include "task_key.h"
 #include "rs485.h"
 /*FreeRtos includes*/
@@ -11,17 +12,90 @@ static u8 rs485txbuf[8];
 static u8 rs485rxbuf[8];
 static u16 rx_crc,cal_crc;
 static u8 rxlen;
-static u8 uRail;
+static u8 uRail=0;
 static u8 railState;
 static u8 keyState;
 static xSemaphoreHandle railrxIT;
 
-/*RS485Íâ²¿ÖĞ¶Ï»Øµ÷º¯Êı*/
+#if 1
+void ChangerailInit(void)
+{
+	GPIO_InitTypeDef GPIO_InitStructure;
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE); 				//ä½¿èƒ½PB,PEç«¯å£æ—¶é’Ÿ
+
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13 ; 			//ç«¯å£é…ç½®ï¼š12å·¦åˆ°ä½/13å³åˆ°ä½
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;                    	//è¾“å…¥ä¸Šæ‹‰
+    GPIO_Init(GPIOF, &GPIO_InitStructure);                              //æ ¹æ®è®¾å®šå‚æ•°åˆå§‹åŒ–GPIOF
+	
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14 | GPIO_Pin_15;				 //ç«¯å£é…ç½®6/8
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;                    //æ¨æŒ½è¾“å‡º
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;                   //IOå£é€Ÿåº¦ä¸º10MHz
+    GPIO_Init(GPIOF, &GPIO_InitStructure);                              //æ ¹æ®è®¾å®šå‚æ•°åˆå§‹åŒ–GPIOF
+	GPIO_ResetBits(GPIOF,GPIO_Pin_14);									//è¾“å‡ºå£å¤ä½
+	GPIO_ResetBits(GPIOF,GPIO_Pin_15);	
+}
+void vChangeRailTask(void *param)
+{
+	while(1)
+	{
+		vTaskDelay(20);
+		if((LEFT==1)&&(RIGHT==0))
+			railState=LEFTRAIL;
+		else if((LEFT==0)&&(RIGHT==1))
+			railState=RIGHTRAIL;
+		else if((LEFT==0)&&(RIGHT==0))
+			railState=0;//idle
+		else
+			railState=3;//error
+		if(radioConnectStatus())
+			uRail=getRail();
+		else
+		{
+			keyState=0;
+			keyState=getKeyState();
+			if(keyState==0) uRail=0;
+			else if(keyState==KEY0_SHORT_PRESS)	uRail=1;			//æ‰‹åŠ¨
+			else if(keyState==KEY1_SHORT_PRESS)	uRail=2;
+		}
+		while(uRail==1)
+		{
+			vTaskDelay(5);
+			if(LEFT==1)
+			{
+				CHANGE_EN=0;
+				break;
+			}
+			else
+			{
+				CHANGE_EN=1;
+				TURN_RIGHT=0;
+			}
+		}
+		while(uRail==2)
+		{
+			vTaskDelay(5);
+			if(RIGHT==1)
+			{
+				CHANGE_EN=0;
+				break;
+			}
+			else
+			{
+				CHANGE_EN=1;
+				TURN_RIGHT=1;;
+			}
+		}
+	}
+}
+#endif
+
+#if 0
+/*RS485å¤–éƒ¨ä¸­æ–­å›è°ƒå‡½æ•°*/
 static void rs485_interruptCallback(void)
 {
 	portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
 	xSemaphoreGiveFromISR(railrxIT, &xHigherPriorityTaskWoken);
-//	portYIELD_FROM_ISR(xHigherPriorityTaskWoken); //Èç¹ûĞèÒªµÄ»°½øĞĞÒ»´ÎÈÎÎñÇĞ»»
+//	portYIELD_FROM_ISR(xHigherPriorityTaskWoken); //å¦‚æœéœ€è¦çš„è¯è¿›è¡Œä¸€æ¬¡ä»»åŠ¡åˆ‡æ¢
 }
 void RailCb_Init(void)
 {
@@ -30,7 +104,7 @@ void RailCb_Init(void)
 }
 void vChangeRailTask(void *param)
 {
-	portBASE_TYPE state;
+	portBASE_TYPE state; 
 	static u8 step=0;
 	static u8 preach=0;
 	static u8 change_en=1;
@@ -42,23 +116,23 @@ void vChangeRailTask(void *param)
 		vTaskDelay(50);
 		
 		keyState=getKeyState();
-		if(keyState==KEY0_SHORT_PRESS)	railState=LEFTRAIL;			//ÖÃÂÖ×Ó´¦ÓÚ¹ìµÀ×´Ì¬
+		if(keyState==KEY0_SHORT_PRESS)	railState=LEFTRAIL;			//ç½®è½®å­å¤„äºè½¨é“çŠ¶æ€
 		else if(keyState==KEY1_SHORT_PRESS)	railState=RIGHTRAIL;
 		
 		uRail=getRail();
 		preach=0;
 		SCount=0;
-		while((uRail==1)&&(railState==RIGHTRAIL)&&change_en)//Õı×ª270¶È
+		while((uRail==1)&&(railState==RIGHTRAIL)&&change_en)//æ­£è½¬270åº¦
 		{
 			switch(step)
 			{
-				case 0://Ñ¡ÔñÄÚ²¿Î»ÖÃ
+				case 0://é€‰æ‹©å†…éƒ¨ä½ç½®
 					rs485txbuf[0]=0x02;
 					rs485txbuf[1]=0x06;
 					rs485txbuf[2]=0x00;
 					rs485txbuf[3]=0x47;		//Pn071
-					rs485txbuf[4]=0x7F;		//ÄÚ²¿Î»ÖÃ0
-					rs485txbuf[5]=0xFF;		//µÍÎ»
+					rs485txbuf[4]=0x7F;		//å†…éƒ¨ä½ç½®0
+					rs485txbuf[5]=0xFF;		//ä½ä½
 					ModbusWriteSReg(rs485txbuf,8);
 					state=xSemaphoreTake(railrxIT, MODBUS_TIME);
 					if(state==pdTRUE)
@@ -67,13 +141,13 @@ void vChangeRailTask(void *param)
 						rx_crc=((u16)RS485_RX_BUF[RS485_RX_CNT-1]<<8)+RS485_RX_BUF[RS485_RX_CNT-2];
 						if(cal_crc==rx_crc)
 						{
-							//Ğ´³É¹¦£¬½øĞĞÏÂÒ»²½
+							//å†™æˆåŠŸï¼Œè¿›è¡Œä¸‹ä¸€æ­¥
 							step++;
 							modbusCount=0;
 						}
 						else
 						{
-							//Ğ£Ñé´íÎó£¬·µ»ØÖ´ĞĞ±¾²½Öè
+							//æ ¡éªŒé”™è¯¯ï¼Œè¿”å›æ‰§è¡Œæœ¬æ­¥éª¤
 						}
 					}
 					else
@@ -81,13 +155,13 @@ void vChangeRailTask(void *param)
 						modbusCount++;
 					}
 					break;
-				case 1://Ê¹ÄÜËÅ·şµç»ú
+				case 1://ä½¿èƒ½ä¼ºæœç”µæœº
 					rs485txbuf[0]=0x02;
 					rs485txbuf[1]=0x06;
 					rs485txbuf[2]=0x00;
 					rs485txbuf[3]=0x46;	//Pn070
 					rs485txbuf[4]=0x7F;
-					rs485txbuf[5]=0xFE;	//SonÊ¹ÄÜÇı¶¯Æ÷
+					rs485txbuf[5]=0xFE;	//Sonä½¿èƒ½é©±åŠ¨å™¨
 					ModbusWriteSReg(rs485txbuf,8);
 					state=xSemaphoreTake(railrxIT, MODBUS_TIME);
 					if(state==pdTRUE)
@@ -96,13 +170,13 @@ void vChangeRailTask(void *param)
 						rx_crc=((u16)RS485_RX_BUF[RS485_RX_CNT-1]<<8)+RS485_RX_BUF[RS485_RX_CNT-2];
 						if(cal_crc==rx_crc)
 						{
-							//Ğ´³É¹¦£¬½øĞĞÏÂÒ»²½
+							//å†™æˆåŠŸï¼Œè¿›è¡Œä¸‹ä¸€æ­¥
 							step++;
 							modbusCount=0;
 						}
 						else
 						{
-							//Ğ£Ñé´íÎó£¬·µ»ØÖ´ĞĞ±¾²½Öè
+							//æ ¡éªŒé”™è¯¯ï¼Œè¿”å›æ‰§è¡Œæœ¬æ­¥éª¤
 						}
 					}
 					else
@@ -110,12 +184,12 @@ void vChangeRailTask(void *param)
 						modbusCount++;
 					}
 					break;
-				case 2://´¥·¢ÄÚ²¿Î»ÖÃ£¬µç»ú×ª¶¯
+				case 2://è§¦å‘å†…éƒ¨ä½ç½®ï¼Œç”µæœºè½¬åŠ¨
 					rs485txbuf[0]=0x02;
 					rs485txbuf[1]=0x06;
 					rs485txbuf[2]=0x00;
 					rs485txbuf[3]=0x47;	//Pn071
-					rs485txbuf[4]=0x7B;	//ÄÚ²¿Î»ÖÃ0,´¥·¢
+					rs485txbuf[4]=0x7B;	//å†…éƒ¨ä½ç½®0,è§¦å‘
 					rs485txbuf[5]=0xFF;
 					ModbusWriteSReg(rs485txbuf,8);
 					state=xSemaphoreTake(railrxIT, MODBUS_TIME);
@@ -125,14 +199,14 @@ void vChangeRailTask(void *param)
 						rx_crc=((u16)RS485_RX_BUF[RS485_RX_CNT-1]<<8)+RS485_RX_BUF[RS485_RX_CNT-2];
 						if(cal_crc==rx_crc)
 						{
-							//Ğ´³É¹¦£¬½øĞĞÏÂÒ»²½
+							//å†™æˆåŠŸï¼Œè¿›è¡Œä¸‹ä¸€æ­¥
 							step++;
 							modbusCount=0;
 							vTaskDelay(500);							
 						}
 						else
 						{
-							//Ğ£Ñé´íÎó£¬·µ»ØÖ´ĞĞ±¾²½Öè
+							//æ ¡éªŒé”™è¯¯ï¼Œè¿”å›æ‰§è¡Œæœ¬æ­¥éª¤
 						}
 					}
 					else
@@ -140,12 +214,12 @@ void vChangeRailTask(void *param)
 						modbusCount++;
 					}
 					break;
-				case 3://¶ÁÈ¡Dn018£¬ÅĞ¶Ïbit3-Preach
+				case 3://è¯»å–Dn018ï¼Œåˆ¤æ–­bit3-Preach
 					rs485txbuf[0]=0x02;
-					rs485txbuf[1]=0x03;	//¶Á
+					rs485txbuf[1]=0x03;	//è¯»
 					rs485txbuf[2]=0x01;
 					rs485txbuf[3]=0x82;	//Dn018
-					rs485txbuf[4]=0x00;	//¶Á1¸ö¼Ä´æÆ÷
+					rs485txbuf[4]=0x00;	//è¯»1ä¸ªå¯„å­˜å™¨
 					rs485txbuf[5]=0x01;
 					ModbusWriteSReg(rs485txbuf,8);
 					state=xSemaphoreTake(railrxIT, MODBUS_TIME);
@@ -156,14 +230,14 @@ void vChangeRailTask(void *param)
 						rx_crc=((u16)RS485_RX_BUF[RS485_RX_CNT-1]<<8)+RS485_RX_BUF[RS485_RX_CNT-2];
 						if(cal_crc==rx_crc)
 						{
-							if(RS485_RX_BUF[4]&0x08)//È¡Bit3 Preach,Bit Î»Îª 0£¬±íÊ¾¹¦ÄÜÎª ON ×´Ì¬£¬Îª 1 ÔòÊÇ OFF ×´Ì¬
+							if(RS485_RX_BUF[4]&0x08)//å–Bit3 Preach,Bit ä½ä¸º 0ï¼Œè¡¨ç¤ºåŠŸèƒ½ä¸º ON çŠ¶æ€ï¼Œä¸º 1 åˆ™æ˜¯ OFF çŠ¶æ€
 							{
-								//Î»ÖÃÆ«²î£¬·¢³öÆ«²î±¨¾¯
+								//ä½ç½®åå·®ï¼Œå‘å‡ºåå·®æŠ¥è­¦
 								preach=0;
 							}
 							else
 							{
-								//µ½´ïÖ¸¶¨Î»ÖÃ£¬½øĞĞÏÂÒ»²½
+								//åˆ°è¾¾æŒ‡å®šä½ç½®ï¼Œè¿›è¡Œä¸‹ä¸€æ­¥
 								preach=1;
 								step++;
 								modbusCount=0;
@@ -172,7 +246,7 @@ void vChangeRailTask(void *param)
 						}
 						else
 						{
-							//Ğ£Ñé´íÎó
+							//æ ¡éªŒé”™è¯¯
 						}
 					}
 					else
@@ -180,13 +254,13 @@ void vChangeRailTask(void *param)
 						modbusCount++;
 					}
 					break;
-				case 4://Ê§ÄÜËÅ·şµç»ú
+				case 4://å¤±èƒ½ä¼ºæœç”µæœº
 					rs485txbuf[0]=0x02;
 					rs485txbuf[1]=0x06;
 					rs485txbuf[2]=0x00;
 					rs485txbuf[3]=0x46;	//Pn070
 					rs485txbuf[4]=0x7F;
-					rs485txbuf[5]=0xFF;	//SonÊ§ÄÜÇı¶¯Æ÷
+					rs485txbuf[5]=0xFF;	//Sonå¤±èƒ½é©±åŠ¨å™¨
 					ModbusWriteSReg(rs485txbuf,8);
 					state=xSemaphoreTake(railrxIT, MODBUS_TIME);
 					if(state==pdTRUE)
@@ -195,22 +269,22 @@ void vChangeRailTask(void *param)
 						rx_crc=((u16)RS485_RX_BUF[RS485_RX_CNT-1]<<8)+RS485_RX_BUF[RS485_RX_CNT-2];
 						if(cal_crc==rx_crc)
 						{
-							//±ä¹ìÖ¸ÁîÍê³É
+							//å˜è½¨æŒ‡ä»¤å®Œæˆ
 							if(preach)
 							{
 								railState=LEFTRAIL;
-								preach=0;//Çå³ı×´Ì¬
+								preach=0;//æ¸…é™¤çŠ¶æ€
 							}
 							else
 							{
-								change_en=0;//Ö¸ÁîÍê³Éµ«Î»ÖÃÆ«²îÊ±£¬½ûÖ¹±ä¹ì
+								change_en=0;//æŒ‡ä»¤å®Œæˆä½†ä½ç½®åå·®æ—¶ï¼Œç¦æ­¢å˜è½¨
 							}
-							step=0;//¸´Î»²½Öè
+							step=0;//å¤ä½æ­¥éª¤
 							modbusCount=0;
 						}
 						else
 						{
-							//Ğ£Ñé´íÎó£¬·µ»ØÖ´ĞĞ±¾²½Öè
+							//æ ¡éªŒé”™è¯¯ï¼Œè¿”å›æ‰§è¡Œæœ¬æ­¥éª¤
 						}
 					}
 					else
@@ -220,17 +294,17 @@ void vChangeRailTask(void *param)
 					break;
 			}		
 		}
-		while((uRail==2)&&(railState==LEFTRAIL)&&change_en)//·´×ª270¶È
+		while((uRail==2)&&(railState==LEFTRAIL)&&change_en)//åè½¬270åº¦
 		{
 			switch(step)
 			{
-				case 0://Ñ¡ÔñÄÚ²¿Î»ÖÃ
+				case 0://é€‰æ‹©å†…éƒ¨ä½ç½®
 					rs485txbuf[0]=0x02;
 					rs485txbuf[1]=0x06;
 					rs485txbuf[2]=0x00;
 					rs485txbuf[3]=0x47;		//Pn071
-					rs485txbuf[4]=0x7E;		//ÄÚ²¿Î»ÖÃ1
-					rs485txbuf[5]=0xFF;		//µÍÎ»
+					rs485txbuf[4]=0x7E;		//å†…éƒ¨ä½ç½®1
+					rs485txbuf[5]=0xFF;		//ä½ä½
 					ModbusWriteSReg(rs485txbuf,8);
 					state=xSemaphoreTake(railrxIT, MODBUS_TIME);
 					if(state==pdTRUE)
@@ -239,13 +313,13 @@ void vChangeRailTask(void *param)
 						rx_crc=((u16)RS485_RX_BUF[RS485_RX_CNT-1]<<8)+RS485_RX_BUF[RS485_RX_CNT-2];
 						if(cal_crc==rx_crc)
 						{
-							//Ğ´³É¹¦£¬½øĞĞÏÂÒ»²½
+							//å†™æˆåŠŸï¼Œè¿›è¡Œä¸‹ä¸€æ­¥
 							step++;
 							modbusCount=0;
 						}
 						else
 						{
-							//Ğ£Ñé´íÎó£¬·µ»ØÖ´ĞĞ±¾²½Öè
+							//æ ¡éªŒé”™è¯¯ï¼Œè¿”å›æ‰§è¡Œæœ¬æ­¥éª¤
 						}
 					}
 					else
@@ -253,13 +327,13 @@ void vChangeRailTask(void *param)
 						modbusCount++;
 					}
 					break;
-				case 1://Ê¹ÄÜËÅ·şµç»ú
+				case 1://ä½¿èƒ½ä¼ºæœç”µæœº
 					rs485txbuf[0]=0x02;
 					rs485txbuf[1]=0x06;
 					rs485txbuf[2]=0x00;
 					rs485txbuf[3]=0x46;	//Pn070
 					rs485txbuf[4]=0x7F;
-					rs485txbuf[5]=0xFE;	//SonÊ¹ÄÜÇı¶¯Æ÷
+					rs485txbuf[5]=0xFE;	//Sonä½¿èƒ½é©±åŠ¨å™¨
 					ModbusWriteSReg(rs485txbuf,8);
 					state=xSemaphoreTake(railrxIT, MODBUS_TIME);
 					if(state==pdTRUE)
@@ -268,13 +342,13 @@ void vChangeRailTask(void *param)
 						rx_crc=((u16)RS485_RX_BUF[RS485_RX_CNT-1]<<8)+RS485_RX_BUF[RS485_RX_CNT-2];
 						if(cal_crc==rx_crc)
 						{
-							//Ğ´³É¹¦£¬½øĞĞÏÂÒ»²½
+							//å†™æˆåŠŸï¼Œè¿›è¡Œä¸‹ä¸€æ­¥
 							step++;
 							modbusCount=0;
 						}
 						else
 						{
-							//Ğ£Ñé´íÎó£¬·µ»ØÖ´ĞĞ±¾²½Öè
+							//æ ¡éªŒé”™è¯¯ï¼Œè¿”å›æ‰§è¡Œæœ¬æ­¥éª¤
 						}
 					}
 					else
@@ -282,12 +356,12 @@ void vChangeRailTask(void *param)
 						modbusCount++;
 					}
 					break;
-				case 2://´¥·¢ÄÚ²¿Î»ÖÃ£¬µç»ú×ª¶¯
+				case 2://è§¦å‘å†…éƒ¨ä½ç½®ï¼Œç”µæœºè½¬åŠ¨
 					rs485txbuf[0]=0x02;
 					rs485txbuf[1]=0x06;
 					rs485txbuf[2]=0x00;
 					rs485txbuf[3]=0x47;	//Pn071
-					rs485txbuf[4]=0x7A;	//ÄÚ²¿Î»ÖÃ1,´¥·¢
+					rs485txbuf[4]=0x7A;	//å†…éƒ¨ä½ç½®1,è§¦å‘
 					rs485txbuf[5]=0xFF;
 					ModbusWriteSReg(rs485txbuf,8);
 					state=xSemaphoreTake(railrxIT, MODBUS_TIME);
@@ -297,14 +371,14 @@ void vChangeRailTask(void *param)
 						rx_crc=((u16)RS485_RX_BUF[RS485_RX_CNT-1]<<8)+RS485_RX_BUF[RS485_RX_CNT-2];
 						if(cal_crc==rx_crc)
 						{
-							//Ğ´³É¹¦£¬½øĞĞÏÂÒ»²½
+							//å†™æˆåŠŸï¼Œè¿›è¡Œä¸‹ä¸€æ­¥
 							step++;
 							modbusCount=0;
 							vTaskDelay(500);
 						}
 						else
 						{
-							//Ğ£Ñé´íÎó£¬·µ»ØÖ´ĞĞ±¾²½Öè
+							//æ ¡éªŒé”™è¯¯ï¼Œè¿”å›æ‰§è¡Œæœ¬æ­¥éª¤
 						}
 					}
 					else
@@ -312,12 +386,12 @@ void vChangeRailTask(void *param)
 						modbusCount++;
 					}
 					break;
-				case 3://¶ÁÈ¡Dn018£¬ÅĞ¶Ïbit3-Preach
+				case 3://è¯»å–Dn018ï¼Œåˆ¤æ–­bit3-Preach
 					rs485txbuf[0]=0x02;
-					rs485txbuf[1]=0x03;	//¶Á
+					rs485txbuf[1]=0x03;	//è¯»
 					rs485txbuf[2]=0x01;
 					rs485txbuf[3]=0x82;	//Dn018
-					rs485txbuf[4]=0x00;	//¶Á1¸ö¼Ä´æÆ÷
+					rs485txbuf[4]=0x00;	//è¯»1ä¸ªå¯„å­˜å™¨
 					rs485txbuf[5]=0x01;
 					ModbusWriteSReg(rs485txbuf,8);
 					state=xSemaphoreTake(railrxIT, MODBUS_TIME);
@@ -328,14 +402,14 @@ void vChangeRailTask(void *param)
 						rx_crc=((u16)RS485_RX_BUF[RS485_RX_CNT-1]<<8)+RS485_RX_BUF[RS485_RX_CNT-2];
 						if(cal_crc==rx_crc)
 						{
-							if(RS485_RX_BUF[4]&0x08)//È¡Bit3 Preach,Bit Î»Îª 0£¬±íÊ¾¹¦ÄÜÎª ON ×´Ì¬£¬Îª 1 ÔòÊÇ OFF ×´Ì¬
+							if(RS485_RX_BUF[4]&0x08)//å–Bit3 Preach,Bit ä½ä¸º 0ï¼Œè¡¨ç¤ºåŠŸèƒ½ä¸º ON çŠ¶æ€ï¼Œä¸º 1 åˆ™æ˜¯ OFF çŠ¶æ€
 							{
-								//Î»ÖÃÆ«²î£¬·¢³öÆ«²î±¨¾¯
+								//ä½ç½®åå·®ï¼Œå‘å‡ºåå·®æŠ¥è­¦
 								preach=0;
 							}
 							else
 							{
-								//µ½´ïÖ¸¶¨Î»ÖÃ£¬½øĞĞÏÂÒ»²½
+								//åˆ°è¾¾æŒ‡å®šä½ç½®ï¼Œè¿›è¡Œä¸‹ä¸€æ­¥
 								preach=1;
 								step++;
 								modbusCount=0;
@@ -344,7 +418,7 @@ void vChangeRailTask(void *param)
 						}
 						else
 						{
-							//Ğ£Ñé´íÎó
+							//æ ¡éªŒé”™è¯¯
 						}
 					}
 					else
@@ -352,13 +426,13 @@ void vChangeRailTask(void *param)
 						modbusCount++;
 					}
 					break;
-				case 4://Ê§ÄÜËÅ·şµç»ú
+				case 4://å¤±èƒ½ä¼ºæœç”µæœº
 					rs485txbuf[0]=0x02;
 					rs485txbuf[1]=0x06;
 					rs485txbuf[2]=0x00;
 					rs485txbuf[3]=0x46;	//Pn070
 					rs485txbuf[4]=0x7F;
-					rs485txbuf[5]=0xFF;	//SonÊ§ÄÜÇı¶¯Æ÷
+					rs485txbuf[5]=0xFF;	//Sonå¤±èƒ½é©±åŠ¨å™¨
 					ModbusWriteSReg(rs485txbuf,8);
 					state=xSemaphoreTake(railrxIT, MODBUS_TIME);
 					if(state==pdTRUE)
@@ -367,22 +441,22 @@ void vChangeRailTask(void *param)
 						rx_crc=((u16)RS485_RX_BUF[RS485_RX_CNT-1]<<8)+RS485_RX_BUF[RS485_RX_CNT-2];
 						if(cal_crc==rx_crc)
 						{
-							//±ä¹ìÖ¸ÁîÍê³É
+							//å˜è½¨æŒ‡ä»¤å®Œæˆ
 							if(preach)
 							{
 								railState=RIGHTRAIL;
-								preach=0;//Çå³ı×´Ì¬
+								preach=0;//æ¸…é™¤çŠ¶æ€
 							}
 							else
 							{
-								change_en=0;//Ö¸ÁîÍê³Éµ«Î»ÖÃÆ«²îÊ±£¬½ûÖ¹±ä¹ì
+								change_en=0;//æŒ‡ä»¤å®Œæˆä½†ä½ç½®åå·®æ—¶ï¼Œç¦æ­¢å˜è½¨
 							}
-							step=0;//¸´Î»²½Öè
+							step=0;//å¤ä½æ­¥éª¤
 							modbusCount=0;
 						}
 						else
 						{
-							//Ğ£Ñé´íÎó£¬·µ»ØÖ´ĞĞ±¾²½Öè
+							//æ ¡éªŒé”™è¯¯ï¼Œè¿”å›æ‰§è¡Œæœ¬æ­¥éª¤
 						}
 					}
 					else
@@ -394,3 +468,4 @@ void vChangeRailTask(void *param)
 		}
 	}
 }
+#endif

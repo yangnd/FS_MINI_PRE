@@ -15,7 +15,7 @@ extern ctrlData carCtrlData;
 extern fdbkData carFdbkDataF, carFdbkDataR;
 static u16 len;
 
-void vUploadTask(void *param)		//DMA·½Ê½
+void vUploadTask(void *param)		//DMAæ–¹å¼
 {
 	LoRa_Set();
 	portTickType xLastWakeTime;
@@ -24,7 +24,7 @@ void vUploadTask(void *param)		//DMA·½Ê½
 	while(1)
 	{
 		vTaskDelayUntil(&xLastWakeTime,200);
-		Lora_mode=2;//½øÈë·¢ËÍÄ£Ê½
+		Lora_mode=2;//è¿›å…¥å‘é€æ¨¡å¼
 		uploaddata.cData=carCtrlData;
 		//Front Moto
 		uploaddata.F_Gear=carFdbkDataF.Gear;
@@ -68,20 +68,20 @@ void vUploadTask(void *param)		//DMA·½Ê½
 		uploaddata.res2=0xFF;
 		uploaddata.fDec=getDec();	//8.25 41040000
 		len=sizeof(uploaddata);
-		DMA_SetCurrDataCounter(DMA1_Channel2, len); //LoraĞè<=53
+		DMA_SetCurrDataCounter(DMA1_Channel2, len); //Loraéœ€<=53
 		DMA_Cmd(DMA1_Channel2, ENABLE);
 //		LED0=!LED0;
 	}
 }
 
-//void vUploadTask(void *param)		//Ò»°ã·½Ê½
+//void vUploadTask(void *param)		//ä¸€èˆ¬æ–¹å¼
 //{
 //	while(1)
 //	{
 //		vTaskDelay(500);
 //		if(!LORA_AUX)
 //		{
-//			LoRa_SendData(upload_buf); //·¢ËÍÒ»´ÎÊı¾İ
+//			LoRa_SendData(upload_buf); //å‘é€ä¸€æ¬¡æ•°æ®
 //			LED0=!LED0;
 //		}
 //	}	

@@ -5,16 +5,16 @@
 #include "task.h"
 
 fdbkData carFdbkDataF, carFdbkDataR;
-/*·¢ËÍ·´À¡ĞÅÏ¢*/
+/*å‘é€åé¦ˆä¿¡æ¯*/
 void vFdbkdataTask(void *param)
 {
 	while (1)
 	{
 		vTaskDelay(10);
-		//·¢ËÍ·´À¡Êı¾İ
+		//å‘é€åé¦ˆæ•°æ®
 		radioSendPacket(&carFdbkDataF);
 		vTaskDelay(10);
-		//·¢ËÍ·´À¡Êı¾İ
+		//å‘é€åé¦ˆæ•°æ®
 		radioSendPacket(&carFdbkDataR);
 	}
 }

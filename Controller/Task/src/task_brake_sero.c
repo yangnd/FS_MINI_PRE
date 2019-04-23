@@ -7,48 +7,50 @@
 #include "task.h"
 #include "semphr.h"
 
-#define PI 3.141592654											//¶¨Òå³£Á¿PI
-#define DM 0.375												//ÂÖ×ÓÖ±¾¶
-#define KM 3.285714												//ËÙ±È
-#define DELTA 1.0												//¼õËÙ¶È²îãĞÖµ
-#define AMAX 10.0												//×î´ó¼õËÙ¶È10m/s2
-#define BRAKETIME 10											//É²³µ¼ÆËãÊ±¼ä
-#define MAXSTEP 100												//É²³µĞĞ³Ì×Ü²½Êı
-static u8 uBrake=0,uLastBrake=0;								//É²³µĞÅºÅ
+#define PI 3.141592654											//å®šä¹‰å¸¸é‡PI
+#define DM 0.375												//è½®å­ç›´å¾„
+#define KM 3.285714												//é€Ÿæ¯”
+#define DELTA 1.0												//å‡é€Ÿåº¦å·®é˜ˆå€¼
+#define AMAX 10.0												//æœ€å¤§å‡é€Ÿåº¦10m/s2
+#define BRAKETIME 10											//åˆ¹è½¦è®¡ç®—æ—¶é—´
+#define MAXSTEP 100												//åˆ¹è½¦è¡Œç¨‹æ€»æ­¥æ•°
+static u8 uBrake=0,uLastBrake=0;								//åˆ¹è½¦ä¿¡å·
 static s16 sTorque=0,sLastTorque=0;
-u16 uRPM,uLastRPM;												//¶¨Òå×ªËÙ
+static s16 sSpeed=-2500;										//é€åˆ¹è½¦è½¬é€Ÿ
+u16 uRPM,uLastRPM;												//å®šä¹‰è½¬é€Ÿ
 s16 sDeltaRPM,sBrake;
 float fDecTarget,fDecNow;
 static u8 rs485txbuf[8];
 static u16 rx_crc,cal_crc;
-static s8 servo_step=0;			//±ê¼ÇËÅ·şÎ»ÖÃ
-static s32 pulseCount;			//É²³µÎ»ÖÃÓëËÅ·şµ±Ç°Î»ÖÃ²î
+static s8 servo_step=0;			//æ ‡è®°ä¼ºæœä½ç½®
+static s32 pulseCount;			//åˆ¹è½¦ä½ç½®ä¸ä¼ºæœå½“å‰ä½ç½®å·®
 static s16 pulseE4;
 static s16 pulseE0;
 static xSemaphoreHandle brakerxIT;
+static u8 timeout_count=0;
 
-/*RS485Íâ²¿ÖĞ¶Ï»Øµ÷º¯Êı*/
+/*RS485å¤–éƒ¨ä¸­æ–­å›è°ƒå‡½æ•°*/
 static void rs485_interruptCallback(void)
 {
 	portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
 	xSemaphoreGiveFromISR(brakerxIT, &xHigherPriorityTaskWoken);
-//	portYIELD_FROM_ISR(xHigherPriorityTaskWoken); //Èç¹ûĞèÒªµÄ»°½øĞĞÒ»´ÎÈÎÎñÇĞ»»
+//	portYIELD_FROM_ISR(xHigherPriorityTaskWoken); //å¦‚æœéœ€è¦çš„è¯è¿›è¡Œä¸€æ¬¡ä»»åŠ¡åˆ‡æ¢
 }
 void BrakeCb_Init(void)
 {
 	brakerxIT = xSemaphoreCreateBinary();
 	Brake_setIterruptCallback(rs485_interruptCallback);
 }
-void vBrakeServoTask(void *param)	//×ª¾Ø¡¢ËÙ¶ÈÄ£Ê½
+void vBrakeServoTask(void *param)	//è½¬çŸ©ã€é€Ÿåº¦æ¨¡å¼
 {
 	portBASE_TYPE state;
 	TickType_t xWakeTime,xLastWakeTime,xDeltaTime;
 	rs485txbuf[0]=0x01;
 	rs485txbuf[1]=0x06;
 	rs485txbuf[2]=0x00;
-	rs485txbuf[3]=0x02;	//Pn002£ºÖØĞÂÉÏµç²ÅÓĞĞ§£¬Ô¤ÏÈÉèÖÃ
+	rs485txbuf[3]=0x02;	//Pn002ï¼šé‡æ–°ä¸Šç”µæ‰æœ‰æ•ˆï¼Œé¢„å…ˆè®¾ç½®
 	rs485txbuf[4]=0x00;
-	rs485txbuf[5]=0x05;	//ËÙ¶È/×ª¾ØÄ£Ê½
+	rs485txbuf[5]=0x05;	//é€Ÿåº¦/è½¬çŸ©æ¨¡å¼
 	ModbusWriteSReg(rs485txbuf,8);
 	state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
 	rs485txbuf[0]=0x01;
@@ -56,15 +58,15 @@ void vBrakeServoTask(void *param)	//×ª¾Ø¡¢ËÙ¶ÈÄ£Ê½
 	rs485txbuf[2]=0x00;
 	rs485txbuf[3]=0xA8;	//Pn168
 	rs485txbuf[4]=0x00;
-	rs485txbuf[5]=0x01;	//ÄÚ²¿ËÙ¶È
+	rs485txbuf[5]=0x01;	//å†…éƒ¨é€Ÿåº¦
 	ModbusWriteSReg(rs485txbuf,8);
 	state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
 	rs485txbuf[0]=0x01;
 	rs485txbuf[1]=0x06;
 	rs485txbuf[2]=0x00;
-	rs485txbuf[3]=0xA9;	//Pn169ÄÚ²¿ËÙ¶È1
-	rs485txbuf[4]=0x03;	//¸ßÎ»
-	rs485txbuf[5]=0xE8;	//µÍÎ» ±£³Ö500r/min
+	rs485txbuf[3]=0xA9;	//Pn169å†…éƒ¨é€Ÿåº¦1
+	rs485txbuf[4]=(sSpeed>>8)&0xFF;	//é«˜ä½
+	rs485txbuf[5]=sSpeed&0xFF;	//ä½ä½ ä¿æŒ500r/min
 	ModbusWriteSReg(rs485txbuf,8);
 	state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
 	rs485txbuf[0]=0x01;
@@ -72,31 +74,31 @@ void vBrakeServoTask(void *param)	//×ª¾Ø¡¢ËÙ¶ÈÄ£Ê½
 	rs485txbuf[2]=0x00;
 	rs485txbuf[3]=0xCC;	//Pn204
 	rs485txbuf[4]=0x00;
-	rs485txbuf[5]=0x01;	//ÄÚ²¿×ª¾Ø1
+	rs485txbuf[5]=0x01;	//å†…éƒ¨è½¬çŸ©1
 	ModbusWriteSReg(rs485txbuf,8);
 	state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
 	rs485txbuf[0]=0x01;
 	rs485txbuf[1]=0x06;
 	rs485txbuf[2]=0x00;
-	rs485txbuf[3]=0xC8;		//Pn200	ÄÚ²¿×ª¾Ø1
-	rs485txbuf[4]=0x00;		//¸ßÎ» Ä¬ÈÏ0
-	rs485txbuf[5]=0x00;		//µÍÎ» Ä¬ÈÏ0
+	rs485txbuf[3]=0xC8;		//Pn200	å†…éƒ¨è½¬çŸ©1
+	rs485txbuf[4]=0x00;		//é«˜ä½ é»˜è®¤0
+	rs485txbuf[5]=0x00;		//ä½ä½ é»˜è®¤0
 	ModbusWriteSReg(rs485txbuf,8);
 	state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
 	rs485txbuf[0]=0x01;
 	rs485txbuf[1]=0x06;
 	rs485txbuf[2]=0x00;
 	rs485txbuf[3]=0x44;		//Pn068
-	rs485txbuf[4]=0x3F;		//¸ßÎ»£ºCmode,TR2,TR1,Sp3,Sp2,Sp1ÓÉÍ¨ĞÅ¿ØÖÆ
-	rs485txbuf[5]=0x01;		//µÍÎ»£ºSonÓÉÍ¨ĞÅ¿ØÖÆ
+	rs485txbuf[4]=0x3F;		//é«˜ä½ï¼šCmode,TR2,TR1,Sp3,Sp2,Sp1ç”±é€šä¿¡æ§åˆ¶
+	rs485txbuf[5]=0x01;		//ä½ä½ï¼šSonç”±é€šä¿¡æ§åˆ¶
 	ModbusWriteSReg(rs485txbuf,8);
 	state=xSemaphoreTake(brakerxIT, MODBUS_TIME);	
 	rs485txbuf[0]=0x01;
 	rs485txbuf[1]=0x06;
 	rs485txbuf[2]=0x00;
 	rs485txbuf[3]=0x46;		//Pn070 
-	rs485txbuf[4]=0x7F;		//¸ßÎ» Cmode:1(OFF)ËÙ¶ÈÄ£Ê½£»TR2£¬TR1:1(OFF)ÄÚ²¿×ª¾Ø£»1,Sp3,Sp2,Sp1:1(OFF)ÄÚ²¿ËÙ¶È1
-	rs485txbuf[5]=0xB2;		//µÍÎ» Son:0£¨ON£©Ê¹ÄÜÇı¶¯Æ÷	
+	rs485txbuf[4]=0x7F;		//é«˜ä½ Cmode:1(OFF)é€Ÿåº¦æ¨¡å¼ï¼›TR2ï¼ŒTR1:1(OFF)å†…éƒ¨è½¬çŸ©ï¼›1,Sp3,Sp2,Sp1:1(OFF)å†…éƒ¨é€Ÿåº¦1
+	rs485txbuf[5]=0xB2;		//ä½ä½ Son:0ï¼ˆONï¼‰ä½¿èƒ½é©±åŠ¨å™¨	
 	ModbusWriteSReg(rs485txbuf,8);
 	state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
 	
@@ -105,59 +107,59 @@ void vBrakeServoTask(void *param)	//×ª¾Ø¡¢ËÙ¶ÈÄ£Ê½
 		vTaskDelay(BRAKETIME);
 		uBrake = getBrake();
 		
-		/*ABS¹¦ÄÜ*/
+		/*ABSåŠŸèƒ½*/
 		xWakeTime = xTaskGetTickCount();	
-		uRPM = getRPM();							//×ªËÙ
+		uRPM = getRPM();							//è½¬é€Ÿ
 		xDeltaTime=xWakeTime-xLastWakeTime;
-		fDecNow=PI*DM*(uRPM-uLastRPM)/(60*KM*xDeltaTime/1000);	//µ¥Î»m/s2
+		fDecNow=PI*DM*(uRPM-uLastRPM)/(60*KM*xDeltaTime/1000);	//å•ä½m/s2
 		xLastWakeTime=xWakeTime;
 		uLastRPM=uRPM;
-		if(fDecNow<-2.5)	//ÂÖ×Ó¼õËÙ¶È´óÓÚ10m/s2
+		if(fDecNow<-2.5)	//è½®å­å‡é€Ÿåº¦å¤§äº10m/s2
 		{
 			uBrake=0;
 		}
 		
-		sTorque=-2*uBrake ;
+		sTorque=uBrake+47;
 		if((uBrake<uLastBrake)||(uBrake==0))
 		{
-			/*ËÙ¶ÈÄ£Ê½ËÉ¿ªÉ²³µ*/
+			/*é€Ÿåº¦æ¨¡å¼æ¾å¼€åˆ¹è½¦*/
 			rs485txbuf[0]=0x01;
 			rs485txbuf[1]=0x06;
 			rs485txbuf[2]=0x00;
 			rs485txbuf[3]=0x46;		//Pn070 
-			rs485txbuf[4]=0x7F;		//¸ßÎ» Cmode:1(OFF)ËÙ¶ÈÄ£Ê½£»TR2£¬TR1:1(OFF)ÄÚ²¿×ª¾Ø1£»Sp3,Sp2,Sp1:1(OFF)ÄÚ²¿ËÙ¶È1
-			rs485txbuf[5]=0xB2;		//µÍÎ» Son:0£¨ON£©Ê¹ÄÜÇı¶¯Æ÷	
+			rs485txbuf[4]=0x7F;		//é«˜ä½ Cmode:1(OFF)é€Ÿåº¦æ¨¡å¼ï¼›TR2ï¼ŒTR1:1(OFF)å†…éƒ¨è½¬çŸ©1ï¼›Sp3,Sp2,Sp1:1(OFF)å†…éƒ¨é€Ÿåº¦1
+			rs485txbuf[5]=0xB2;		//ä½ä½ Son:0ï¼ˆONï¼‰ä½¿èƒ½é©±åŠ¨å™¨	
 			ModbusWriteSReg(rs485txbuf,8);
 			state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
 			vTaskDelay(20);
 		}
 		else
 		{
-			/*×ª¾ØÄ£Ê½É²³µ*/
+			/*è½¬çŸ©æ¨¡å¼åˆ¹è½¦*/
 			while(1)
 			{
 //				rs485txbuf[0]=0x01;
 //				rs485txbuf[1]=0x06;
 //				rs485txbuf[2]=0x00;
 //				rs485txbuf[3]=0x46;		//Pn070 
-//				rs485txbuf[4]=0x5F;		//¸ßÎ» Cmode:0(ON)×ª¾ØÄ£Ê½£»TR2£¬TR1:1(OFF)ÄÚ²¿×ª¾Ø1£»Sp3,Sp2,Sp1:1(OFF)ÄÚ²¿ËÙ¶È1
-//				rs485txbuf[5]=0xB3;		//µÍÎ» Son:1£¨OFF£©Ê§ÄÜÇı¶¯Æ÷	
+//				rs485txbuf[4]=0x5F;		//é«˜ä½ Cmode:0(ON)è½¬çŸ©æ¨¡å¼ï¼›TR2ï¼ŒTR1:1(OFF)å†…éƒ¨è½¬çŸ©1ï¼›Sp3,Sp2,Sp1:1(OFF)å†…éƒ¨é€Ÿåº¦1
+//				rs485txbuf[5]=0xB3;		//ä½ä½ Son:1ï¼ˆOFFï¼‰å¤±èƒ½é©±åŠ¨å™¨	
 //				ModbusWriteSReg(rs485txbuf,8);
 //				state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
 				rs485txbuf[0]=0x01;
 				rs485txbuf[1]=0x06;
 				rs485txbuf[2]=0x00;
-				rs485txbuf[3]=0xC8;		//Pn200	ÄÚ²¿×ª¾Ø1
-				rs485txbuf[4]=(sTorque>>8)&0xFF;		//¸ßÎ» 
-				rs485txbuf[5]=sTorque&0xFF;		//µÍÎ» 
+				rs485txbuf[3]=0xC8;		//Pn200	å†…éƒ¨è½¬çŸ©1
+				rs485txbuf[4]=(sTorque>>8)&0xFF;		//é«˜ä½ 
+				rs485txbuf[5]=sTorque&0xFF;		//ä½ä½ 
 				ModbusWriteSReg(rs485txbuf,8);
 				state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
 				rs485txbuf[0]=0x01;
 				rs485txbuf[1]=0x06;
 				rs485txbuf[2]=0x00;
 				rs485txbuf[3]=0x46;		//Pn070 
-				rs485txbuf[4]=0x5F;		//¸ßÎ» Cmode:0(ON)×ª¾ØÄ£Ê½£»TR2£¬TR1:1(OFF)ÄÚ²¿×ª¾Ø1£»Sp3,Sp2,Sp1:1(OFF)ÄÚ²¿ËÙ¶È1
-				rs485txbuf[5]=0xB2;		//µÍÎ» Son:0£¨ON£©Ê¹ÄÜÇı¶¯Æ÷	
+				rs485txbuf[4]=0x5F;		//é«˜ä½ Cmode:0(ON)è½¬çŸ©æ¨¡å¼ï¼›TR2ï¼ŒTR1:1(OFF)å†…éƒ¨è½¬çŸ©1ï¼›Sp3,Sp2,Sp1:1(OFF)å†…éƒ¨é€Ÿåº¦1
+				rs485txbuf[5]=0xB2;		//ä½ä½ Son:0ï¼ˆONï¼‰ä½¿èƒ½é©±åŠ¨å™¨	
 				ModbusWriteSReg(rs485txbuf,8);
 				state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
 				if(state==pdTRUE)
@@ -166,25 +168,33 @@ void vBrakeServoTask(void *param)	//×ª¾Ø¡¢ËÙ¶ÈÄ£Ê½
 					rx_crc=((u16)RS485_RX_BUF[RS485_RX_CNT-1]<<8)+RS485_RX_BUF[RS485_RX_CNT-2];
 					if(cal_crc==rx_crc)
 					{
-						//Ğ´³É¹¦£¬½øĞĞÏÂÒ»²½
+						//å†™æˆåŠŸï¼Œè¿›è¡Œä¸‹ä¸€æ­¥
+						timeout_count=0;
 						break;
 					}
 					else
 					{
-						//Ğ£Ñé´íÎó(ºöÂÔ£ºµç»úÇı¶¯Æ÷ÊÕµ½ÁËÕıÈ·µÄÊı¾İ£¬²¢ÇÒÓĞÏìÓ¦£¬485´«ÊäÏßÂ·ÎÊÌâµ¼ÖÂcrc´íÎó)
+						//æ ¡éªŒé”™è¯¯(å¿½ç•¥ï¼šç”µæœºé©±åŠ¨å™¨æ”¶åˆ°äº†æ­£ç¡®çš„æ•°æ®ï¼Œå¹¶ä¸”æœ‰å“åº”ï¼Œ485ä¼ è¾“çº¿è·¯é—®é¢˜å¯¼è‡´crcé”™è¯¯)
+						timeout_count=0;
 						break;
 					}
 				}
 				else
 				{
-					//³¬Ê±Î´ÊÕµ½·´À¡£¬ÖØ¸´·¢ËÍ
+					//è¶…æ—¶æœªæ”¶åˆ°åé¦ˆï¼Œé‡å¤å‘é€
+					timeout_count++;
+					if(timeout_count>100)						
+					{
+						timeout_count=0;
+						break;
+					}
 				}		
 			}
 //			rs485txbuf[0]=0x01;
-//			rs485txbuf[1]=0x03;	//¶Á
+//			rs485txbuf[1]=0x03;	//è¯»
 //			rs485txbuf[2]=0x01;
 //			rs485txbuf[3]=0x82;	//Dn018
-//			rs485txbuf[4]=0x00;	//¶Á1¸ö¼Ä´æÆ÷
+//			rs485txbuf[4]=0x00;	//è¯»1ä¸ªå¯„å­˜å™¨
 //			rs485txbuf[5]=0x01;
 //			ModbusWriteSReg(rs485txbuf,8);
 //			state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
@@ -194,56 +204,56 @@ void vBrakeServoTask(void *param)	//×ª¾Ø¡¢ËÙ¶ÈÄ£Ê½
 //				rx_crc=((u16)RS485_RX_BUF[RS485_RX_CNT-1]<<8)+RS485_RX_BUF[RS485_RX_CNT-2];
 //				if(cal_crc==rx_crc)
 //				{
-//					if(RS485_RX_BUF[3]&0x20)//È¡Bit13 TCMDreach,Bit Î»Îª 0£¬±íÊ¾¹¦ÄÜÎª ON ×´Ì¬£¬Îª 1 ÔòÊÇ OFF ×´Ì¬
+//					if(RS485_RX_BUF[3]&0x20)//å–Bit13 TCMDreach,Bit ä½ä¸º 0ï¼Œè¡¨ç¤ºåŠŸèƒ½ä¸º ON çŠ¶æ€ï¼Œä¸º 1 åˆ™æ˜¯ OFF çŠ¶æ€
 //					{
-//						//×ª¾ØÃ»ÓĞµ½´ïÉè¶¨Ö¸ÁîÖµ
+//						//è½¬çŸ©æ²¡æœ‰åˆ°è¾¾è®¾å®šæŒ‡ä»¤å€¼
 //					}
 //					else
 //					{
-//						//×ª¾Øµ½´ïÉè¶¨Ö¸ÁîÖµ
+//						//è½¬çŸ©åˆ°è¾¾è®¾å®šæŒ‡ä»¤å€¼
 //					}
 //					
 //				}
 //				else
 //				{
-//					//Ğ£Ñé´íÎó
+//					//æ ¡éªŒé”™è¯¯
 //				}
 //			}
 //			else
 //			{
-//				//³¬Ê±
+//				//è¶…æ—¶
 //			}
 		}
 		
 		uLastBrake=uBrake;	
 	}
 }
-void vBrakeServoTask0(void *param)		//Î»ÖÃÄ£Ê½
+void vBrakeServoTask0(void *param)		//ä½ç½®æ¨¡å¼
 {
 	portBASE_TYPE state;
 	TickType_t xWakeTime,xLastWakeTime,xDeltaTime;
 	rs485txbuf[0]=0x01;
 	rs485txbuf[1]=0x06;
 	rs485txbuf[2]=0x00;
-	rs485txbuf[3]=0x78;		//Pn120	ÄÚ²¿Î»ÖÃ0£¨Íò£©
-	rs485txbuf[4]=0x00;		//¸ßÎ»
-	rs485txbuf[5]=0x00;		//µÍÎ»
+	rs485txbuf[3]=0x78;		//Pn120	å†…éƒ¨ä½ç½®0ï¼ˆä¸‡ï¼‰
+	rs485txbuf[4]=0x00;		//é«˜ä½
+	rs485txbuf[5]=0x00;		//ä½ä½
 	ModbusWriteSReg(rs485txbuf,8);
 	state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
 	rs485txbuf[0]=0x01;
 	rs485txbuf[1]=0x06;
 	rs485txbuf[2]=0x00;
-	rs485txbuf[3]=0x79;		//Pn121	ÄÚ²¿Î»ÖÃ0£¨¸ö£©
-	rs485txbuf[4]=0x00;		//¸ßÎ»
-	rs485txbuf[5]=0x00;		//µÍÎ»
+	rs485txbuf[3]=0x79;		//Pn121	å†…éƒ¨ä½ç½®0ï¼ˆä¸ªï¼‰
+	rs485txbuf[4]=0x00;		//é«˜ä½
+	rs485txbuf[5]=0x00;		//ä½ä½
 	ModbusWriteSReg(rs485txbuf,8);
 	state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
 	rs485txbuf[0]=0x01;
 	rs485txbuf[1]=0x06;
 	rs485txbuf[2]=0x00;
 	rs485txbuf[3]=0x47;		//Pn071
-	rs485txbuf[4]=0x7F;		//ÄÚ²¿Î»ÖÃ0,²¢È¡Ïû´¥·¢
-	rs485txbuf[5]=0xFF;		//µÍÎ»
+	rs485txbuf[4]=0x7F;		//å†…éƒ¨ä½ç½®0,å¹¶å–æ¶ˆè§¦å‘
+	rs485txbuf[5]=0xFF;		//ä½ä½
 	ModbusWriteSReg(rs485txbuf,8);
 	state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
 	rs485txbuf[0]=0x01;
@@ -251,7 +261,7 @@ void vBrakeServoTask0(void *param)		//Î»ÖÃÄ£Ê½
 	rs485txbuf[2]=0x00;
 	rs485txbuf[3]=0x46;	//Pn070
 	rs485txbuf[4]=0x7F;
-	rs485txbuf[5]=0xFE;	//SonÊ¹ÄÜÇı¶¯Æ÷
+	rs485txbuf[5]=0xFE;	//Sonä½¿èƒ½é©±åŠ¨å™¨
 	ModbusWriteSReg(rs485txbuf,8);
 	state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
 	
@@ -260,27 +270,27 @@ void vBrakeServoTask0(void *param)		//Î»ÖÃÄ£Ê½
 		vTaskDelay(BRAKETIME);
 		uBrake = getBrake();
 		
-		/*ABS¹¦ÄÜ*/
+		/*ABSåŠŸèƒ½*/
 		xWakeTime = xTaskGetTickCount();	
-		uRPM = getRPM();							//×ªËÙ
+		uRPM = getRPM();							//è½¬é€Ÿ
 		xDeltaTime=xWakeTime-xLastWakeTime;
-		fDecNow=PI*DM*(uRPM-uLastRPM)/(60*KM*xDeltaTime/1000);	//µ¥Î»m/s2
+		fDecNow=PI*DM*(uRPM-uLastRPM)/(60*KM*xDeltaTime/1000);	//å•ä½m/s2
 		xLastWakeTime=xWakeTime;
 		uLastRPM=uRPM;
-		if(fDecNow<-2.5)	//ÂÖ×Ó¼õËÙ¶È´óÓÚ10m/s2
+		if(fDecNow<-2.5)	//è½®å­å‡é€Ÿåº¦å¤§äº10m/s2
 		{
 			uBrake=0;
 		}
 		
-		/*	×ÜĞĞ³Ì45000¸öÂö³å
-			Ã¿²½450Âö³å
+		/*	æ€»è¡Œç¨‹45000ä¸ªè„‰å†²
+			æ¯æ­¥450è„‰å†²
 		*/
 		if(servo_step!=uBrake)
 		{
 			pulseCount=uBrake-servo_step;
-			pulseCount=430*(uBrake-servo_step);		//Ô­À´450
-			pulseE4=pulseCount/10000;				//ÍòÎ»
-			pulseE0=pulseCount-10000*pulseE4;		//¸öÎ»
+			pulseCount=430*(uBrake-servo_step);		//åŸæ¥450
+			pulseE4=pulseCount/10000;				//ä¸‡ä½
+			pulseE0=pulseCount-10000*pulseE4;		//ä¸ªä½
 			while(1)
 			{
 				rs485txbuf[0]=0x01;
@@ -288,7 +298,7 @@ void vBrakeServoTask0(void *param)		//Î»ÖÃÄ£Ê½
 				rs485txbuf[2]=0x00;
 				rs485txbuf[3]=0x46;	//Pn070
 				rs485txbuf[4]=0x7F;
-				rs485txbuf[5]=0xFE;	//SonÊ¹ÄÜÇı¶¯Æ÷
+				rs485txbuf[5]=0xFE;	//Sonä½¿èƒ½é©±åŠ¨å™¨
 				ModbusWriteSReg(rs485txbuf,8);
 				state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
 				if(state==pdTRUE)
@@ -297,25 +307,25 @@ void vBrakeServoTask0(void *param)		//Î»ÖÃÄ£Ê½
 					rx_crc=((u16)RS485_RX_BUF[RS485_RX_CNT-1]<<8)+RS485_RX_BUF[RS485_RX_CNT-2];
 					if(cal_crc==rx_crc)
 					{
-						//Ğ´³É¹¦£¬½øĞĞÏÂÒ»²½
+						//å†™æˆåŠŸï¼Œè¿›è¡Œä¸‹ä¸€æ­¥
 					}
 					else
 					{
-						//Ğ£Ñé´íÎó£¬Ìø³ö
+						//æ ¡éªŒé”™è¯¯ï¼Œè·³å‡º
 						break;
 					}
 				}
 				else
 				{
-					//³¬Ê±Î»ÊÕµ½·´À¡£¬Ìø³ö
+					//è¶…æ—¶ä½æ”¶åˆ°åé¦ˆï¼Œè·³å‡º
 					break;
 				}				
 				rs485txbuf[0]=0x01;
 				rs485txbuf[1]=0x06;
 				rs485txbuf[2]=0x00;
 				rs485txbuf[3]=0x47;		//Pn071
-				rs485txbuf[4]=0x7F;		//ÄÚ²¿Î»ÖÃ0,²¢È¡Ïû´¥·¢
-				rs485txbuf[5]=0xFF;		//µÍÎ»
+				rs485txbuf[4]=0x7F;		//å†…éƒ¨ä½ç½®0,å¹¶å–æ¶ˆè§¦å‘
+				rs485txbuf[5]=0xFF;		//ä½ä½
 				ModbusWriteSReg(rs485txbuf,8);
 				state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
 				if(state==pdTRUE)
@@ -324,27 +334,25 @@ void vBrakeServoTask0(void *param)		//Î»ÖÃÄ£Ê½
 					rx_crc=((u16)RS485_RX_BUF[RS485_RX_CNT-1]<<8)+RS485_RX_BUF[RS485_RX_CNT-2];
 					if(cal_crc==rx_crc)
 					{
-						//Ğ´³É¹¦£¬½øĞĞÏÂÒ»²½
+						//å†™æˆåŠŸï¼Œè¿›è¡Œä¸‹ä¸€æ­¥
 					}
 					else
 					{
-						//Ğ£Ñé´íÎó£¬Ìø³ö
+						//æ ¡éªŒé”™è¯¯ï¼Œè·³å‡º
 						break;
 					}
 				}
 				else
 				{
-					//³¬Ê±Î»ÊÕµ½·´À¡£¬Ìø³ö
+					//è¶…æ—¶ä½æ”¶åˆ°åé¦ˆï¼Œè·³å‡º
 					break;
 				}
 				rs485txbuf[0]=0x01;
 				rs485txbuf[1]=0x06;
 				rs485txbuf[2]=0x00;
-				rs485txbuf[3]=0x78;		//Pn120	ÄÚ²¿Î»ÖÃ0£¨Íò£©
-				rs485txbuf[4]=(pulseE4>>8)&0xFF;		//¸ßÎ»
-				rs485txbuf[5]=pulseE4&0xFF;		//µÍÎ»
-//				rs485txbuf[4]=(pulseCount>>8)&0xFF;		//¸ßÎ»
-//				rs485txbuf[5]=pulseCount&0xFF;		//µÍÎ»
+				rs485txbuf[3]=0x78;		//Pn120	å†…éƒ¨ä½ç½®0ï¼ˆä¸‡ï¼‰
+				rs485txbuf[4]=(pulseE4>>8)&0xFF;		//é«˜ä½
+				rs485txbuf[5]=pulseE4&0xFF;		//ä½ä½
 				ModbusWriteSReg(rs485txbuf,8);
 				state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
 				if(state==pdTRUE)
@@ -353,25 +361,25 @@ void vBrakeServoTask0(void *param)		//Î»ÖÃÄ£Ê½
 					rx_crc=((u16)RS485_RX_BUF[RS485_RX_CNT-1]<<8)+RS485_RX_BUF[RS485_RX_CNT-2];
 					if(cal_crc==rx_crc)
 					{
-						//Ğ´³É¹¦£¬½øĞĞÏÂÒ»²½
+						//å†™æˆåŠŸï¼Œè¿›è¡Œä¸‹ä¸€æ­¥
 					}
 					else
 					{
-						//Ğ£Ñé´íÎó£¬Ìø³ö
+						//æ ¡éªŒé”™è¯¯ï¼Œè·³å‡º
 						break;
 					}
 				}
 				else
 				{
-					//³¬Ê±Î»ÊÕµ½·´À¡£¬Ìø³ö
+					//è¶…æ—¶ä½æ”¶åˆ°åé¦ˆï¼Œè·³å‡º
 					break;
 				}
 				rs485txbuf[0]=0x01;
 				rs485txbuf[1]=0x06;
 				rs485txbuf[2]=0x00;
-				rs485txbuf[3]=0x79;		//Pn121	ÄÚ²¿Î»ÖÃ0£¨¸ö£©
-				rs485txbuf[4]=(pulseE0>>8)&0xFF;		//¸ßÎ»
-				rs485txbuf[5]=pulseE0&0xFF;		//µÍÎ»
+				rs485txbuf[3]=0x79;		//Pn121	å†…éƒ¨ä½ç½®0ï¼ˆä¸ªï¼‰
+				rs485txbuf[4]=(pulseE0>>8)&0xFF;		//é«˜ä½
+				rs485txbuf[5]=pulseE0&0xFF;		//ä½ä½
 				ModbusWriteSReg(rs485txbuf,8);
 				state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
 				if(state==pdTRUE)
@@ -380,17 +388,17 @@ void vBrakeServoTask0(void *param)		//Î»ÖÃÄ£Ê½
 					rx_crc=((u16)RS485_RX_BUF[RS485_RX_CNT-1]<<8)+RS485_RX_BUF[RS485_RX_CNT-2];
 					if(cal_crc==rx_crc)
 					{
-						//Ğ´³É¹¦£¬½øĞĞÏÂÒ»²½
+						//å†™æˆåŠŸï¼Œè¿›è¡Œä¸‹ä¸€æ­¥
 					}
 					else
 					{
-						//Ğ£Ñé´íÎó£¬Ìø³ö
+						//æ ¡éªŒé”™è¯¯ï¼Œè·³å‡º
 						break;
 					}
 				}
 				else
 				{
-					//³¬Ê±Î»ÊÕµ½·´À¡£¬Ìø³ö
+					//è¶…æ—¶ä½æ”¶åˆ°åé¦ˆï¼Œè·³å‡º
 					break;
 				}
 				
@@ -398,7 +406,7 @@ void vBrakeServoTask0(void *param)		//Î»ÖÃÄ£Ê½
 				rs485txbuf[1]=0x06;
 				rs485txbuf[2]=0x00;
 				rs485txbuf[3]=0x47;	//Pn071
-				rs485txbuf[4]=0x7B;	//ÄÚ²¿Î»ÖÃ0,´¥·¢
+				rs485txbuf[4]=0x7B;	//å†…éƒ¨ä½ç½®0,è§¦å‘
 				rs485txbuf[5]=0xFF;
 				ModbusWriteSReg(rs485txbuf,8);
 				state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
@@ -408,198 +416,28 @@ void vBrakeServoTask0(void *param)		//Î»ÖÃÄ£Ê½
 					rx_crc=((u16)RS485_RX_BUF[RS485_RX_CNT-1]<<8)+RS485_RX_BUF[RS485_RX_CNT-2];
 					if(cal_crc==rx_crc)
 					{
-						//³É¹¦Ö´ĞĞ£¬Ìø³ö
-						servo_step=uBrake;		//±ê¼ÇËÅ·şÎ»ÖÃ
+						//æˆåŠŸæ‰§è¡Œï¼Œè·³å‡º
+						servo_step=uBrake;		//æ ‡è®°ä¼ºæœä½ç½®
 						break;
 					}
 					else
 					{
-						//Ğ£Ñé´íÎó£¬Ìø³ö
+						//æ ¡éªŒé”™è¯¯ï¼Œè·³å‡º
 						break;
 					}
 				}
 				else
 				{
-					//³¬Ê±Î»ÊÕµ½·´À¡£¬Ìø³ö
+					//è¶…æ—¶ä½æ”¶åˆ°åé¦ˆï¼Œè·³å‡º
 					break;
 				}
 				
 			}
 		}
-/*·½·¨2*/
-//		if(servo_step<uBrake)
-//		{
-//			//¼ÌĞøÉ²³µ
-//			pulseCount=uBrake-servo_step;
-//			servo_step=uBrake;
-//			if(servo_step<=MAXSTEP)
-//			{
-//				rs485txbuf[0]=0x01;
-//				rs485txbuf[1]=0x06;
-//				rs485txbuf[2]=0x00;
-//				rs485txbuf[3]=0x78;		//Pn120	ÄÚ²¿Î»ÖÃ0£¨Íò£©
-//				rs485txbuf[4]=(pulseCount>>8)&0xFF;		//¸ßÎ»
-//				rs485txbuf[5]=pulseCount&0xFF;		//µÍÎ»
-//				ModbusWriteSReg(rs485txbuf,8);
-//				vTaskDelay(20);
-//				rs485txbuf[0]=0x01;
-//				rs485txbuf[1]=0x06;
-//				rs485txbuf[2]=0x00;
-//				rs485txbuf[3]=0x47;		//Pn071
-//				rs485txbuf[4]=0x7F;		//ÄÚ²¿Î»ÖÃ0
-//				rs485txbuf[5]=0xFF;		//µÍÎ»
-//				ModbusWriteSReg(rs485txbuf,8);
-//				vTaskDelay(20);
-//				rs485txbuf[0]=0x01;
-//				rs485txbuf[1]=0x06;
-//				rs485txbuf[2]=0x00;
-//				rs485txbuf[3]=0x47;	//Pn071
-//				rs485txbuf[4]=0x7B;	//ÄÚ²¿Î»ÖÃ0,´¥·¢
-//				rs485txbuf[5]=0xFF;
-//				ModbusWriteSReg(rs485txbuf,8);
-//				vTaskDelay(20);
-//			}
-//			else
-//			{
-//				servo_step=MAXSTEP;
-//			}	
-//		}
-//		else if(servo_step>uBrake)
-//		{
-//			//ËÉ¿ªÉ²³µ
-//			pulseCount=uBrake-servo_step;
-//			servo_step=uBrake;
-//			if(servo_step>=0)
-//			{
-//				rs485txbuf[0]=0x01;
-//				rs485txbuf[1]=0x06;
-//				rs485txbuf[2]=0x00;
-//				rs485txbuf[3]=0x7A;		//Pn122	ÄÚ²¿Î»ÖÃ1¸ßÎ»
-//				rs485txbuf[4]=(pulseCount>>8)&0xFF;		//¸ßÎ»
-//				rs485txbuf[5]=pulseCount&0xFF;		//µÍÎ»
-//				ModbusWriteSReg(rs485txbuf,8);
-//				vTaskDelay(20);
-//				rs485txbuf[0]=0x01;
-//				rs485txbuf[1]=0x06;
-//				rs485txbuf[2]=0x00;
-//				rs485txbuf[3]=0x47;		//Pn071
-//				rs485txbuf[4]=0x7E;		//ÄÚ²¿Î»ÖÃ1
-//				rs485txbuf[5]=0xFF;		//µÍÎ»
-//				ModbusWriteSReg(rs485txbuf,8);
-//				vTaskDelay(20);
-//				rs485txbuf[0]=0x01;
-//				rs485txbuf[1]=0x06;
-//				rs485txbuf[2]=0x00;
-//				rs485txbuf[3]=0x47;	//Pn071
-//				rs485txbuf[4]=0x7A;	//ÄÚ²¿Î»ÖÃ1,´¥·¢
-//				rs485txbuf[5]=0xFF;
-//				ModbusWriteSReg(rs485txbuf,8);
-//				vTaskDelay(20);
-//			}
-//			else
-//			{
-//				servo_step=0;
-//			}
-//		}
-/*·½·¨1*/		
-//		if (uBrake>5)						//ÊÕµ½É²³µĞÅºÅ
-//		{
-//			//ËÅ·şÊ¹ÄÜ
-//			rs485txbuf[0]=0x01;
-//			rs485txbuf[1]=0x06;
-//			rs485txbuf[2]=0x00;
-//			rs485txbuf[3]=0x46;	//Pn070
-//			rs485txbuf[4]=0x7F;
-//			rs485txbuf[5]=0xFE;	//SonÊ¹ÄÜÇı¶¯Æ÷
-//			ModbusWriteSReg(rs485txbuf,8); 					
-//			if (uRPM > 0)
-//			{
-//				
-//				if ((-fDecNow) <fDecTarget-DELTA) //Êµ¼Ê¼õËÙ¶ÈÓëÉè¶¨¼õËÙ¶ÈÖ®²îµÍÓÚÉè¶¨ãĞÖµ
-//				{
-//					//¼ÌĞøÉ²³µ
-//					servo_step++;
-//					if(servo_step<=MAXSTEP)
-//					{
-//						rs485txbuf[0]=0x01;
-//						rs485txbuf[1]=0x06;
-//						rs485txbuf[2]=0x00;
-//						rs485txbuf[3]=0x47;		//Pn071
-//						rs485txbuf[4]=0x7F;		//ÄÚ²¿Î»ÖÃ0
-//						rs485txbuf[5]=0xFF;		//µÍÎ»
-//						ModbusWriteSReg(rs485txbuf,8);
-//						rs485txbuf[0]=0x01;
-//						rs485txbuf[1]=0x06;
-//						rs485txbuf[2]=0x00;
-//						rs485txbuf[3]=0x47;	//Pn071
-//						rs485txbuf[4]=0x7B;	//ÄÚ²¿Î»ÖÃ0,´¥·¢
-//						rs485txbuf[5]=0xFF;
-//						ModbusWriteSReg(rs485txbuf,8);
-//					}
-//					else
-//					{
-//						servo_step=MAXSTEP;
-//					}								
-//				}
-//				else if ((-fDecNow) >fDecTarget+DELTA) 	//Êµ¼Ê¼õËÙ¶ÈÓëÉè¶¨¼õËÙ¶ÈÖ®²î³¬³öÉè¶¨ãĞÖµ
-//				{
-//					//ËÉ¿ªÉ²³µ
-//					servo_step--;
-//					if(servo_step>=0)
-//					{
-//						rs485txbuf[0]=0x01;
-//						rs485txbuf[1]=0x06;
-//						rs485txbuf[2]=0x00;
-//						rs485txbuf[3]=0x47;		//Pn071
-//						rs485txbuf[4]=0x7E;		//ÄÚ²¿Î»ÖÃ1
-//						rs485txbuf[5]=0xFF;		//µÍÎ»
-//						ModbusWriteSReg(rs485txbuf,8);
-//						rs485txbuf[0]=0x01;
-//						rs485txbuf[1]=0x06;
-//						rs485txbuf[2]=0x00;
-//						rs485txbuf[3]=0x47;	//Pn071
-//						rs485txbuf[4]=0x7A;	//ÄÚ²¿Î»ÖÃ1,´¥·¢
-//						rs485txbuf[5]=0xFF;
-//						ModbusWriteSReg(rs485txbuf,8);
-//					}
-//					else
-//					{
-//						servo_step=0;
-//					}
-//				}
-//				else if ((fDecTarget-DELTA <=( -fDecNow) ) && ((-fDecNow )<= fDecTarget+DELTA)) //Êµ¼Ê¼õËÙ¶ÈÓëÉè¶¨¼õËÙ¶ÈÖ®²îÔÚÉè¶¨ãĞÖµ·¶Î§ÄÚ
-//				{
-//					//±£³ÖÉ²³µÎ»ÖÃ
-//					
-//				}
-//			}
-//		}
-//		else
-//		{
-//			//ÍË»Øµ½ÍêÈ«ËÉ¿ªÎ»ÖÃ
-//			while(servo_step)
-//			{
-//				servo_step--;
-//				rs485txbuf[0]=0x01;
-//				rs485txbuf[1]=0x06;
-//				rs485txbuf[2]=0x00;
-//				rs485txbuf[3]=0x47;		//Pn071
-//				rs485txbuf[4]=0x7E;		//ÄÚ²¿Î»ÖÃ1
-//				rs485txbuf[5]=0xFF;		//µÍÎ»
-//				ModbusWriteSReg(rs485txbuf,8);
-//				rs485txbuf[0]=0x01;
-//				rs485txbuf[1]=0x06;
-//				rs485txbuf[2]=0x00;
-//				rs485txbuf[3]=0x47;	//Pn071
-//				rs485txbuf[4]=0x7A;	//ÄÚ²¿Î»ÖÃ1,´¥·¢
-//				rs485txbuf[5]=0xFF;
-//				ModbusWriteSReg(rs485txbuf,8);
-//			}
-//		}
 	}
 }
 
-//»ñÈ¡¼õËÙ¶È
+//è·å–å‡é€Ÿåº¦
 float getDec(void)
 {
 	return fDecNow;
