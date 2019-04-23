@@ -1,14 +1,14 @@
 2018-12-06
-1.添加伺服电机刹车程序[task_brake_servo]
-2.485串口波特率由9600改为115200
+1.娣诲姞浼烘湇鐢垫満鍒硅溅绋嬪簭[task_brake_servo]
+2.485涓插彛娉㈢壒鐜囩敱9600鏀逛负115200
 
 2018-12-27
-1.task_brake_servo加入ABS功能
-2.task_upload上传数据加入加速度fDec
+1.task_brake_servo鍔犲叆ABS鍔熻兘
+2.task_upload涓婁紶鏁版嵁鍔犲叆鍔犻�熷害fDec
 
 2019-01-25
-1.task_brake_servo添加使用转矩方式刹车
-2.task_upload.h中结构体变量uploadData添加res1、res2使之与最长变量类型float对齐
+1.task_brake_servo娣诲姞浣跨敤杞煩鏂瑰紡鍒硅溅
+2.task_upload.h涓粨鏋勪綋鍙橀噺uploadData娣诲姞res1銆乺es2浣夸箣涓庢渶闀垮彉閲忕被鍨媐loat瀵归綈
 
 2019-02-14
-1.task_brake_servo刹车使用转矩模式，松刹车使用速度模式
+1.task_brake_servo鍒硅溅浣跨敤杞煩妯″紡锛屾澗鍒硅溅浣跨敤閫熷害妯″紡

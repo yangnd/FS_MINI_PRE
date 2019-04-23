@@ -48,11 +48,11 @@ typedef struct
 	u8 R_ErrCodeH;
 	u8 R_TorqueL;
 	u8 R_TorqueH;
-	//6+18+18=42, ¼Ó2 bytes²¹Æë£¨¶ÔÆëºóµÄ³¤¶È±ØĞëÊÇ³ÉÔ±ÖĞ×î´óµÄ¶ÔÆë²ÎÊıµÄÕûÊı±¶£©
+	//6+18+18=42, åŠ 2 bytesè¡¥é½ï¼ˆå¯¹é½åçš„é•¿åº¦å¿…é¡»æ˜¯æˆå‘˜ä¸­æœ€å¤§çš„å¯¹é½å‚æ•°çš„æ•´æ•°å€ï¼‰
 	u8 res1;
 	u8 res2;
-	//¼ÓËÙ¶È
-	float fDec;	//4 bytes£¬¹²48 bytes
+	//åŠ é€Ÿåº¦
+	float fDec;	//4 bytesï¼Œå…±48 bytes
 }uploadData;
 
 void vUploadTask(void *param);

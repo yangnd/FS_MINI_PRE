@@ -7,7 +7,7 @@
 
 #define MAX_DATA_SIZE 32
 
-/*通讯反馈数据结构*/
+/*閫氳鍙嶉鏁版嵁缁撴瀯*/
 typedef struct
 {
 	u8 CarStatus;

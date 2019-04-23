@@ -5,7 +5,7 @@
 #define LED0 PBout(5)// PB5
 #define LED1 PEout(5)// PE5	
 
-void LED_Init(void);//³õÊ¼»¯
+void LED_Init(void);//åˆå§‹åŒ–
 
 		 				    
 #endif

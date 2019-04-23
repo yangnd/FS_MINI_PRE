@@ -2,9 +2,9 @@
 #define __SPI_H
 #include "sys.h"
 				  	    													  
-void SPI2_Init(void);			 //³õÊ¼»¯SPI¿Ú
-void SPI2_SetSpeed(u8 SpeedSet); //ÉèÖÃSPIËÙ¶È   
-u8 SPI2_ReadWriteByte(u8 TxData);//SPI×ÜÏß¶ÁĞ´Ò»¸ö×Ö½Ú
+void SPI2_Init(void);			 //åˆå§‹åŒ–SPIå£
+void SPI2_SetSpeed(u8 SpeedSet); //è®¾ç½®SPIé€Ÿåº¦   
+u8 SPI2_ReadWriteByte(u8 TxData);//SPIæ€»çº¿è¯»å†™ä¸€ä¸ªå­—èŠ‚
 		 
 #endif
 

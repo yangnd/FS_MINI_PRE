@@ -8,8 +8,8 @@
 FS 2018-08-25
 ************************************************/
 
-#define LORA_AUX  PAin(4)    //LORAÄ£¿é×´Ì¬Òı½Å
-#define LORA_MD0  PAout(15)  //LORAÄ£¿é¿ØÖÆÒı½Å
+#define LORA_AUX  PAin(4)    //LORAæ¨¡å—çŠ¶æ€å¼•è„š
+#define LORA_MD0  PAout(15)  //LORAæ¨¡å—æ§åˆ¶å¼•è„š
 
 extern _LoRa_CFG LoRa_CFG;
 extern u8 Lora_mode;

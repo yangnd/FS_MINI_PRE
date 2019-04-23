@@ -1,19 +1,19 @@
 #include "stm32f10x.h"
 #include "key.h"
 
-//°´¼ü³õÊ¼»¯º¯Êı
-void KEY_Init(void) //IO³õÊ¼»¯
+//æŒ‰é”®åˆå§‹åŒ–å‡½æ•°
+void KEY_Init(void) //IOåˆå§‹åŒ–
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOE, ENABLE); //Ê¹ÄÜPORTA,PORTEÊ±ÖÓ
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOE, ENABLE); //ä½¿èƒ½PORTA,PORTEæ—¶é’Ÿ
 
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_3; //KEY0-KEY1
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;		   //ÉèÖÃ³ÉÉÏÀ­ÊäÈë
-	GPIO_Init(GPIOE, &GPIO_InitStructure);				   //³õÊ¼»¯GPIOE4,3
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;		   //è®¾ç½®æˆä¸Šæ‹‰è¾“å…¥
+	GPIO_Init(GPIOE, &GPIO_InitStructure);				   //åˆå§‹åŒ–GPIOE4,3
 
-	//³õÊ¼»¯ WK_UP-->GPIOA.0	  ÏÂÀ­ÊäÈë
+	//åˆå§‹åŒ– WK_UP-->GPIOA.0	  ä¸‹æ‹‰è¾“å…¥
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD; //PA0ÉèÖÃ³ÉÊäÈë£¬Ä¬ÈÏÏÂÀ­
-	GPIO_Init(GPIOA, &GPIO_InitStructure);		  //³õÊ¼»¯GPIOA.0
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD; //PA0è®¾ç½®æˆè¾“å…¥ï¼Œé»˜è®¤ä¸‹æ‹‰
+	GPIO_Init(GPIOA, &GPIO_InitStructure);		  //åˆå§‹åŒ–GPIOA.0
 }

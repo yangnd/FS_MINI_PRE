@@ -4,15 +4,15 @@
 								  
 ////////////////////////////////////////////////////////////////////////////////// 	   
 
-#define USART3_MAX_RECV_LEN		1024			    //×î´ó½ÓÊÕ»º´æ×Ö½ÚÊı
-#define USART3_MAX_SEND_LEN		600					//×î´ó·¢ËÍ»º´æ×Ö½ÚÊı
-#define USART3_RX_EN 			1					//0,²»½ÓÊÕ;1,½ÓÊÕ.
+#define USART3_MAX_RECV_LEN		1024			    //æœ€å¤§æ¥æ”¶ç¼“å­˜å­—èŠ‚æ•°
+#define USART3_MAX_SEND_LEN		600					//æœ€å¤§å‘é€ç¼“å­˜å­—èŠ‚æ•°
+#define USART3_RX_EN 			1					//0,ä¸æ¥æ”¶;1,æ¥æ”¶.
 
-extern u8  USART3_RX_BUF[USART3_MAX_RECV_LEN]; 		//½ÓÊÕ»º³å,×î´óUSART3_MAX_RECV_LEN×Ö½Ú
-extern u8  USART3_TX_BUF[USART3_MAX_SEND_LEN]; 		//·¢ËÍ»º³å,×î´óUSART3_MAX_SEND_LEN×Ö½Ú
-extern vu16 USART3_RX_STA;   						//½ÓÊÕÊı¾İ×´Ì¬
+extern u8  USART3_RX_BUF[USART3_MAX_RECV_LEN]; 		//æ¥æ”¶ç¼“å†²,æœ€å¤§USART3_MAX_RECV_LENå­—èŠ‚
+extern u8  USART3_TX_BUF[USART3_MAX_SEND_LEN]; 		//å‘é€ç¼“å†²,æœ€å¤§USART3_MAX_SEND_LENå­—èŠ‚
+extern vu16 USART3_RX_STA;   						//æ¥æ”¶æ•°æ®çŠ¶æ€
 
-void usart3_init(u32 bound);		//´®¿Ú3³õÊ¼»¯ 
+void usart3_init(u32 bound);		//ä¸²å£3åˆå§‹åŒ– 
 void usart3_set(u8 bps,u8 parity);    
 void usart3_rx(u8 enable);
 void u3_printf(char* fmt,...);

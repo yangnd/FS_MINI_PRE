@@ -2,7 +2,7 @@
 #define __TASK_CTRLDATA_H
 #include "sys.h"
 
-/*通讯控制信号数据结构*/
+/*閫氳鎺у埗淇″彿鏁版嵁缁撴瀯*/
 typedef struct
 {
 	u8 MotoSel;

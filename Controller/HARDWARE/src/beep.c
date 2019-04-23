@@ -1,18 +1,18 @@
 #include "beep.h"
 
-//³õÊ¼»¯PB8ÎªÊä³ö¿Ú.²¢Ê¹ÄÜÕâ¸ö¿ÚµÄÊ±ÖÓ
-//·äÃùÆ÷³õÊ¼»¯
+//åˆå§‹åŒ–PB8ä¸ºè¾“å‡ºå£.å¹¶ä½¿èƒ½è¿™ä¸ªå£çš„æ—¶é’Ÿ
+//èœ‚é¸£å™¨åˆå§‹åŒ–
 void BEEP_Init(void)
 {
 
     GPIO_InitTypeDef GPIO_InitStructure;
 
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE); //Ê¹ÄÜGPIOB¶Ë¿ÚÊ±ÖÓ
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE); //ä½¿èƒ½GPIOBç«¯å£æ—¶é’Ÿ
 
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;         //BEEP-->PB.8 ¶Ë¿ÚÅäÖÃ
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;  //ÍÆÍìÊä³ö
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; //ËÙ¶ÈÎª50MHz
-    GPIO_Init(GPIOB, &GPIO_InitStructure);            //¸ù¾İ²ÎÊı³õÊ¼»¯GPIOB.8
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;         //BEEP-->PB.8 ç«¯å£é…ç½®
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;  //æ¨æŒ½è¾“å‡º
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; //é€Ÿåº¦ä¸º50MHz
+    GPIO_Init(GPIOB, &GPIO_InitStructure);            //æ ¹æ®å‚æ•°åˆå§‹åŒ–GPIOB.8
 
-    GPIO_ResetBits(GPIOB, GPIO_Pin_8); //Êä³ö0£¬¹Ø±Õ·äÃùÆ÷Êä³ö
+    GPIO_ResetBits(GPIOB, GPIO_Pin_8); //è¾“å‡º0ï¼Œå…³é—­èœ‚é¸£å™¨è¾“å‡º
 }

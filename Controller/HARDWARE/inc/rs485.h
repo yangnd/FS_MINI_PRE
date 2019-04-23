@@ -5,15 +5,15 @@
 //All rights reserved									  
 //////////////////////////////////////////////////////////////////////////////////
 	  		  	
-extern u8 RS485_RX_BUF[64]; 		//½ÓÊÕ»º³å,×î´ó64¸ö×Ö½Ú
-extern u8 RS485_RX_CNT;   			//½ÓÊÕµ½µÄÊı¾İ³¤¶È
+extern u8 RS485_RX_BUF[64]; 		//æ¥æ”¶ç¼“å†²,æœ€å¤§64ä¸ªå­—èŠ‚
+extern u8 RS485_RX_CNT;   			//æ¥æ”¶åˆ°çš„æ•°æ®é•¿åº¦
 
-//Ä£Ê½¿ØÖÆ
-#define RS485_TX_EN		PDout(7)	//485Ä£Ê½¿ØÖÆ.0,½ÓÊÕ;1,·¢ËÍ.
-//Èç¹ûÏë´®¿ÚÖĞ¶Ï½ÓÊÕ£¬Çë²»Òª×¢ÊÍÒÔÏÂºê¶¨Òå
-#define EN_USART2_RX 	1			//0,²»½ÓÊÕ;1,½ÓÊÕ.
+//æ¨¡å¼æ§åˆ¶
+#define RS485_TX_EN		PDout(7)	//485æ¨¡å¼æ§åˆ¶.0,æ¥æ”¶;1,å‘é€.
+//å¦‚æœæƒ³ä¸²å£ä¸­æ–­æ¥æ”¶ï¼Œè¯·ä¸è¦æ³¨é‡Šä»¥ä¸‹å®å®šä¹‰
+#define EN_USART2_RX 	1			//0,ä¸æ¥æ”¶;1,æ¥æ”¶.
 
-#define MODBUS_TIME 100				//Modbus³¬Ê±Ê±¼ä
+#define MODBUS_TIME 100				//Modbusè¶…æ—¶æ—¶é—´
 
 
 
@@ -23,7 +23,7 @@ void RS485_Send_Data(u8 *buf,u8 len);
 u8 RS485_Receive_Data(u8 *buf,u8 *len);
 u16 crc_chk(u8 *data,u8 length);
 void ModbusWriteSReg(u8 *txbuf, u8 txlen);
-/*ÉèÖÃRS485ÖĞ¶Ï»Øµ÷º¯Êı*/
+/*è®¾ç½®RS485ä¸­æ–­å›è°ƒå‡½æ•°*/
 void Brake_setIterruptCallback(void (*cb)(void));
 void Rail_setIterruptCallback(void (*cb)(void));
 
