@@ -15,7 +15,7 @@
  * All rights reserved
 ********************************************************************************/
 
-/*²Ëµ¥ÏîÊı*/
+/*èœå•é¡¹æ•°*/
 #define  MOTOSEL_MENU_NUM   3
 #define  MOTOMODE_MENU_NUM    	3
 #define  LANGUAGE_MENU_NUM    	3
@@ -24,13 +24,13 @@ MenuItem_Typedef  motoselMenu[MOTOSEL_MENU_NUM];
 MenuItem_Typedef  motomodeMenu[MOTOMODE_MENU_NUM];
 MenuItem_Typedef  languageMenu[LANGUAGE_MENU_NUM];
 
-/****** Ñ¡ÖĞÍ¼±ê ÒõÂë ÖğÁĞÊ½ Ë³Ïò(¸ßÎ»ÔÚÇ°) *****/
+/****** é€‰ä¸­å›¾æ ‡ é˜´ç  é€åˆ—å¼ é¡ºå‘(é«˜ä½åœ¨å‰) *****/
 const u8 radio_selected_img[32]={
 0x00,0x00,0x03,0xC0,0x0C,0x30,0x10,0x08,0x11,0x88,0x23,0xC4,0x27,0xE4,0x27,0xE4,
 0x23,0xC4,0x11,0x88,0x10,0x08,0x0C,0x30,0x03,0xC0,0x00,0x00,0x00,0x00,0x00,0x00,
 };
 
-/****** ·ÇÑ¡ÖĞÍ¼±ê ÒõÂë ÖğÁĞÊ½ Ë³Ïò(¸ßÎ»ÔÚÇ°) *****/
+/****** éé€‰ä¸­å›¾æ ‡ é˜´ç  é€åˆ—å¼ é¡ºå‘(é«˜ä½åœ¨å‰) *****/
 const u8  radio_unselected_img[32]={
 0x00,0x00,0x03,0xC0,0x0C,0x30,0x10,0x08,0x10,0x08,0x20,0x04,0x20,0x04,0x20,0x04,
 0x20,0x04,0x10,0x08,0x10,0x08,0x0C,0x30,0x03,0xC0,0x00,0x00,0x00,0x00,0x00,0x00,
@@ -38,9 +38,9 @@ const u8  radio_unselected_img[32]={
 
 const u8* motoselLanguage[3][MOTOSEL_MENU_NUM]={
 {
-"µç»úA",
-"µç»úB",
-"µç»úAºÍB",
+"ç”µæœºA",
+"ç”µæœºB",
+"ç”µæœºAå’ŒB",
 },
 {
 "Moto A",
@@ -48,16 +48,16 @@ const u8* motoselLanguage[3][MOTOSEL_MENU_NUM]={
 "Moto A and B",
 },
 {
-"µç»úA",
-"µç»úB",
-"µç»úAºÍB",
+"ç”µæœºA",
+"ç”µæœºB",
+"ç”µæœºAå’ŒB",
 },
 };
 const u8* motomodeLanguage[3][MOTOMODE_MENU_NUM]={
 {
-"ÓÍÃÅ¿ØÖÆÄ£Ê½",
-"×ª¾Ø¿ØÖÆÄ£Ê½",
-"×ªËÙ¿ØÖÆÄ£Ê½",
+"æ²¹é—¨æ§åˆ¶æ¨¡å¼",
+"è½¬çŸ©æ§åˆ¶æ¨¡å¼",
+"è½¬é€Ÿæ§åˆ¶æ¨¡å¼",
 },
 {
 "Throttle Control Mode",
@@ -65,27 +65,27 @@ const u8* motomodeLanguage[3][MOTOMODE_MENU_NUM]={
 "Speed Control Mode",
 },
 {
-"ÓÍÃÅ¿ØÖÆÄ£Ê½",
-"×ª¾Ø¿ØÖÆÄ£Ê½",
-"×ªËÙ¿ØÖÆÄ£Ê½",
+"æ²¹é—¨æ§åˆ¶æ¨¡å¼",
+"è½¬çŸ©æ§åˆ¶æ¨¡å¼",
+"è½¬é€Ÿæ§åˆ¶æ¨¡å¼",
 },
 };
 
 const u8* languageChoiceLanguage[3][LANGUAGE_MENU_NUM]={
 {
-"¼òÌåÖĞÎÄ",
+"ç®€ä½“ä¸­æ–‡",
 "English",
-"·±ÌåÖĞÎÄ"
+"ç¹ä½“ä¸­æ–‡"
 },
 {
-"¼òÌåÖĞÎÄ",
+"ç®€ä½“ä¸­æ–‡",
 "English",
-"·±ÌåÖĞÎÄ"
+"ç¹ä½“ä¸­æ–‡"
 },
 {
-"¼òÌåÖĞÎÄ",
+"ç®€ä½“ä¸­æ–‡",
 "English",
-"·±ÌåÖĞÎÄ"
+"ç¹ä½“ä¸­æ–‡"
 }	
 };
 
@@ -108,7 +108,7 @@ static void selMotoFR(void)
 	configParam.car.motosel = FRONT_REAR;
 }
 
-/*³õÊ¼»¯µç»úÑ¡Ôñ²Ëµ¥*/
+/*åˆå§‹åŒ–ç”µæœºé€‰æ‹©èœå•*/
 void motoselMenuInit(void)
 {	
 	for(int i=0; i<MOTOSEL_MENU_NUM; i++)
@@ -154,7 +154,7 @@ static void motoModeSpeed(void)
 	configParam.car.controlmode = SPEED;
 }
 
-/*³õÊ¼»¯µç»úÄ£Ê½²Ëµ¥*/
+/*åˆå§‹åŒ–ç”µæœºæ¨¡å¼èœå•*/
 void motomodeMenuInit(void)
 {	
 	for(int i=0; i<MOTOMODE_MENU_NUM; i++)
@@ -215,7 +215,7 @@ static void setLanguageComplexChinese(void)
 	languageMenuInit();
 }
 
-/*³õÊ¼»¯ÓïÑÔÑ¡Ôñ²Ëµ¥*/
+/*åˆå§‹åŒ–è¯­è¨€é€‰æ‹©èœå•*/
 void languageMenuInit(void)
 {	
 	for(int i=0; i<LANGUAGE_MENU_NUM; i++)

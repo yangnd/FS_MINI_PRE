@@ -11,9 +11,9 @@
 #define  ADC_LH		3
 #define  ADC_BREAK		4
 
-//³õÊ¼»¯ADC£¬Ê¹ÓÃDMA´«Êä
+//åˆå§‹åŒ–ADCï¼Œä½¿ç”¨DMAä¼ è¾“
 void Adc_Init(void);
-void ADC_Filter(uint16_t* adc_val);	//ADC¾ùÖµÂË²¨
+void ADC_Filter(uint16_t* adc_val);	//ADCå‡å€¼æ»¤æ³¢
 uint16_t getAdcValue(uint8_t axis);
 
 #endif 

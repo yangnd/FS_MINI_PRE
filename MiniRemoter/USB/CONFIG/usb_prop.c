@@ -134,7 +134,7 @@ void Virtual_Com_Port_init(void)
   USB_SIL_Init();
 
   /* configure the USART to the default settings */
-  //USART_Config_Default();//本例程未用到
+  //USART_Config_Default();//鏈緥绋嬫湭鐢ㄥ埌
 
   bDeviceState = UNCONNECTED;
 }

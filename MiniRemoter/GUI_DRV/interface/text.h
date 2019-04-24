@@ -5,9 +5,9 @@
 //All rights reserved									  
 //////////////////////////////////////////////////////////////////////////////////
 
-/*»ìºÏÏÔÊ¾ºº×ÖºÍ×Ö·û*/
+/*æ··åˆæ˜¾ç¤ºæ±‰å­—å’Œå­—ç¬¦*/
 void show_str(uint16_t x,uint16_t y,const uint8_t*str,uint8_t f_w,uint8_t f_h,uint8_t mode);
-/*ÔÚÖĞ¼äÏÔÊ¾»ìºÏ×Ö·û*/
+/*åœ¨ä¸­é—´æ˜¾ç¤ºæ··åˆå­—ç¬¦*/
 void show_str_mid(uint16_t x,uint16_t y,const uint8_t*str,uint8_t f_w,uint8_t f_h,uint8_t mode,uint16_t len);
 
 #endif

@@ -1,6 +1,6 @@
 #ifndef __KEY_H
 #define __KEY_H	 
 
-void KEY_Init(void);//IO³õÊ¼»¯
+void KEY_Init(void);//IOåˆå§‹åŒ–
 					    
 #endif

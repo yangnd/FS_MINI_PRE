@@ -5,7 +5,7 @@
  * All rights reserved
 ********************************************************************************/
 		
-//°´¼üIO³õÊ¼»¯º¯Êı
+//æŒ‰é”®IOåˆå§‹åŒ–å‡½æ•°
 void keyInit(void) 
 { 
  	GPIO_InitTypeDef GPIO_InitStructure;
@@ -23,29 +23,29 @@ void keyInit(void)
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 }
 
-////°´¼ü´¦Àíº¯Êı
-////·µ»Ø°´¼üÖµ
-////mode:0,²»Ö§³ÖÁ¬Ğø°´;1,Ö§³ÖÁ¬Ğø°´;
-////0£¬Ã»ÓĞÈÎºÎ°´¼ü°´ÏÂ
-////1£¬KEY0°´ÏÂ
-////2£¬KEY1°´ÏÂ
-////3£¬KEY2°´ÏÂ 
-////4£¬KEY3°´ÏÂ WK_UP
-////×¢Òâ´Ëº¯ÊıÓĞÏìÓ¦ÓÅÏÈ¼¶,KEY0>KEY1>KEY2>KEY3!!
+////æŒ‰é”®å¤„ç†å‡½æ•°
+////è¿”å›æŒ‰é”®å€¼
+////mode:0,ä¸æ”¯æŒè¿ç»­æŒ‰;1,æ”¯æŒè¿ç»­æŒ‰;
+////0ï¼Œæ²¡æœ‰ä»»ä½•æŒ‰é”®æŒ‰ä¸‹
+////1ï¼ŒKEY0æŒ‰ä¸‹
+////2ï¼ŒKEY1æŒ‰ä¸‹
+////3ï¼ŒKEY2æŒ‰ä¸‹ 
+////4ï¼ŒKEY3æŒ‰ä¸‹ WK_UP
+////æ³¨æ„æ­¤å‡½æ•°æœ‰å“åº”ä¼˜å…ˆçº§,KEY0>KEY1>KEY2>KEY3!!
 //u8 KEY_Scan(u8 mode)
 //{	 
-//	static u8 key_up=1;//°´¼ü°´ËÉ¿ª±êÖ¾
-//	if(mode)key_up=1;  //Ö§³ÖÁ¬°´		  
+//	static u8 key_up=1;//æŒ‰é”®æŒ‰æ¾å¼€æ ‡å¿—
+//	if(mode)key_up=1;  //æ”¯æŒè¿æŒ‰		  
 //	if(key_up&&(KEY0==0||KEY1==0||KEY2==0||WK_UP==1))
 //	{
-//		delay_ms(10);//È¥¶¶¶¯ 
+//		delay_ms(10);//å»æŠ–åŠ¨ 
 //		key_up=0;
 //		if(KEY0==0)return KEY0_PRES;
 //		else if(KEY1==0)return KEY1_PRES;
 //		else if(KEY2==0)return KEY2_PRES;
 //		else if(WK_UP==1)return WKUP_PRES;
 //	}else if(KEY0==1&&KEY1==1&&KEY2==1&&WK_UP==0)key_up=1; 	    
-// 	return 0;// ÎŞ°´¼ü°´ÏÂ
+// 	return 0;// æ— æŒ‰é”®æŒ‰ä¸‹
 //}
 
 

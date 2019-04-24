@@ -3,84 +3,84 @@
 #include "delay.h"
 #include "oled.h"
 
-#define SCROLL_BTN_WIDTH  10  //°´Å¥µÄ¿í¶È
-#define SCROLL_BTN_HEIGHT 10	//°´Å¥µÄ¸ß¶È
+#define SCROLL_BTN_WIDTH  10  //æŒ‰é’®çš„å®½åº¦
+#define SCROLL_BTN_HEIGHT 10	//æŒ‰é’®çš„é«˜åº¦
 
-//ÉÏ°´Å¥
+//ä¸ŠæŒ‰é’®
 const unsigned char scroll_btn_up[8]={
 0x02,0x0E,0x3E,0x7E,0x7E,0x3E,0x0E,0x02,
 };
 
-//ÏÂ°´Å¥
+//ä¸‹æŒ‰é’®
 const unsigned char scroll_btn_down[8]={
 0x40,0x70,0x7C,0x7E,0x7E,0x7C,0x70,0x40,
 };
 
-//ÉèÖÃ¹ö¶¯ÌõµÄÎ»ÖÃ
+//è®¾ç½®æ»šåŠ¨æ¡çš„ä½ç½®
 void GUI_Scrollbar_SetPos(Scrollbar_Typedef *scbx)
 {	
-	uint16_t scbpos;  //¹ö¶¯ÌõÆ«ÒÆ
-	uint16_t scblen;  //¹ö¶¯Ìõ¿ÉÒÔ¹ö¶¯µÄ³¤¶È
+	uint16_t scbpos;  //æ»šåŠ¨æ¡åç§»
+	uint16_t scblen;  //æ»šåŠ¨æ¡å¯ä»¥æ»šåŠ¨çš„é•¿åº¦
 	uint16_t x,y,xlen,ylen;
 //	uint8_t scbplen;
 //	
-//	scbplen = SCROLL_BTN_HEIGHT;  //µÃµ½°´Å¥µÄ¸ß¶È
+//	scbplen = SCROLL_BTN_HEIGHT;  //å¾—åˆ°æŒ‰é’®çš„é«˜åº¦
 	
-	scblen=scbx->height-2*SCROLL_BTN_HEIGHT-scbx->scbbarlen;//µÃµ½¹ö¶¯Ìõ¹ö¶¯¿Õ¼äµÄ³¤¶È
-	x=scbx->x+1;                  //¹ö¶¯ÌõÆğÊ¼×ø±êx
-	y=scbx->y+SCROLL_BTN_HEIGHT;  //¹ö¶¯ÌõÆğÊ¼×ø±êy
-	xlen=scbx->width-2-1;         //¹ö¶¯Ìõ¿í¶È -1
-	ylen=scblen+scbx->scbbarlen-1;//¹ö¶¯Ìõ³¤¶È -1
+	scblen=scbx->height-2*SCROLL_BTN_HEIGHT-scbx->scbbarlen;//å¾—åˆ°æ»šåŠ¨æ¡æ»šåŠ¨ç©ºé—´çš„é•¿åº¦
+	x=scbx->x+1;                  //æ»šåŠ¨æ¡èµ·å§‹åæ ‡x
+	y=scbx->y+SCROLL_BTN_HEIGHT;  //æ»šåŠ¨æ¡èµ·å§‹åæ ‡y
+	xlen=scbx->width-2-1;         //æ»šåŠ¨æ¡å®½åº¦ -1
+	ylen=scblen+scbx->scbbarlen-1;//æ»šåŠ¨æ¡é•¿åº¦ -1
 	
-	//Çå³ı¹ö¶¯Ìõ
+	//æ¸…é™¤æ»šåŠ¨æ¡
 	GUI_RectangleFill(x ,y,x+xlen,y+ylen, 0);
-	if(scbx->totalitems <= scbx->itemsperpage)//×ÜÌõÄ¿²»¹»Ò»Ò³ÏÔÊ¾µÄ
+	if(scbx->totalitems <= scbx->itemsperpage)//æ€»æ¡ç›®ä¸å¤Ÿä¸€é¡µæ˜¾ç¤ºçš„
 	{
-		scbpos=0; //Æ«ÒÆ0
+		scbpos=0; //åç§»0
 	}
-	else //²»Ö¹Ò»Ò³
+	else //ä¸æ­¢ä¸€é¡µ
 	{
-		scbpos=(scbx->topitem*scblen)/(scbx->totalitems-1);//¼ÆËãµ±Ç°¹ö¶¯ÌõÆ«ÒÆµÄÎ»ÖÃ
+		scbpos=(scbx->topitem*scblen)/(scbx->totalitems-1);//è®¡ç®—å½“å‰æ»šåŠ¨æ¡åç§»çš„ä½ç½®
 	}
 	
-	//»­³ö¹ö¶¯Ìõ
+	//ç”»å‡ºæ»šåŠ¨æ¡
 	GUI_RectangleFill(x ,y+scbpos,x+xlen,y+scbpos+scbx->scbbarlen, 1);
-	//GUI_Refresh();	//Ë¢ĞÂÆÁÄ»	
+	//GUI_Refresh();	//åˆ·æ–°å±å¹•	
 }
 
 
 
-//´´½¨Ò»¸ö¹ö¶¯Ìõ
+//åˆ›å»ºä¸€ä¸ªæ»šåŠ¨æ¡
 void GUI_ScrollbarDraw(Scrollbar_Typedef *scbx)
 {
-	uint32_t scbactlen=0;//¹ö¶¯Ìõ¿ÉÒÔ¹ö¶¯µÄ¿Õ¼ä³¤¶È
+	uint32_t scbactlen=0;//æ»šåŠ¨æ¡å¯ä»¥æ»šåŠ¨çš„ç©ºé—´é•¿åº¦
 	if(scbx==NULL) return;
 	if(scbx->width<SCROLL_BTN_WIDTH) return;
 	if(scbx->height<2*SCROLL_BTN_HEIGHT) return;
 	
-	//»­Íâ±ß¿ò
+	//ç”»å¤–è¾¹æ¡†
 	GUI_Rectangle(scbx->x, scbx->y, scbx->x+scbx->width-1, scbx->y+scbx->height-1, 1);
-	//»­ÉÏÏÂÁ½¸ö°´Å¥
+	//ç”»ä¸Šä¸‹ä¸¤ä¸ªæŒ‰é’®
 	oled_showPicture(scbx->x+(scbx->width-8)/2, scbx->y+1, (uint8_t *)scroll_btn_up, 8, 8);
 	oled_showPicture(scbx->x+(scbx->width-8)/2, scbx->y+scbx->height-9, (uint8_t *)scroll_btn_down, 8, 8);	
-	//»­°´Å¥±ß¿ò
+	//ç”»æŒ‰é’®è¾¹æ¡†
 	GUI_Line(scbx->x, scbx->y+9, scbx->x+scbx->width-1, scbx->y+9,1);
 	GUI_Line(scbx->x, scbx->y+scbx->height-10, scbx->x+scbx->width-1, scbx->y+scbx->height-10,1);
 	
 	
-	//¿É¹©¹ö¶¯Ìõ¹ö¶¯µÄ¿Õ¼ä·¶Î§
+	//å¯ä¾›æ»šåŠ¨æ¡æ»šåŠ¨çš„ç©ºé—´èŒƒå›´
 	scbactlen=scbx->height -2*SCROLL_BTN_HEIGHT;
 	
-	//Ã¿Ò³¹ö¶¯ÌõÄ¿´óÓÚ×ÜÌõÄ¿Êı ¹ö¶¯ÌõÄ¿µÈÓÚ×î´ó¿É¹ö¶¯µÄ¿Ø¼ş
+	//æ¯é¡µæ»šåŠ¨æ¡ç›®å¤§äºæ€»æ¡ç›®æ•° æ»šåŠ¨æ¡ç›®ç­‰äºæœ€å¤§å¯æ»šåŠ¨çš„æ§ä»¶
 	if(scbx->itemsperpage >= scbx->totalitems)scbx->scbbarlen=scbactlen;
-	//Ã¿Ò³¹ö¶¯ÌõÄ¿Ğ¡ÓÚ×ÜÌõÄ¿Êı 
-	else scbx->scbbarlen=(scbactlen*scbx->itemsperpage)/scbx->totalitems;//µÃµ½¹ö¶¯ÌõµÄ³¤¶È
-	//ÉèÖÃ¹ö¶¯ÌõµÄÎ»ÖÃ
+	//æ¯é¡µæ»šåŠ¨æ¡ç›®å°äºæ€»æ¡ç›®æ•° 
+	else scbx->scbbarlen=(scbactlen*scbx->itemsperpage)/scbx->totalitems;//å¾—åˆ°æ»šåŠ¨æ¡çš„é•¿åº¦
+	//è®¾ç½®æ»šåŠ¨æ¡çš„ä½ç½®
 	GUI_Scrollbar_SetPos(scbx);
 }
 
 
-//É¾³ıÒ»¸ö¹ö¶¯Ìõ
+//åˆ é™¤ä¸€ä¸ªæ»šåŠ¨æ¡
 void GUI_ScrollbarDelete(Scrollbar_Typedef *scbx)
 {
   GUI_RectangleFill(scbx->x, scbx->y, scbx->x+scbx->width-1, scbx->y+scbx->height-1, 0);
@@ -100,15 +100,15 @@ Scrollbar_Typedef Scrollbar=
 0
 };
 
-//²âÊÔ¹ö¶¯Ìõº¯Êı
+//æµ‹è¯•æ»šåŠ¨æ¡å‡½æ•°
 void test_scrollbar(void){
 
 	GUI_ScrollbarDraw(&Scrollbar);
-	GUI_Refresh();								//Ë¢ĞÂÆÁÄ»
+	GUI_Refresh();								//åˆ·æ–°å±å¹•
 	delay_ms(2000);
 	Scrollbar.topitem = 1;
 	GUI_Scrollbar_SetPos(&Scrollbar);
-	GUI_Refresh();								//Ë¢ĞÂÆÁÄ»
+	GUI_Refresh();								//åˆ·æ–°å±å¹•
 	delay_ms(2000);
 //	GUI_ScrollbarDraw(&Scrollbar);
 	

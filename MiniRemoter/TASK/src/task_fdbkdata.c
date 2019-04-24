@@ -20,7 +20,7 @@
 fdbkData carFdbkData,fdbkMotoF,fdbkMotoR;
 u8 uCarBreak;
 float fCarBattery;
-/*返回数据解析*/
+/*杩斿洖鏁版嵁瑙ｆ瀽*/
 static void dataAnalyze(fdbkData *p)
 {
 //	if(p->MotoId==MOTO_FRONT)
@@ -38,7 +38,7 @@ static void dataAnalyze(fdbkData *p)
 	uCarBreak=p->Break;
 	fCarBattery=(float)(p->VoltL+(p->VoltH<<8))/10;
 }
-/*无线连接数据处理任务*/
+/*鏃犵嚎杩炴帴鏁版嵁澶勭悊浠诲姟*/
 void vFdbkdataTask(void *param) 
 {
 	

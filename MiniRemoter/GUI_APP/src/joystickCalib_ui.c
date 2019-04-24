@@ -13,30 +13,30 @@
 ********************************************************************************/
 
 const unsigned char* stepLanguage1[3]={
-{"1.Ò¡¶¯Á½¸öÒ¡¸ËÒ»È¦"},
+{"1.æ‘‡åŠ¨ä¸¤ä¸ªæ‘‡æ†ä¸€åœˆ"},
 {"1.Rock two joysticks   a circle"},
-{"1.“u„ÓƒÉ‚€“u—UÒ»È¦"},
+{"1.æ–å‹•å…©å€‹æ–æ¡¿ä¸€åœˆ"},
 };
 
 const unsigned char* stepLanguage2[3]={
-{"2.°´KEY_RÏÂÒ»²½"},
+{"2.æŒ‰KEY_Rä¸‹ä¸€æ­¥"},
 {"2.Press KEY_R next"},
-{"2.°´KEY_RÏÂÒ»²½"},
+{"2.æŒ‰KEY_Rä¸‹ä¸€æ­¥"},
 };
 
 const unsigned char* stepLanguage3[3]={
-{"3.±£³ÖÒ¡¸Ë»ØÖĞ"},
+{"3.ä¿æŒæ‘‡æ†å›ä¸­"},
 {"3.Keep joysticks on    center"},
-{"3.±£³Ö“u—U»ØÖĞ"},
+{"3.ä¿æŒæ–æ¡¿å›ä¸­"},
 };
 
 const unsigned char* stepLanguage4[3]={
-{"4.°´KEY_RÍê³É"},
+{"4.æŒ‰KEY_Rå®Œæˆ"},
 {"4.Press KEY_R finish"},
-{"4.°´KEY_RÍê³É"},
+{"4.æŒ‰KEY_Rå®Œæˆ"},
 };
 
-/*Ò¡¸ËĞ£×¼½çÃæ*/
+/*æ‘‡æ†æ ¡å‡†ç•Œé¢*/
 void joystickCalib_ui(void)
 {
 	static u8 steps;
@@ -104,7 +104,7 @@ void joystickCalib_ui(void)
 	oled_showString(0,54,(u8*)str,6,8);	
 	
 	u8 keyState = getKeyState();
-	if(keyState == KEY_R_SHORT_PRESS)/*¶Ì°´KEY_R½øÈëÏÂÒ»²½*/
+	if(keyState == KEY_R_SHORT_PRESS)/*çŸ­æŒ‰KEY_Rè¿›å…¥ä¸‹ä¸€æ­¥*/
 	{
 		steps++;
 		if(steps==2)
@@ -120,7 +120,7 @@ void joystickCalib_ui(void)
 			setShow_ui(MAIN_UI);
 		}
 	}
-	else if(keyState == KEY_L_SHORT_PRESS)/*¶Ì°´KEY_LÍË³öĞ£×¼*/
+	else if(keyState == KEY_L_SHORT_PRESS)/*çŸ­æŒ‰KEY_Lé€€å‡ºæ ¡å‡†*/
 	{
 		steps=0;
 		setShow_ui(MAIN_UI);

@@ -10,12 +10,12 @@ u8 rx_buf[100];
 u16 rx_len;
 u8 uLoraTimeoutFlag;
 static xSemaphoreHandle loraIT;
-/*loraÍâ²¿ÖĞ¶Ï»Øµ÷º¯Êı*/
+/*loraå¤–éƒ¨ä¸­æ–­å›è°ƒå‡½æ•°*/
 static void lora_interruptCallback(void)
 {
 	portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
 	xSemaphoreGiveFromISR(loraIT, &xHigherPriorityTaskWoken);
-//	portYIELD_FROM_ISR(xHigherPriorityTaskWoken); //Èç¹ûĞèÒªµÄ»°½øĞĞÒ»´ÎÈÎÎñÇĞ»»
+//	portYIELD_FROM_ISR(xHigherPriorityTaskWoken); //å¦‚æœéœ€è¦çš„è¯è¿›è¡Œä¸€æ¬¡ä»»åŠ¡åˆ‡æ¢
 }
 void lora_task_init(void)
 {
@@ -28,14 +28,14 @@ void vLoraTask(void *param)
 	static u8 t=0;
 	Lora_mode=1;
 	while(LORA_AUX);
-	LoRa_SendData(rx_buf);		//ĞèÒª·¢ËÍÒ»´ÎÄ£¿é²ÅÕı³£¹¤×÷£¬Ô­ÒòÎ´Öª£¿£¿£¿			
+	LoRa_SendData(rx_buf);		//éœ€è¦å‘é€ä¸€æ¬¡æ¨¡å—æ‰æ­£å¸¸å·¥ä½œï¼ŒåŸå› æœªçŸ¥ï¼Ÿï¼Ÿï¼Ÿ			
 	while (1)
 	{
 		if(xSemaphoreTake(loraIT, 2000)==pdTRUE)
 		{
 			if (LoRa_ReceData(rx_buf,&rx_len) == 1)
 			{
-				uLoraTimeoutFlag = 0; //Çå³ı³¬Ê±±êÊ¶
+				uLoraTimeoutFlag = 0; //æ¸…é™¤è¶…æ—¶æ ‡è¯†
 				LED0=0;
 				t=0;
 			}
@@ -45,10 +45,10 @@ void vLoraTask(void *param)
 		{
 			t++;
 			rx_len=0;
-			if (t == 2) //Á¬Ğø2´ÎÃ»ÓĞ½ÓÊÕ£¬Ôò³¬Ê±
+			if (t == 2) //è¿ç»­2æ¬¡æ²¡æœ‰æ¥æ”¶ï¼Œåˆ™è¶…æ—¶
 			{
 				t = 0;
-				uLoraTimeoutFlag = 1; //ÖÃ³¬Ê±±êÊ¶
+				uLoraTimeoutFlag = 1; //ç½®è¶…æ—¶æ ‡è¯†
 				LED0=1;
 			}
 		}

@@ -3,21 +3,21 @@
 
 #include "sys.h"
 
-//Éè±¸²ÎÊı¶¨Òå
+//è®¾å¤‡å‚æ•°å®šä¹‰
 typedef struct
 {
-   u16 addr;//Éè±¸µØÖ·
-   u8 chn;//ĞÅµÀ
-   u8 power;//·¢Éä¹¦ÂÊ
-   u8 wlrate;//¿ÕÖĞËÙÂÊ
-   u8 wltime;//ĞİÃßÊ±¼ä
-   u8 mode;//¹¤×÷Ä£Ê½
-   u8 mode_sta;//·¢ËÍ×´Ì¬
-   u8 bps;//´®¿Ú²¨ÌØÂÊ
-   u8 parity;//Ğ£ÑéÎ»
+   u16 addr;//è®¾å¤‡åœ°å€
+   u8 chn;//ä¿¡é“
+   u8 power;//å‘å°„åŠŸç‡
+   u8 wlrate;//ç©ºä¸­é€Ÿç‡
+   u8 wltime;//ä¼‘çœ æ—¶é—´
+   u8 mode;//å·¥ä½œæ¨¡å¼
+   u8 mode_sta;//å‘é€çŠ¶æ€
+   u8 bps;//ä¸²å£æ³¢ç‰¹ç‡
+   u8 parity;//æ ¡éªŒä½
 }_LoRa_CFG;
 
-//¿ÕÖĞËÙÂÊ(µ¥Î»:Kbps)
+//ç©ºä¸­é€Ÿç‡(å•ä½:Kbps)
 #define  LORA_RATE_0K3  0 //0.3
 #define  LORA_RATE_1K2  1 //1.2
 #define  LORA_RATE_2K4  2 //2.4
@@ -25,26 +25,26 @@ typedef struct
 #define  LORA_RATE_9K6  4 //9.6
 #define  LORA_RATE_19K2 5 //19.2
 
-//ĞİÃßÊ±¼ä(µ¥Î»:Ãë)
-#define LORA_WLTIME_1S  0  //1Ãë
-#define LORA_WLTIME_2S  1  //2Ãë
+//ä¼‘çœ æ—¶é—´(å•ä½:ç§’)
+#define LORA_WLTIME_1S  0  //1ç§’
+#define LORA_WLTIME_2S  1  //2ç§’
 
-//¹¤×÷Ä£Ê½
-#define LORA_MODE_GEN   0   //Ò»°ãÄ£Ê½
-#define LORA_MODE_WK    1   //»½ĞÑÄ£Ê½
-#define LORA_MODE_SLEEP 2   //Ê¡µçÄ£Ê½
+//å·¥ä½œæ¨¡å¼
+#define LORA_MODE_GEN   0   //ä¸€èˆ¬æ¨¡å¼
+#define LORA_MODE_WK    1   //å”¤é†’æ¨¡å¼
+#define LORA_MODE_SLEEP 2   //çœç”µæ¨¡å¼
 
-//·¢Éä¹¦ÂÊ  
+//å‘å°„åŠŸç‡  
 #define LORA_PW_11dBm  0   //11dBm
 #define LORA_PW_14Bbm  1   //14dBm
 #define LORA_PW_17Bbm  2   //17dBm
 #define LORA_PW_20Bbm  3   //20dBm
 
-//·¢ËÍ×´Ì¬
-#define LORA_STA_Tran 0 //Í¸Ã÷´«Êä
-#define LORA_STA_Dire 1 //¶¨Ïò´«Êä
+//å‘é€çŠ¶æ€
+#define LORA_STA_Tran 0 //é€æ˜ä¼ è¾“
+#define LORA_STA_Dire 1 //å®šå‘ä¼ è¾“
 
-//´®¿Ú²¨ÌØÂÊ(µ¥Î»:bps)
+//ä¸²å£æ³¢ç‰¹ç‡(å•ä½:bps)
 #define LORA_TTLBPS_1200    0  //1200
 #define LORA_TTLBPS_2400    1  //2400
 #define LORA_TTLBPS_4800    2  //4800
@@ -54,22 +54,22 @@ typedef struct
 #define LORA_TTLBPS_57600   6  //57600
 #define LORA_TTLBPS_115200  7  //115200
 
-//´®¿ÚÊı¾İĞ£Ñé
-#define LORA_TTLPAR_8N1  0 //8Î»Êı¾İ
-#define LORA_TTLPAR_8E1  1 //8Î»Êı¾İ+1Î»Å¼Ğ£Ñé
-#define LORA_TTLPAR_8O1  2 //8Î»Êı¾İ+1Î»ÆæĞ£Ñé
+//ä¸²å£æ•°æ®æ ¡éªŒ
+#define LORA_TTLPAR_8N1  0 //8ä½æ•°æ®
+#define LORA_TTLPAR_8E1  1 //8ä½æ•°æ®+1ä½å¶æ ¡éªŒ
+#define LORA_TTLPAR_8O1  2 //8ä½æ•°æ®+1ä½å¥‡æ ¡éªŒ
 
 
-//Éè±¸³ö³§Ä¬ÈÏ²ÎÊı
-#define LORA_ADDR    0                //Éè±¸µØÖ·
-#define LORA_CHN     23               //Í¨ĞÅĞÅµÀ
-#define LORA_POWER   LORA_PW_20Bbm    //·¢Éä¹¦ÂÊ
-#define LORA_RATE    LORA_RATE_19K2   //¿ÕÖĞËÙÂÊ
-#define LORA_WLTIME  LORA_WLTIME_1S   //ĞİÃßÊ±¼ä
-#define LORA_MODE    LORA_MODE_GEN    //¹¤×÷Ä£Ê½
-#define LORA_STA     LORA_STA_Tran    //·¢ËÍ×´Ì¬
-#define LORA_TTLBPS  LORA_TTLBPS_115200 //²¨ÌØÂÊ
-#define LORA_TTLPAR  LORA_TTLPAR_8N1  //Ğ£ÑéÎ»   
+//è®¾å¤‡å‡ºå‚é»˜è®¤å‚æ•°
+#define LORA_ADDR    0                //è®¾å¤‡åœ°å€
+#define LORA_CHN     23               //é€šä¿¡ä¿¡é“
+#define LORA_POWER   LORA_PW_20Bbm    //å‘å°„åŠŸç‡
+#define LORA_RATE    LORA_RATE_19K2   //ç©ºä¸­é€Ÿç‡
+#define LORA_WLTIME  LORA_WLTIME_1S   //ä¼‘çœ æ—¶é—´
+#define LORA_MODE    LORA_MODE_GEN    //å·¥ä½œæ¨¡å¼
+#define LORA_STA     LORA_STA_Tran    //å‘é€çŠ¶æ€
+#define LORA_TTLBPS  LORA_TTLBPS_115200 //æ³¢ç‰¹ç‡
+#define LORA_TTLPAR  LORA_TTLPAR_8N1  //æ ¡éªŒä½   
 
 
 #endif

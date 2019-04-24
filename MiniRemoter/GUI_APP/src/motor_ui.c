@@ -13,9 +13,9 @@
 
 extern ctrlData ctrlCMD;
 motoData motoR_Data;
-//GµµÎ» TÓÍÃÅ MÄ£Ê½ R×ªËÙ Tmµç»úÎÂ¶È TdÇı¶¯Æ÷ÎÂ¶È
-//VµçÑ¹ CµçÁ÷ DÀï³Ì E´íÎó´úÂë
-//TQc×ª¾ØÖ¸Áî Rc×ªËÙÖ¸Áî TQ×ª¾Ø
+//Gæ¡£ä½ Tæ²¹é—¨ Mæ¨¡å¼ Rè½¬é€Ÿ Tmç”µæœºæ¸©åº¦ Tdé©±åŠ¨å™¨æ¸©åº¦
+//Vç”µå‹ Cç”µæµ Dé‡Œç¨‹ Eé”™è¯¯ä»£ç 
+//TQcè½¬çŸ©æŒ‡ä»¤ Rcè½¬é€ŸæŒ‡ä»¤ TQè½¬çŸ©
 
 void motor_ui(void)
 {
@@ -126,7 +126,7 @@ void motor_ui(void)
 	
 	if(joystick1==RIGHT)
 	{
-		getKeyState();	//Çå³ı°´¼ü×´Ì¬
+		getKeyState();	//æ¸…é™¤æŒ‰é”®çŠ¶æ€
 		setShow_ui(MAIN_UI);
 	}
 	else if(joystick1==LEFT)

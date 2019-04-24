@@ -13,21 +13,21 @@
 #include "config_param.h"
 
 /********************************************************************************	 
- * ±¾³ÌĞòÖ»¹©Ñ§Ï°Ê¹ÓÃ£¬Î´¾­×÷ÕßĞí¿É£¬²»µÃÓÃÓÚÆäËüÈÎºÎÓÃÍ¾
+ * æœ¬ç¨‹åºåªä¾›å­¦ä¹ ä½¿ç”¨ï¼Œæœªç»ä½œè€…è®¸å¯ï¼Œä¸å¾—ç”¨äºå…¶å®ƒä»»ä½•ç”¨é€”
  * ALIENTEK MiniFly_Remotor
- * Î¢µ÷½çÃæ´úÂë	
- * ÕıµãÔ­×Ó@ALIENTEK
- * ¼¼ÊõÂÛÌ³:www.openedv.com
- * ´´½¨ÈÕÆÚ:2018/6/1
- * °æ±¾£ºV1.0
- * °æÈ¨ËùÓĞ£¬µÁ°æ±Ø¾¿¡£
- * Copyright(C) ¹ãÖİÊĞĞÇÒíµç×Ó¿Æ¼¼ÓĞÏŞ¹«Ë¾ 2014-2024
+ * å¾®è°ƒç•Œé¢ä»£ç 	
+ * æ­£ç‚¹åŸå­@ALIENTEK
+ * æŠ€æœ¯è®ºå›:www.openedv.com
+ * åˆ›å»ºæ—¥æœŸ:2018/6/1
+ * ç‰ˆæœ¬ï¼šV1.0
+ * ç‰ˆæƒæ‰€æœ‰ï¼Œç›—ç‰ˆå¿…ç©¶ã€‚
+ * Copyright(C) å¹¿å·å¸‚æ˜Ÿç¿¼ç”µå­ç§‘æŠ€æœ‰é™å…¬å¸ 2014-2024
  * All rights reserved
 ********************************************************************************/
 
 #define TRIM_SCALE 	5
 #define PI			(3.14159265)
-#define DEG2RAD		0.017453293f	/* ¶È×ª»¡¶È ¦Ğ/180 */
+#define DEG2RAD		0.017453293f	/* åº¦è½¬å¼§åº¦ Ï€/180 */
 
 extern float plane_yaw;
 
@@ -87,7 +87,7 @@ void trim_ui(void)
 
 	ADCtoFlyDataPercent(&percent);
 	
-	if(configParam.flight.mode == HEAD_LESS)//ÎŞÍ·Ä£Ê½
+	if(configParam.flight.mode == HEAD_LESS)//æ— å¤´æ¨¡å¼
 	{	
 		float yawRad = plane_yaw * DEG2RAD;
 		//float cosy = cosf(yawRad);
@@ -99,7 +99,7 @@ void trim_ui(void)
 		configParam.trim.roll += (originalRoll * cosy - originalPitch * siny);
 		configParam.trim.pitch += (originalPitch * cosy + originalRoll * siny);
 	}
-	else//ÓĞÍ·Ä£Ê½
+	else//æœ‰å¤´æ¨¡å¼
 	{
 		configParam.trim.pitch += percent.pitch/TRIM_SCALE;
 		configParam.trim.roll += percent.roll/TRIM_SCALE;
@@ -107,13 +107,13 @@ void trim_ui(void)
 	configParam.trim.pitch = limit(configParam.trim.pitch, -5.0, 5.0);
 	configParam.trim.roll = limit(configParam.trim.roll, -5.0, 5.0);
 	
-	// °´¼ü´¦Àí
+	// æŒ‰é”®å¤„ç†
 	u8 keyState = getKeyState();
-	if(keyState==KEY_J2_SHORT_PRESS || (++timeOut>60))//¶Ì°´KEY_R»ò³¬Ê±ÍË³öÎ¢µ÷½çÃæ
+	if(keyState==KEY_J2_SHORT_PRESS || (++timeOut>60))//çŸ­æŒ‰KEY_Ræˆ–è¶…æ—¶é€€å‡ºå¾®è°ƒç•Œé¢
 	{
 		timeOut = 0;
-		setTrimFlag(false);/*Çå³ıÎ¢µ÷±êÖ¾*/
-		stopBeepAcktion(TRIM_BEEP);/*¹Ø±Õ·äÃùÆ÷*/
+		setTrimFlag(false);/*æ¸…é™¤å¾®è°ƒæ ‡å¿—*/
+		stopBeepAcktion(TRIM_BEEP);/*å…³é—­èœ‚é¸£å™¨*/
 		setShow_ui(MAIN_UI);
 	}
 }

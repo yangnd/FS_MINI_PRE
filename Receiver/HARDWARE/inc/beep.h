@@ -2,9 +2,9 @@
 #define __BEEP_H	 
 #include "sys.h"
  
-//·äÃùÆ÷¶Ë¿Ú¶¨Òå
-#define BEEP PBout(8)	// BEEP,·äÃùÆ÷½Ó¿Ú		   
+//èœ‚é¸£å™¨ç«¯å£å®šä¹‰
+#define BEEP PBout(8)	// BEEP,èœ‚é¸£å™¨æ¥å£		   
 
-void BEEP_Init(void);	//³õÊ¼»¯
+void BEEP_Init(void);	//åˆå§‹åŒ–
 		 				    
 #endif

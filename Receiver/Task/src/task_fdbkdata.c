@@ -5,7 +5,7 @@
 #include "task.h"
 
 fdbkData carFdbkData;
-/*·¢ËÍ·´À¡ĞÅÏ¢*/
+/*å‘é€åé¦ˆä¿¡æ¯*/
 void vFdbkdataTask(void *param)
 {
 	while (1)

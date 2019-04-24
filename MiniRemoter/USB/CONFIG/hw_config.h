@@ -3,37 +3,37 @@
 #include "platform_config.h"
 #include "usb_type.h"
 //////////////////////////////////////////////////////////////////////////////////	 
-//±¾³ÌĞòÖ»¹©Ñ§Ï°Ê¹ÓÃ£¬Î´¾­×÷ÕßĞí¿É£¬²»µÃÓÃÓÚÆäËüÈÎºÎÓÃÍ¾
-//ALIENTEKÕ½½¢STM32¿ª·¢°åV3
-//USB-hw_config ´úÂë	   
-//ÕıµãÔ­×Ó@ALIENTEK
-//¼¼ÊõÂÛÌ³:www.openedv.com
-//´´½¨ÈÕÆÚ:2015/1/28
-//°æ±¾£ºV1.0
-//°æÈ¨ËùÓĞ£¬µÁ°æ±Ø¾¿¡£
-//Copyright(C) ¹ãÖİÊĞĞÇÒíµç×Ó¿Æ¼¼ÓĞÏŞ¹«Ë¾ 2009-2019
+//æœ¬ç¨‹åºåªä¾›å­¦ä¹ ä½¿ç”¨ï¼Œæœªç»ä½œè€…è®¸å¯ï¼Œä¸å¾—ç”¨äºå…¶å®ƒä»»ä½•ç”¨é€”
+//ALIENTEKæˆ˜èˆ°STM32å¼€å‘æ¿V3
+//USB-hw_config ä»£ç 	   
+//æ­£ç‚¹åŸå­@ALIENTEK
+//æŠ€æœ¯è®ºå›:www.openedv.com
+//åˆ›å»ºæ—¥æœŸ:2015/1/28
+//ç‰ˆæœ¬ï¼šV1.0
+//ç‰ˆæƒæ‰€æœ‰ï¼Œç›—ç‰ˆå¿…ç©¶ã€‚
+//Copyright(C) å¹¿å·å¸‚æ˜Ÿç¿¼ç”µå­ç§‘æŠ€æœ‰é™å…¬å¸ 2009-2019
 //All rights reserved									  
 ////////////////////////////////////////////////////////////////////////////////// 
   
  
-#define USB_USART_TXFIFO_SIZE   256	//USBĞéÄâ´®¿Ú·¢ËÍFIFO´óĞ¡		
-#define USB_USART_REC_LEN	 	256	//USB´®¿Ú½ÓÊÕ»º³åÇø×î´ó×Ö½ÚÊı
+#define USB_USART_TXFIFO_SIZE   256	//USBè™šæ‹Ÿä¸²å£å‘é€FIFOå¤§å°		
+#define USB_USART_REC_LEN	 	256	//USBä¸²å£æ¥æ”¶ç¼“å†²åŒºæœ€å¤§å­—èŠ‚æ•°
 
-//¶¨ÒåÒ»¸öUSB USART FIFO½á¹¹Ìå
+//å®šä¹‰ä¸€ä¸ªUSB USART FIFOç»“æ„ä½“
 typedef struct  
 {										    
 	u8  buffer[USB_USART_TXFIFO_SIZE];	//buffer
-	vu16 writeptr;						//Ğ´Ö¸Õë
-	vu16 readptr;						//¶ÁÖ¸Õë
+	vu16 writeptr;						//å†™æŒ‡é’ˆ
+	vu16 readptr;						//è¯»æŒ‡é’ˆ
 }_usb_usart_fifo;
 
-extern _usb_usart_fifo uu_txfifo;		//USB´®¿Ú·¢ËÍFIFO
-extern _usb_usart_fifo uu_rxfifo;		//USB´®¿Ú½ÓÊÕFIFO
+extern _usb_usart_fifo uu_txfifo;		//USBä¸²å£å‘é€FIFO
+extern _usb_usart_fifo uu_rxfifo;		//USBä¸²å£æ¥æ”¶FIFO
 
-extern u8  USB_USART_RX_BUF[USB_USART_REC_LEN]; //½ÓÊÕ»º³å,×î´óUSB_USART_REC_LEN¸ö×Ö½Ú.Ä©×Ö½ÚÎª»»ĞĞ·û 
-extern u16 USB_USART_RX_STA;   					//½ÓÊÕ×´Ì¬±ê¼Ç	
+extern u8  USB_USART_RX_BUF[USB_USART_REC_LEN]; //æ¥æ”¶ç¼“å†²,æœ€å¤§USB_USART_REC_LENä¸ªå­—èŠ‚.æœ«å­—èŠ‚ä¸ºæ¢è¡Œç¬¦ 
+extern u16 USB_USART_RX_STA;   					//æ¥æ”¶çŠ¶æ€æ ‡è®°	
  
-//USBÍ¨ÓÃ´úÂëº¯ÊıÉùÃ÷
+//USBé€šç”¨ä»£ç å‡½æ•°å£°æ˜
 void usb_vcp_init(void);
 int usbGetDataWithTimout(uint8_t *c);
 void usbsendData(u8* data, u16 length);
@@ -46,7 +46,7 @@ void USB_Port_Set(u8 enable);
 void IntToUnicode (u32 value,u8 *pbuf,u8 len);
 void Get_SerialNum(void);
 
-//²»Í¬USB¹¦ÄÜÌí¼ÓµÄº¯ÊıÉùÃ÷ 
+//ä¸åŒUSBåŠŸèƒ½æ·»åŠ çš„å‡½æ•°å£°æ˜ 
 bool USART_Config(void);
 void USB_To_USART_Send_Data(uint8_t* data_buffer, uint8_t Nb_bytes);
 void USART_To_USB_Send_Data(void);

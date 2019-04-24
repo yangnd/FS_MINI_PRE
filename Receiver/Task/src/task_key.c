@@ -62,11 +62,11 @@ void vKeyTask(void *param)
 	}
 }
 
-//¶ÁÈ¡°´¼ü×´Ì¬
+//è¯»å–æŒ‰é”®çŠ¶æ€
 u8 getKeyState(void)
 {
 	u8 temp;
 	temp = uKeyState;
-	uKeyState = 0; //¶ÁÈ¡°´¼üÖ®ºóÇåÁã
+	uKeyState = 0; //è¯»å–æŒ‰é”®ä¹‹åæ¸…é›¶
 	return temp;
 }

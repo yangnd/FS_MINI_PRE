@@ -4,23 +4,23 @@
  * All rights reserved
 ********************************************************************************/	   
 
-/* LED³õÊ¼»¯ */
+/* LEDåˆå§‹åŒ– */
 void ledInit(void)
 {
 	GPIO_InitTypeDef  GPIO_InitStructure;
  	
-	/* ½ûÖ¹JTAÊ¹ÄÜSWD¿Ú */
+	/* ç¦æ­¢JTAä½¿èƒ½SWDå£ */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable,ENABLE);
 	
-	/* ³õÊ¼»¯LED_BLUE(PB3) LED_RED(PB7) */
+	/* åˆå§‹åŒ–LED_BLUE(PB3) LED_RED(PB7) */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3 | GPIO_Pin_7;				 
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 	
-	/* ¹Ø±ÕËùÓĞLED */
+	/* å…³é—­æ‰€æœ‰LED */
 	GPIO_SetBits(GPIOB,GPIO_Pin_3);			
 	GPIO_SetBits(GPIOB,GPIO_Pin_7);
 }

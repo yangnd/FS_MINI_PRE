@@ -59,25 +59,25 @@ void EP1_IN_Callback (void)
 {
 	u16 USB_Tx_ptr;
 	u16 USB_Tx_length; 
-	if(uu_txfifo.readptr==uu_txfifo.writeptr)		//ÎŞÈÎºÎÊı¾İÒª·¢ËÍ,Ö±½ÓÍË³ö
+	if(uu_txfifo.readptr==uu_txfifo.writeptr)		//æ— ä»»ä½•æ•°æ®è¦å‘é€,ç›´æ¥é€€å‡º
 	{
 		return;
 	}
-	if(uu_txfifo.readptr<uu_txfifo.writeptr)		//Ã»ÓĞ³¬¹ıÊı×é,¶ÁÖ¸Õë<Ğ´Ö¸Õë
+	if(uu_txfifo.readptr<uu_txfifo.writeptr)		//æ²¡æœ‰è¶…è¿‡æ•°ç»„,è¯»æŒ‡é’ˆ<å†™æŒ‡é’ˆ
 	{
-		USB_Tx_length=uu_txfifo.writeptr-uu_txfifo.readptr;//µÃµ½Òª·¢ËÍµÄÊı¾İ³¤¶È
+		USB_Tx_length=uu_txfifo.writeptr-uu_txfifo.readptr;//å¾—åˆ°è¦å‘é€çš„æ•°æ®é•¿åº¦
 	}
-	else											//³¬¹ıÊı×éÁË ¶ÁÖ¸Õë>Ğ´Ö¸Õë
+	else											//è¶…è¿‡æ•°ç»„äº† è¯»æŒ‡é’ˆ>å†™æŒ‡é’ˆ
 	{
-		USB_Tx_length=USB_USART_TXFIFO_SIZE-uu_txfifo.readptr;//µÃµ½Òª·¢ËÍµÄÊı¾İ³¤¶È 
+		USB_Tx_length=USB_USART_TXFIFO_SIZE-uu_txfifo.readptr;//å¾—åˆ°è¦å‘é€çš„æ•°æ®é•¿åº¦ 
 	} 
-	if(USB_Tx_length>VIRTUAL_COM_PORT_DATA_SIZE)	//³¬¹ı64×Ö½Ú?
+	if(USB_Tx_length>VIRTUAL_COM_PORT_DATA_SIZE)	//è¶…è¿‡64å­—èŠ‚?
 	{
-		USB_Tx_length=VIRTUAL_COM_PORT_DATA_SIZE;	//´Ë´Î·¢ËÍÊı¾İÁ¿
+		USB_Tx_length=VIRTUAL_COM_PORT_DATA_SIZE;	//æ­¤æ¬¡å‘é€æ•°æ®é‡
 	}
-	USB_Tx_ptr=uu_txfifo.readptr;					//·¢ËÍÆğÊ¼µØÖ·		
-	uu_txfifo.readptr+=USB_Tx_length;				//¶ÁÖ¸ÕëÆ«ÒÆ  
-	if(uu_txfifo.readptr>=USB_USART_TXFIFO_SIZE)	//¶ÁÖ¸Õë¹éÁã
+	USB_Tx_ptr=uu_txfifo.readptr;					//å‘é€èµ·å§‹åœ°å€		
+	uu_txfifo.readptr+=USB_Tx_length;				//è¯»æŒ‡é’ˆåç§»  
+	if(uu_txfifo.readptr>=USB_USART_TXFIFO_SIZE)	//è¯»æŒ‡é’ˆå½’é›¶
 	{
 		uu_txfifo.readptr=0;
 	} 
@@ -96,9 +96,9 @@ void EP1_IN_Callback (void)
 void EP3_OUT_Callback(void)
 {
 	u16 USB_Rx_Cnt; 
-	USB_Rx_Cnt = USB_SIL_Read(EP3_OUT, USB_Rx_Buffer);	//µÃµ½USB½ÓÊÕµ½µÄÊı¾İ¼°Æä³¤¶È  
-	USB_To_USART_Send_Data(USB_Rx_Buffer, USB_Rx_Cnt);	//´¦ÀíÊı¾İ£¨ÆäÊµ¾ÍÊÇ±£´æÊı¾İ£© 
-	SetEPRxValid(ENDP3);								//Ê±ÄÜ¶Ëµã3µÄÊı¾İ½ÓÊÕ
+	USB_Rx_Cnt = USB_SIL_Read(EP3_OUT, USB_Rx_Buffer);	//å¾—åˆ°USBæ¥æ”¶åˆ°çš„æ•°æ®åŠå…¶é•¿åº¦  
+	USB_To_USART_Send_Data(USB_Rx_Buffer, USB_Rx_Cnt);	//å¤„ç†æ•°æ®ï¼ˆå…¶å®å°±æ˜¯ä¿å­˜æ•°æ®ï¼‰ 
+	SetEPRxValid(ENDP3);								//æ—¶èƒ½ç«¯ç‚¹3çš„æ•°æ®æ¥æ”¶
 }
 
 
@@ -121,7 +121,7 @@ void SOF_Callback(void)
 			FrameCount = 0;
 
 			/* Check the data to be sent through IN pipe */
-			EP1_IN_Callback();//Í¨¹ıEP1_IN_Callbackº¯ÊıÊµÏÖTXÊı¾İ·¢ËÍ¸øUSB
+			EP1_IN_Callback();//é€šè¿‡EP1_IN_Callbackå‡½æ•°å®ç°TXæ•°æ®å‘é€ç»™USB
 			//Handle_USBAsynchXfer();
 		}
 	}  

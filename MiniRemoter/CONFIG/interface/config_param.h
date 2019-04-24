@@ -7,26 +7,26 @@
 #include "task_joystick.h"
 
 /********************************************************************************	 
- * ±¾³ÌĞòÖ»¹©Ñ§Ï°Ê¹ÓÃ£¬Î´¾­×÷ÕßĞí¿É£¬²»µÃÓÃÓÚÆäËüÈÎºÎÓÃÍ¾
+ * æœ¬ç¨‹åºåªä¾›å­¦ä¹ ä½¿ç”¨ï¼Œæœªç»ä½œè€…è®¸å¯ï¼Œä¸å¾—ç”¨äºå…¶å®ƒä»»ä½•ç”¨é€”
  * ALIENTEK MiniFly
- * ÅäÖÃ²ÎÊıÇı¶¯´úÂë	
- * ÕıµãÔ­×Ó@ALIENTEK
- * ¼¼ÊõÂÛÌ³:www.openedv.com
- * ´´½¨ÈÕÆÚ:2018/6/1
- * °æ±¾£ºV1.0
- * °æÈ¨ËùÓĞ£¬µÁ°æ±Ø¾¿¡£
- * Copyright(C) ¹ãÖİÊĞĞÇÒíµç×Ó¿Æ¼¼ÓĞÏŞ¹«Ë¾ 2014-2024
+ * é…ç½®å‚æ•°é©±åŠ¨ä»£ç 	
+ * æ­£ç‚¹åŸå­@ALIENTEK
+ * æŠ€æœ¯è®ºå›:www.openedv.com
+ * åˆ›å»ºæ—¥æœŸ:2018/6/1
+ * ç‰ˆæœ¬ï¼šV1.0
+ * ç‰ˆæƒæ‰€æœ‰ï¼Œç›—ç‰ˆå¿…ç©¶ã€‚
+ * Copyright(C) å¹¿å·å¸‚æ˜Ÿç¿¼ç”µå­ç§‘æŠ€æœ‰é™å…¬å¸ 2014-2024
  * All rights reserved
 ********************************************************************************/
 
 #define BOOTLOADER_SIZE		(9*1024)		/*9K bootloader*/
-#define CONFIG_PARAM_SIZE	(127*1024)		/*128KÓÃÓÚ±£´æ²ÎÊı*/
+#define CONFIG_PARAM_SIZE	(127*1024)		/*128Kç”¨äºä¿å­˜å‚æ•°*/
 
-#define CONFIG_PARAM_ADDR 	(FLASH_BASE + CONFIG_PARAM_SIZE)/*ÅäÖÃ²ÎÊı±£´æµØÖ·*/	
+#define CONFIG_PARAM_ADDR 	(FLASH_BASE + CONFIG_PARAM_SIZE)/*é…ç½®å‚æ•°ä¿å­˜åœ°å€*/	
 #define FIRMWARE_START_ADDR (FLASH_BASE + BOOTLOADER_SIZE)
 
-/* Ä¬ÈÏÅäÖÃ²ÎÊı */
-#define  VERSION	10		/*±íÊ¾°æ±¾ÎªV1.0*/
+/* é»˜è®¤é…ç½®å‚æ•° */
+#define  VERSION	10		/*è¡¨ç¤ºç‰ˆæœ¬ä¸ºV1.0*/
 #define  DISPLAY_LANGUAGE	SIMPLE_CHINESE
 
 #define  RADIO_CHANNEL 		40
@@ -64,29 +64,29 @@ enum language
 	COMPLEX_CHINESE,
 };
 
-//³µÁ¾ÅäÖÃ
+//è½¦è¾†é…ç½®
 typedef struct{
 	enum motoSel motosel;
 	enum controlMode controlmode;
 	u8 maxthrottle;
 }carConfig_t;
 
-/*ÎŞÏßÅäÖÃ½á¹¹*/
+/*æ— çº¿é…ç½®ç»“æ„*/
 typedef struct{
 	u8 channel;		
 	enum nrfRate dataRate;
-	u32 addressHigh;/*Í¨ĞÅµØÖ·¸ß4×Ö½Ú*/
-	u32 addressLow;	/*Í¨ĞÅµØÖ·µÍ4×Ö½Ú*/
+	u32 addressHigh;/*é€šä¿¡åœ°å€é«˜4å­—èŠ‚*/
+	u32 addressLow;	/*é€šä¿¡åœ°å€ä½4å­—èŠ‚*/
 }radioConfig_t;
 
-/*±£´æ²ÎÊı½á¹¹*/
+/*ä¿å­˜å‚æ•°ç»“æ„*/
 typedef struct{
-	u8 version;				/*Èí¼ş°æ±¾ºÅ*/
-	enum language language;	/*ÏÔÊ¾ÓïÑÔ*/
-	radioConfig_t radio;	/*ÎŞÏßÅäÖÃ²ÎÊı*/
-	carConfig_t car;	/*·ÉĞĞÅäÖÃ²ÎÊı*/
-	joystickParam_t jsParam;/*Ò¡¸ËĞ£×¼²ÎÊı*/
-	u8 cksum;				/*Ğ£Ñé*/
+	u8 version;				/*è½¯ä»¶ç‰ˆæœ¬å·*/
+	enum language language;	/*æ˜¾ç¤ºè¯­è¨€*/
+	radioConfig_t radio;	/*æ— çº¿é…ç½®å‚æ•°*/
+	carConfig_t car;	/*é£è¡Œé…ç½®å‚æ•°*/
+	joystickParam_t jsParam;/*æ‘‡æ†æ ¡å‡†å‚æ•°*/
+	u8 cksum;				/*æ ¡éªŒ*/
 } configParam_t;
 
 

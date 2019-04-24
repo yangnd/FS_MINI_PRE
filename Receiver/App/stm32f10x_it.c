@@ -134,7 +134,7 @@ void DebugMon_Handler(void)
   */
 void SysTick_Handler(void)
 {
-	if(xTaskGetSchedulerState()!=taskSCHEDULER_NOT_STARTED)//系统已经运行
+	if(xTaskGetSchedulerState()!=taskSCHEDULER_NOT_STARTED)//绯荤粺宸茬粡杩愯
     {
         xPortSysTickHandler();	
     }

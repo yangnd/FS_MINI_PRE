@@ -2,12 +2,12 @@
 #define __CAN_H
 #include "sys.h"
 
-//CAN½ÓÊÕRX0ÖĞ¶ÏÊ¹ÄÜ
-#define CAN_RX0_INT_ENABLE 0 //0,²»Ê¹ÄÜ;1,Ê¹ÄÜ.
+//CANæ¥æ”¶RX0ä¸­æ–­ä½¿èƒ½
+#define CAN_RX0_INT_ENABLE 0 //0,ä¸ä½¿èƒ½;1,ä½¿èƒ½.
 
-u8 CAN_Mode_Init(u8 tsjw, u8 tbs2, u8 tbs1, u16 brp, u8 mode); //CAN³õÊ¼»¯
+u8 CAN_Mode_Init(u8 tsjw, u8 tbs2, u8 tbs1, u16 brp, u8 mode); //CANåˆå§‹åŒ–
 
-u8 Can_Send_Msg(u32 ExtId, u8 *msg, u8 len); //·¢ËÍÊı¾İ
+u8 Can_Send_Msg(u32 ExtId, u8 *msg, u8 len); //å‘é€æ•°æ®
 
-u8 Can_Receive_Msg(u8 *buf, u32 *rxid); //½ÓÊÕÊı¾İ
+u8 Can_Receive_Msg(u8 *buf, u32 *rxid); //æ¥æ”¶æ•°æ®
 #endif

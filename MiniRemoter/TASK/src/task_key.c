@@ -8,7 +8,7 @@
  * All rights reserved
 ********************************************************************************/
 
-#define LONG_PRESS_COUNT 	500	/*ÅĞ¶ÏÎª³¤°´Ê±¼ä£¨ms£©*/
+#define LONG_PRESS_COUNT 	500	/*åˆ¤æ–­ä¸ºé•¿æŒ‰æ—¶é—´ï¼ˆmsï¼‰*/
 
 
 
@@ -84,12 +84,12 @@ void keyTask(void* param)
 	}	
 }
 
-//¶ÁÈ¡°´¼ü×´Ì¬
+//è¯»å–æŒ‰é”®çŠ¶æ€
 u8 getKeyState(void)
 {
 	u8 temp;
 	temp = keyState;
-	keyState = 0;//¶ÁÈ¡°´¼üÖ®ºóÇåÁã
+	keyState = 0;//è¯»å–æŒ‰é”®ä¹‹åæ¸…é›¶
 	return temp;
 }
 

@@ -20,11 +20,11 @@
 
 /********************************************************************************	 
  * main.c	
- * °üÀ¨ÏµÍ³³õÊ¼»¯ºÍ´´½¨ÈÎÎñ
- * ´´½¨ÈÕÆÚ:2018/10/23
- * °æ±¾£ºV1.0
- * °æÈ¨ËùÓĞ£¬µÁ°æ±Ø¾¿¡£
- * Copyright(C) ½­ËÕ·ÉËó
+ * åŒ…æ‹¬ç³»ç»Ÿåˆå§‹åŒ–å’Œåˆ›å»ºä»»åŠ¡
+ * åˆ›å»ºæ—¥æœŸ:2018/10/23
+ * ç‰ˆæœ¬ï¼šV1.0
+ * ç‰ˆæƒæ‰€æœ‰ï¼Œç›—ç‰ˆå¿…ç©¶ã€‚
+ * Copyright(C) æ±Ÿè‹é£æ¢­
  * All rights reserved
 ********************************************************************************/
 
@@ -34,49 +34,49 @@ static void startTask(void *param);
 int main(void)
 {
 	NVIC_SetVectorTable(FIRMWARE_START_ADDR, 0);
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4); /*ÖĞ¶ÏÅäÖÃ³õÊ¼»¯*/
-	delay_init();									/*delay³õÊ¼»¯*/
-	configParamInit();								/*ÅäÖÃ²ÎÊı³õÊ¼»¯*/
-	ledInit();										/*led³õÊ¼»¯*/
-	oledInit();										/*oled³õÊ¼»¯*/
-	beepInit();										/*·äÃùÆ÷³õÊ¼»¯*/
-	keyInit();										/*°´¼ü³õÊ¼»¯*/
-	joystickInit();									/*Ò¡¸Ë³õÊ¼»¯*/
-	// usb_vcp_init();		/*usbĞéÄâ´®¿Ú³õÊ¼»¯*/
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4); /*ä¸­æ–­é…ç½®åˆå§‹åŒ–*/
+	delay_init();									/*delayåˆå§‹åŒ–*/
+	configParamInit();								/*é…ç½®å‚æ•°åˆå§‹åŒ–*/
+	ledInit();										/*ledåˆå§‹åŒ–*/
+	oledInit();										/*oledåˆå§‹åŒ–*/
+	beepInit();										/*èœ‚é¸£å™¨åˆå§‹åŒ–*/
+	keyInit();										/*æŒ‰é”®åˆå§‹åŒ–*/
+	joystickInit();									/*æ‘‡æ†åˆå§‹åŒ–*/
+	// usb_vcp_init();		/*usbè™šæ‹Ÿä¸²å£åˆå§‹åŒ–*/
 
-	radiolinkInit(); /*ÎŞÏßÍ¨ĞÅ³õÊ¼»¯*/
-	// usblinkInit();		/*usbÍ¨ĞÅ³õÊ¼»¯*/
-	displayInit();   /*ÏÔÊ¾³õÊ¼»¯*/
+	radiolinkInit(); /*æ— çº¿é€šä¿¡åˆå§‹åŒ–*/
+	// usblinkInit();		/*usbé€šä¿¡åˆå§‹åŒ–*/
+	displayInit();   /*æ˜¾ç¤ºåˆå§‹åŒ–*/
 
-	xTaskCreate(startTask, "START_TASK", 100, NULL, 2, &startTaskHandle); /*´´½¨ÆğÊ¼ÈÎÎñ*/
-	vTaskStartScheduler();												  /*¿ªÆôÈÎÎñµ÷¶È*/
+	xTaskCreate(startTask, "START_TASK", 100, NULL, 2, &startTaskHandle); /*åˆ›å»ºèµ·å§‹ä»»åŠ¡*/
+	vTaskStartScheduler();												  /*å¼€å¯ä»»åŠ¡è°ƒåº¦*/
 
 	while (1)
 	{
-	}; /* ÈÎÎñµ÷¶Èºó²»»áÖ´ĞĞµ½Õâ */
+	}; /* ä»»åŠ¡è°ƒåº¦åä¸ä¼šæ‰§è¡Œåˆ°è¿™ */
 }
 
-/*´´½¨ÈÎÎñ*/
+/*åˆ›å»ºä»»åŠ¡*/
 void startTask(void *param)
 {
-	taskENTER_CRITICAL(); /*½øÈëÁÙ½çÇø*/
+	taskENTER_CRITICAL(); /*è¿›å…¥ä¸´ç•ŒåŒº*/
 
-	xTaskCreate(vRadioTask, "RADIOLINK", 100, NULL, 6, &radiolinkTaskHandle); /*´´½¨ÎŞÏßÁ¬½ÓÈÎÎñ£¬ĞÅºÅÁ¿1000*/
+	xTaskCreate(vRadioTask, "RADIOLINK", 100, NULL, 6, &radiolinkTaskHandle); /*åˆ›å»ºæ— çº¿è¿æ¥ä»»åŠ¡ï¼Œä¿¡å·é‡1000*/
 
-	//	xTaskCreate(usblinkTxTask, "USBLINK_TX", 100, NULL, 5, NULL);	/*´´½¨usb·¢ËÍÈÎÎñ£¬¶ÓÁĞmax*/
-	//	xTaskCreate(usblinkRxTask, "USBLINK_RX", 100, NULL, 5, NULL);	/*´´½¨usb½ÓÊÕÈÎÎñ*/
+	//	xTaskCreate(usblinkTxTask, "USBLINK_TX", 100, NULL, 5, NULL);	/*åˆ›å»ºusbå‘é€ä»»åŠ¡ï¼Œé˜Ÿåˆ—max*/
+	//	xTaskCreate(usblinkRxTask, "USBLINK_RX", 100, NULL, 5, NULL);	/*åˆ›å»ºusbæ¥æ”¶ä»»åŠ¡*/
 
-	xTaskCreate(vCtrldataTask, "COMMANDER", 100, NULL, 4, NULL); /*´´½¨·É¿ØÖ¸Áî·¢ËÍÈÎÎñ£¬10*/
+	xTaskCreate(vCtrldataTask, "COMMANDER", 100, NULL, 4, NULL); /*åˆ›å»ºé£æ§æŒ‡ä»¤å‘é€ä»»åŠ¡ï¼Œ10*/
 
-	xTaskCreate(vFdbkdataTask, "DATA_PROCESS", 100, NULL, 4, NULL); /*´´½¨ÎŞÏßÍ¨ĞÅÊı¾İ´¦ÀíÈÎÎñ£¬1*/
+	xTaskCreate(vFdbkdataTask, "DATA_PROCESS", 100, NULL, 4, NULL); /*åˆ›å»ºæ— çº¿é€šä¿¡æ•°æ®å¤„ç†ä»»åŠ¡ï¼Œ1*/
 
-	xTaskCreate(keyTask, "BUTTON_SCAN", 100, NULL, 3, NULL); /*´´½¨°´¼üÉ¨ÃèÈÎÎñ£¬20*/
+	xTaskCreate(keyTask, "BUTTON_SCAN", 100, NULL, 3, NULL); /*åˆ›å»ºæŒ‰é”®æ‰«æä»»åŠ¡ï¼Œ20*/
 
-	xTaskCreate(displayTask, "DISPLAY", 200, NULL, 1, NULL); /*´´½¨ÏÔÊ¾ÈÎÎñ50*/
+	xTaskCreate(displayTask, "DISPLAY", 200, NULL, 1, NULL); /*åˆ›å»ºæ˜¾ç¤ºä»»åŠ¡50*/
 
-	xTaskCreate(configParamTask, "CONFIG_TASK", 100, NULL, 1, NULL); /*´´½¨²ÎÊıÅäÖÃÈÎÎñ1000*/
+	xTaskCreate(configParamTask, "CONFIG_TASK", 100, NULL, 1, NULL); /*åˆ›å»ºå‚æ•°é…ç½®ä»»åŠ¡1000*/
 
-	vTaskDelete(startTaskHandle); /*É¾³ı¿ªÊ¼ÈÎÎñ*/
+	vTaskDelete(startTaskHandle); /*åˆ é™¤å¼€å§‹ä»»åŠ¡*/
 
-	taskEXIT_CRITICAL(); /*ÍË³öÁÙ½çÇø*/
+	taskEXIT_CRITICAL(); /*é€€å‡ºä¸´ç•ŒåŒº*/
 }

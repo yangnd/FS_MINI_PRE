@@ -20,14 +20,14 @@
 
 static enum ui_e show_ui = MAIN_UI;
 
-/*ÉèÖÃÏÔÊ¾½çÃæ*/
+/*è®¾ç½®æ˜¾ç¤ºç•Œé¢*/
 void setShow_ui(enum ui_e ui)
 {
 	show_ui = ui;
 	GUI_ClearSCR();
 }
 
-/*ÏÔÊ¾ÈÎÎñ*/
+/*æ˜¾ç¤ºä»»åŠ¡*/
 void displayTask(void* param)
 {
 	while(1)
@@ -68,10 +68,10 @@ void displayTask(void* param)
 	}
 }
 
-/*½çÃæÏÔÊ¾³õÊ¼»¯*/
+/*ç•Œé¢æ˜¾ç¤ºåˆå§‹åŒ–*/
 void displayInit(void)
 {
-	//²Ëµ¥³õÊ¼»¯
+	//èœå•åˆå§‹åŒ–
 	mainMenuInit();
 	motoselMenuInit();
 	motomodeMenuInit();

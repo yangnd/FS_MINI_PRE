@@ -14,8 +14,8 @@ extern WINDOWS MenuWindow;
 extern Scrollbar_Typedef MenuScrollbar;
 
 void menu_test(void);
-void Menu_Run(void);//运行菜单
-void MenuHookFun(uint8_t key);//钩子函数
+void Menu_Run(void);//杩愯鑿滃崟
+void MenuHookFun(uint8_t key);//閽╁瓙鍑芥暟
 void exitMenu(void);
 void gotoNextMenu(void);
 void gotoLastMenu(void);

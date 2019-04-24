@@ -5,13 +5,13 @@
 #include "task.h"
 
 ctrlData carCtrlData;
-/*·¢ËÍ¿ØÖÆÃüÁîÈÎÎñ*/
+/*å‘é€æ§åˆ¶å‘½ä»¤ä»»åŠ¡*/
 void vCtrldataTask(void *param)
 {
 	while (1)
 	{
 		radioReceiveCtrlPacket(&carCtrlData);
-		//TO DO ½â°ücarCtrlData
+		//TO DO è§£åŒ…carCtrlData
 
 		vTaskDelay(1);
 	}

@@ -10,7 +10,7 @@
 u32 uCanRxID;
 u8 uCanRxBuf[8];
 u8 uCanRxState;
-//u8 uCanTxBuf[8] = {0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00}; //空挡，油门低字节，油门高字节，油门控制，转矩低字节，转矩高字节，转速低字节，转速高字节
+//u8 uCanTxBuf[8] = {0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00}; //绌烘尅锛屾补闂ㄤ綆瀛楄妭锛屾补闂ㄩ珮瀛楄妭锛屾补闂ㄦ帶鍒讹紝杞煩浣庡瓧鑺傦紝杞煩楂樺瓧鑺傦紝杞�熶綆瀛楄妭锛岃浆閫熼珮瀛楄妭
 static canData canTX =
 	{
 		.Gear = 0x00,
@@ -82,7 +82,7 @@ void vCanReceiveTask(void *param)
 
 			switch (uCanRxID)
 			{
-			//Front电机反馈信息打包
+			//Front鐢垫満鍙嶉淇℃伅鎵撳寘
 			case MOTO_F_CANID2:
 				carFdbkData1.Gear = uCanRxBuf[0];
 				carFdbkData1.ThrottleL = uCanRxBuf[1];
@@ -113,7 +113,7 @@ void vCanReceiveTask(void *param)
 				carFdbkData1.CanReserved1 = uCanRxBuf[6];
 				carFdbkData1.CanReserved2 = uCanRxBuf[7];
 				break;
-			//Front电机反馈信息打包
+			//Front鐢垫満鍙嶉淇℃伅鎵撳寘
 			case MOTO_R_CANID2:
 				carFdbkData2.Gear = uCanRxBuf[0];
 				carFdbkData2.ThrottleL = uCanRxBuf[1];

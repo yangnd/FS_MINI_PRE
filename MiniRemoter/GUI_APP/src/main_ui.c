@@ -47,19 +47,19 @@ static u8 uRail;
 enum dir_e joystick1,joystick2;
 char str[22];
 static motoData motoF_Data,motoR_Data;
-extern float fCarBattery;;//·µ»ØµÄµçÁ¿
+extern float fCarBattery;;//è¿”å›çš„ç”µé‡
 ctrlData ctrlCMD;
 u8 uGear=0;
 char cGear,cGearF,cGearR;
 u8 uThrF,uThrR;
 u8 uRPMF,uRPMR;
-//extern u8 rssi;//·µ»ØµÄÎŞÏßĞÅºÅÖµ
+//extern u8 rssi;//è¿”å›çš„æ— çº¿ä¿¡å·å€¼
 
 
 static void drive(void)
 {
 	oled_fill(0,24,127,63,0);	
-	/*ÏÔÊ¾Ñ¡ÖĞµç»ú£¬Ä£Ê½*/
+	/*æ˜¾ç¤ºé€‰ä¸­ç”µæœºï¼Œæ¨¡å¼*/
 	GUI_Circle(10,10,8,1);
 	if(configParam.car.motosel == FRONT_ONLY)
 	{
@@ -109,7 +109,7 @@ static void drive(void)
 		oled_showPicture(49,43-15,bmp_lock[RCLock],30,30);
 	else
 	{
-		//moto F·´À¡
+		//moto Fåé¦ˆ
 		motoF_Data=getMotoData(MOTO_FRONT);
 		memset(str,0,22);
 		switch(motoF_Data.Gear)
@@ -135,7 +135,7 @@ static void drive(void)
 		memset(str,0,22);
 		sprintf(str,"RPM:%4d", motoF_Data.RPM);
 		oled_showString(0,50,(u8*)str,6,12);
-		//moto R·´À¡
+		//moto Råé¦ˆ
 		motoR_Data=getMotoData(MOTO_REAR);
 		memset(str,0,22);
 		switch(motoR_Data.Gear)
@@ -162,39 +162,39 @@ static void drive(void)
 		sprintf(str,"RPM:%4d",motoR_Data.RPM);
 		oled_showString(64,50,(u8*)str,6,12);
 	}
-	/*°´¼ü´¦Àí*/
+	/*æŒ‰é”®å¤„ç†*/
 	u8 keyState = getKeyState();
 	switch(keyState)
 	{
-		case KEY_J1_LONG_PRESS:	/*Ò£¿ØÆ÷½âËø*/
+		case KEY_J1_LONG_PRESS:	/*é¥æ§å™¨è§£é”*/
 			RCLock=false;
 			break;
 		case KEY_J1_SHORT_PRESS:
 			break;
-		case KEY_J2_LONG_PRESS:	//½øÈë²Ëµ¥½çÃæ
+		case KEY_J2_LONG_PRESS:	//è¿›å…¥èœå•ç•Œé¢
 			if(RCLock == true)
 			{
 				setShow_ui(MENU_UI);
 			}
 			break;
-		case KEY_J2_SHORT_PRESS:	/*Ò£¿ØÆ÷¼ÓËø*/
+		case KEY_J2_SHORT_PRESS:	/*é¥æ§å™¨åŠ é”*/
 			RCLock=true;
 			break;
 		case KEY_L_LONG_PRESS:
 			break;
-		case KEY_L_SHORT_PRESS:	//ÇĞ»»µ½×ó¹ìµÀ
+		case KEY_L_SHORT_PRESS:	//åˆ‡æ¢åˆ°å·¦è½¨é“
 			if( RCLock==false)
 			{
 				uRail=0x01;
 			}
 			break;
-		case KEY_R_LONG_PRESS:	//½øÈëµ÷ÊÔ½çÃæ
+		case KEY_R_LONG_PRESS:	//è¿›å…¥è°ƒè¯•ç•Œé¢
 			if( RCLock==true)
 			{
 				setShow_ui(DEBUG_UI);
 			}
 			break;
-		case KEY_R_SHORT_PRESS:	//ÇĞ»»µ½ÓÒ¹ìµÀ
+		case KEY_R_SHORT_PRESS:	//åˆ‡æ¢åˆ°å³è½¨é“
 			if( RCLock==false)
 			{
 				uRail=0x02;
@@ -209,7 +209,7 @@ static void drive(void)
 //	joystick20=getJoystick2DirD();
 	joystick1=getJoystick1Dir(0);
 	joystick2=getJoystick2Dir(0);
-	/*Ò£¿ØÆ÷½âËø¡¢¼ÓËø*/
+	/*é¥æ§å™¨è§£é”ã€åŠ é”*/
 //	if(joystick1==BACK_LEFT && joystick2==BACK_RIGHT)
 //	{
 //		RCLock = false;
@@ -238,8 +238,8 @@ void main_ui(void)
 //	u8 rssi_level;
 	static float remoterBat;
 	
-	/*µçÁ¿°Ù·Ö±ÈÏÔÊ¾*/
-	if(xTaskGetTickCount() >= dispalyBatTime+1000)/*Ò£¿ØÆ÷µçÁ¿1000ms¸üĞÂÒ»´Î*/
+	/*ç”µé‡ç™¾åˆ†æ¯”æ˜¾ç¤º*/
+	if(xTaskGetTickCount() >= dispalyBatTime+1000)/*é¥æ§å™¨ç”µé‡1000msæ›´æ–°ä¸€æ¬¡*/
 	{
 		dispalyBatTime = xTaskGetTickCount();
 		remoterBat = ((float)getAdcValue(ADC_BAT)/4095.0)*3*2;
@@ -248,36 +248,36 @@ void main_ui(void)
 		else 
 			RCLowPower = false;	
 	}
-	/*ÏÔÊ¾Ò£¿ØÆ÷µçÁ¿*/
+	/*æ˜¾ç¤ºé¥æ§å™¨ç”µé‡*/
 	batPercent = (remoterBat-REMOTER_LOW_POWER)/(REMOTER_FULL_POWER-REMOTER_LOW_POWER)*100;
 	batPercent = limit(batPercent, 0, 99);
 	
-	/*ĞÅºÅÏÔÊ¾*/
-//	if(rssi < 80) rssi_level = 5;/*ĞÅºÅÖµĞ¡80db,ĞÅºÅÎª5¸ñ*/
+	/*ä¿¡å·æ˜¾ç¤º*/
+//	if(rssi < 80) rssi_level = 5;/*ä¿¡å·å€¼å°80db,ä¿¡å·ä¸º5æ ¼*/
 //	else if(rssi < 85) rssi_level = 4;
 //	else if(rssi < 90) rssi_level = 3;
 //	else if(rssi < 95) rssi_level = 2;
 //	else if(rssi >= 95) rssi_level = 1;
 //	if(radioinkConnectStatus() == false) rssi_level = 0;
 		
-	/*ÏÔÊ¾Í¼Æ¬*/
+	/*æ˜¾ç¤ºå›¾ç‰‡*/
 //	oled_showPicture(0,0,bmp_rssi[rssi_level],24,22);
 //	oled_showPicture(24,0,bmp_logo,80,22);
 	oled_showPicture(106,4,bmp_battery[batPercent*12/99],10,16);
 	oled_showChar(119,13,'%',6,8,1);
 	oled_showNum(116,4,batPercent,2,6,8);
 	
-	/*ËÄÖá×Ô¼ì*/
+	/*å››è½´è‡ªæ£€*/
 	if(isCARSelfTestPass == true)
 	{
-		drive();/*×Ô¼ì³É¹¦¿É·ÉĞĞ*/
+		drive();/*è‡ªæ£€æˆåŠŸå¯é£è¡Œ*/
 	}
-	else/*×Ô¼ì³ö´íÏÔÊ¾³ö´í´«¸ĞÆ÷*/
+	else/*è‡ªæ£€å‡ºé”™æ˜¾ç¤ºå‡ºé”™ä¼ æ„Ÿå™¨*/
 	{
 		
 	}
 	
-	/*µÍµçÁ¿±¨¾¯*/
+	/*ä½ç”µé‡æŠ¥è­¦*/
 	if(RCLowPower!=RCLowPowerOld || CARLowPower!=CARLowPowerOld)
 	{
 		if(RCLowPower==true || CARLowPower==true)

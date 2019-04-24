@@ -15,12 +15,12 @@ static u8 railState;
 static u8 keyState;
 static xSemaphoreHandle rs485rxIT;
 
-/*RS485Íâ²¿ÖĞ¶Ï»Øµ÷º¯Êı*/
+/*RS485å¤–éƒ¨ä¸­æ–­å›è°ƒå‡½æ•°*/
 static void rs485_interruptCallback(void)
 {
 	portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
 	xSemaphoreGiveFromISR(rs485rxIT, &xHigherPriorityTaskWoken);
-	portYIELD_FROM_ISR(xHigherPriorityTaskWoken); //Èç¹ûĞèÒªµÄ»°½øĞĞÒ»´ÎÈÎÎñÇĞ»»
+	portYIELD_FROM_ISR(xHigherPriorityTaskWoken); //å¦‚æœéœ€è¦çš„è¯è¿›è¡Œä¸€æ¬¡ä»»åŠ¡åˆ‡æ¢
 }
 void Modbus_Init(void)
 {
@@ -39,61 +39,61 @@ void vChangeRailTask(void *param)
 		vTaskDelay(50);
 		
 		keyState=getKeyState();
-		if(keyState==KEY0_SHORT_PRESS)	railState=LEFTRAIL;			//ÖÃÂÖ×Ó´¦ÓÚ¹ìµÀ×´Ì¬
+		if(keyState==KEY0_SHORT_PRESS)	railState=LEFTRAIL;			//ç½®è½®å­å¤„äºè½¨é“çŠ¶æ€
 		else if(keyState==KEY1_SHORT_PRESS)	railState=RIGTHRAIL;
 		
 		uRail=getRail();
-		if((uRail==2)&&(railState==LEFTRAIL))//Õı×ª270¶È
+		if((uRail==2)&&(railState==LEFTRAIL))//æ­£è½¬270åº¦
 		{
 			rs485txbuf[2]=0x00;
 			rs485txbuf[3]=0x47;		//Pn071
-			rs485txbuf[4]=0x7F;		//ÄÚ²¿Î»ÖÃ0
-			rs485txbuf[5]=0xFF;		//µÍÎ»
+			rs485txbuf[4]=0x7F;		//å†…éƒ¨ä½ç½®0
+			rs485txbuf[5]=0xFF;		//ä½ä½
 			ModbusWriteSReg(rs485txbuf,8,rs485rxbuf,rxlen);
 //			while(ModbusWriteSReg(rs485txbuf,8,rs485rxbuf,rxlen));
 			rs485txbuf[2]=0x00;
 			rs485txbuf[3]=0x46;	//Pn070
 			rs485txbuf[4]=0x7F;
-			rs485txbuf[5]=0xFE;	//SonÊ¹ÄÜÇı¶¯Æ÷
+			rs485txbuf[5]=0xFE;	//Sonä½¿èƒ½é©±åŠ¨å™¨
 			ModbusWriteSReg(rs485txbuf,8,rs485rxbuf,rxlen);
 //			while(ModbusWriteSReg(rs485txbuf,8,rs485rxbuf,rxlen));
 			rs485txbuf[2]=0x00;
 			rs485txbuf[3]=0x47;	//Pn071
-			rs485txbuf[4]=0x7B;	//ÄÚ²¿Î»ÖÃ0,´¥·¢
+			rs485txbuf[4]=0x7B;	//å†…éƒ¨ä½ç½®0,è§¦å‘
 			rs485txbuf[5]=0xFF;
 			ModbusWriteSReg(rs485txbuf,8,rs485rxbuf,rxlen);
 //			while(ModbusWriteSReg(rs485txbuf,8,rs485rxbuf,rxlen));
 //			rs485txbuf[2]=0x00;
 //			rs485txbuf[3]=0x46;	//Pn070
 //			rs485txbuf[4]=0x7F;
-//			rs485txbuf[5]=0xFF;	//SonÊ§ÄÜÇı¶¯Æ÷
+//			rs485txbuf[5]=0xFF;	//Sonå¤±èƒ½é©±åŠ¨å™¨
 //			while(ModbusWriteSReg(rs485txbuf,8,rs485rxbuf,rxlen));
 			railState=RIGTHRAIL;
 		}
-		else if((uRail==1)&&(railState==RIGTHRAIL))//·´×ª270¶È
+		else if((uRail==1)&&(railState==RIGTHRAIL))//åè½¬270åº¦
 		{
 			rs485txbuf[2]=0x00;
 			rs485txbuf[3]=0x47;	//Pn071
-			rs485txbuf[4]=0x7E;	//ÄÚ²¿Î»ÖÃ1
+			rs485txbuf[4]=0x7E;	//å†…éƒ¨ä½ç½®1
 			rs485txbuf[5]=0xFF;
 			ModbusWriteSReg(rs485txbuf,8,rs485rxbuf,rxlen);
 //			while(ModbusWriteSReg(rs485txbuf,8,rs485rxbuf,rxlen));
 			rs485txbuf[2]=0x00;
 			rs485txbuf[3]=0x46;	//Pn070
 			rs485txbuf[4]=0x7F;
-			rs485txbuf[5]=0xFE;	//SonÊ¹ÄÜÇı¶¯Æ÷
+			rs485txbuf[5]=0xFE;	//Sonä½¿èƒ½é©±åŠ¨å™¨
 			ModbusWriteSReg(rs485txbuf,8,rs485rxbuf,rxlen);
 //			while(ModbusWriteSReg(rs485txbuf,8,rs485rxbuf,rxlen));
 			rs485txbuf[2]=0x00;
 			rs485txbuf[3]=0x47;	//Pn071
-			rs485txbuf[4]=0x7A;	//ÄÚ²¿Î»ÖÃ1,´¥·¢
+			rs485txbuf[4]=0x7A;	//å†…éƒ¨ä½ç½®1,è§¦å‘
 			rs485txbuf[5]=0xFF;
 			ModbusWriteSReg(rs485txbuf,8,rs485rxbuf,rxlen);
 //			while(ModbusWriteSReg(rs485txbuf,8,rs485rxbuf,rxlen));
 //			rs485txbuf[2]=0x00;
 //			rs485txbuf[3]=0x46;	//Pn070
 //			rs485txbuf[4]=0x7F;
-//			rs485txbuf[5]=0xFF;	//SonÊ§ÄÜÇı¶¯Æ÷
+//			rs485txbuf[5]=0xFF;	//Sonå¤±èƒ½é©±åŠ¨å™¨
 //			while(ModbusWriteSReg(rs485txbuf,8,rs485rxbuf,rxlen));
 			railState=LEFTRAIL;
 		}

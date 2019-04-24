@@ -10,15 +10,15 @@
 #define KEY_S1   	GPIO_Pin_10
 #define KEY_S2   	GPIO_Pin_8
 
-#define READ_KEY_L()  	GPIO_ReadInputDataBit(GPIOB,KEY_L)	//¶ÁÈ¡×ó°´¼ü
-#define READ_KEY_R() 	GPIO_ReadInputDataBit(GPIOC,KEY_R)	//¶ÁÈ¡ÓÒ°´¼ü
-#define READ_KEY_J1()  	GPIO_ReadInputDataBit(GPIOB,KEY_S1)	//¶ÁÈ¡Ò¡¸Ë1°´¼ü
-#define READ_KEY_J2()  	GPIO_ReadInputDataBit(GPIOA,KEY_S2)	//¶ÁÈ¡Ò¡¸Ë2°´¼ü
+#define READ_KEY_L()  	GPIO_ReadInputDataBit(GPIOB,KEY_L)	//è¯»å–å·¦æŒ‰é”®
+#define READ_KEY_R() 	GPIO_ReadInputDataBit(GPIOC,KEY_R)	//è¯»å–å³æŒ‰é”®
+#define READ_KEY_J1()  	GPIO_ReadInputDataBit(GPIOB,KEY_S1)	//è¯»å–æ‘‡æ†1æŒ‰é”®
+#define READ_KEY_J2()  	GPIO_ReadInputDataBit(GPIOA,KEY_S2)	//è¯»å–æ‘‡æ†2æŒ‰é”®
 
-//IO³õÊ¼»¯
+//IOåˆå§‹åŒ–
 void keyInit(void);
 
- //°´¼üÉ¨Ãèº¯Êı		
+ //æŒ‰é”®æ‰«æå‡½æ•°		
 void KEY_Scan(void);
 
 #endif

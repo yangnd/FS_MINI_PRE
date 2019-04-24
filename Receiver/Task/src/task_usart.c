@@ -11,9 +11,9 @@ u8 USART_TX_BUF[64];
 extern u8 rx_buf[100];
 extern u16 rx_len;
 
-//u8 *data;//Êý¾ÝÆðÊ¼µØÖ·£¬ÓÃÓÚ¼ÆËã CRC Öµ
-//u8 length; //Êý¾Ý³¤¶È
-//·µ»Ø unsigned integer ÀàÐÍµÄ CRC Öµ¡£
+//u8 *data;//æ•°æ®èµ·å§‹åœ°å€ï¼Œç”¨äºŽè®¡ç®— CRC å€¼
+//u8 length; //æ•°æ®é•¿åº¦
+//è¿”å›ž unsigned integer ç±»åž‹çš„ CRC å€¼ã€‚
 u16 crc_chk(u8 *data, u8 length)
 {
 	u8 j;
@@ -63,10 +63,10 @@ void usart_send_frame(u8 sel,u16 frame_count)
 	USART_TX_BUF[9+len]=crc>>8;
 	USART_TX_BUF[10+len]=crc&0xFF;
 	USART_ClearFlag( USART1, USART_FLAG_TC );
-//	for(i=0;i<9+len;i++)	//²»º¬crc£º9+len£¬º¬crc£º11+len
+//	for(i=0;i<9+len;i++)	//ä¸å«crcï¼š9+lenï¼Œå«crcï¼š11+len
 //	{
-//		USART_SendData(USART1, *(USART_TX_BUF+i));//Ïò´®¿Ú1·¢ËÍÊý¾Ý
-//		while(USART_GetFlagStatus(USART1,USART_FLAG_TC)!=SET);//µÈ´ý·¢ËÍ½áÊø
+//		USART_SendData(USART1, *(USART_TX_BUF+i));//å‘ä¸²å£1å‘é€æ•°æ®
+//		while(USART_GetFlagStatus(USART1,USART_FLAG_TC)!=SET);//ç­‰å¾…å‘é€ç»“æŸ
 //	}
 	DMA_SetCurrDataCounter(DMA1_Channel4, 9+len); 
     DMA_Cmd(DMA1_Channel4, ENABLE);

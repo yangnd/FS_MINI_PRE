@@ -13,7 +13,7 @@
 
 static bool isInit;
 
-//ÖØÖÃ¶Ô»°¿ò
+//é‡ç½®å¯¹è¯æ¡†
 MessageBox_Typedef ResetSystemMessageBox={
 0,
 0,	
@@ -27,28 +27,28 @@ MessageBox_Typedef ResetSystemMessageBox={
 
 const u8 *resetSystemLanguage[4][3]={
 {
-"ÖØÖÃ",
+"é‡ç½®",
 "Reset",
-"ÖØÖÃ",
+"é‡ç½®",
 },
 {
-"È·¶¨»Ö¸´ÎªÄ¬ÈÏÉèÖÃ£¿",
+"ç¡®å®šæ¢å¤ä¸ºé»˜è®¤è®¾ç½®ï¼Ÿ",
 "Restore the default Settings?",
-"´_¶¨»ÖÍéÄ¬ÕJÔOÖÃ£¿",
+"ç¢ºå®šæ¢å¾©ç‚ºé»˜èªè¨­ç½®ï¼Ÿ",
 },
 {
-"È·¶¨",
+"ç¡®å®š",
 "OK",
-"´_¶¨",
+"ç¢ºå®š",
 },
 {
-"È¡Ïû",
+"å–æ¶ˆ",
 "Cancel",
-"È¡Ïû",
+"å–æ¶ˆ",
 }
 };
 
-/*ÏÔÊ¾ÖØÖÃ¶Ô»°¿ò*/
+/*æ˜¾ç¤ºé‡ç½®å¯¹è¯æ¡†*/
 static void msgboxDispalyInit(void)
 {
 	if(isInit) return;
@@ -62,7 +62,7 @@ static void msgboxDispalyInit(void)
 	isInit = true;
 }
 
-/*ÖØÖÃ½çÃæ*/
+/*é‡ç½®ç•Œé¢*/
 void reset_ui(void)
 {
 	enum dir_e joystick2;
@@ -77,29 +77,29 @@ void reset_ui(void)
 	}
 	switch(joystick2)
 	{
-		case RIGHT:  //ROLLÏòÓÒ
+		case RIGHT:  //ROLLå‘å³
 			GUI_MessageBoxButtonStatus(&ResetSystemMessageBox, 0);
 			break;
 			
-		case LEFT:  //ROLLÏò×ó
+		case LEFT:  //ROLLå‘å·¦
 			GUI_MessageBoxButtonStatus(&ResetSystemMessageBox, 1);
 			break;
 		default :break;
 	}
 	
 	u8 keyState = getKeyState();
-	if(keyState == KEY_J2_SHORT_PRESS)//°´ÏÂÒ¡¸Ë¼üÖ´ĞĞ²Ëµ¥¶ÔÓ¦µÄ¶¯×÷
+	if(keyState == KEY_J2_SHORT_PRESS)//æŒ‰ä¸‹æ‘‡æ†é”®æ‰§è¡Œèœå•å¯¹åº”çš„åŠ¨ä½œ
 	{	
 		if(GUI_MessageBoxResult(&ResetSystemMessageBox) == 1)
 		{
 			configParamReset();
-			INTX_DISABLE();/*½ûÖ¹È«¾ÖÖĞ¶Ï*/
-			NVIC_SystemReset();	/*ÖØÆô*/
+			INTX_DISABLE();/*ç¦æ­¢å…¨å±€ä¸­æ–­*/
+			NVIC_SystemReset();	/*é‡å¯*/
 		}
 		isInit = false;
 		setShow_ui(MAIN_UI);
 	}
-	if(timeout++ > 100)//³¬Ê±ÍË³ö²Ëµ¥
+	if(timeout++ > 100)//è¶…æ—¶é€€å‡ºèœå•
 	{
 		timeout = 0;
 		isInit = false;

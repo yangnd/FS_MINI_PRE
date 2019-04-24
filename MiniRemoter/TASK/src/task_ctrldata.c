@@ -25,7 +25,7 @@ u8 limit(u8 value,u8 min, u8 max)
 	return value;
 }
 
-/*·¢ËÍ¿ØÖÆÃüÁîÈÎÎñ*/
+/*å‘é€æ§åˆ¶å‘½ä»¤ä»»åŠ¡*/
 void vCtrldataTask(void* param)
 {
 	ctrlData carCtrlData;
@@ -47,7 +47,7 @@ void vCtrldataTask(void* param)
 		if(getRCLock()==false)
 		{
 			//Throttle
-			if(carCtrlData.Break!=0)	carCtrlData.Throttle=0;		//É²³µÆÁ±ÎÓÍÃÅ
+			if(carCtrlData.Break!=0)	carCtrlData.Throttle=0;		//åˆ¹è½¦å±è”½æ²¹é—¨
 			else
 			{
 				carCtrlData.Throttle=percent.Throttle*maxThrottle;
@@ -57,9 +57,9 @@ void vCtrldataTask(void* param)
 		}
 		else 
 		{
-			carCtrlData.Throttle=0;	//Ëø¶¨
+			carCtrlData.Throttle=0;	//é”å®š
 		}
-		/*·¢ËÍ¿ØÖÆÊı¾İ*/
+		/*å‘é€æ§åˆ¶æ•°æ®*/
 		radioSendPacket(&carCtrlData);
 	}
 }

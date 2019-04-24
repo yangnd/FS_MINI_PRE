@@ -1,17 +1,17 @@
 /**
   ********************************  STM32F10x  *********************************
-  * @ÎÄ¼şÃû     £º main.c
-  * @×÷Õß       £º 
-  * @¿â°æ±¾     £º V3.5.0
-  * @ÎÄ¼ş°æ±¾   £º V1.0.0
-  * @ÈÕÆÚ       £º 2018Äê9ÔÂ10ÈÕ
-  * @ÕªÒª       £º Ö÷º¯Êı
+  * @æ–‡ä»¶å     ï¼š main.c
+  * @ä½œè€…       ï¼š 
+  * @åº“ç‰ˆæœ¬     ï¼š V3.5.0
+  * @æ–‡ä»¶ç‰ˆæœ¬   ï¼š V1.0.0
+  * @æ—¥æœŸ       ï¼š 2018å¹´9æœˆ10æ—¥
+  * @æ‘˜è¦       ï¼š ä¸»å‡½æ•°
   ******************************************************************************/
 /*----------------------------------------------------------------------------
-  ¸üĞÂÈÕÖ¾:
-  2018-09-10 V1.0.0:³õÊ¼°æ±¾
+  æ›´æ–°æ—¥å¿—:
+  2018-09-10 V1.0.0:åˆå§‹ç‰ˆæœ¬
   ----------------------------------------------------------------------------*/
-/* °üº¬µÄÍ·ÎÄ¼ş --------------------------------------------------------------*/
+/* åŒ…å«çš„å¤´æ–‡ä»¶ --------------------------------------------------------------*/
 /* Standard includes. */
 //#include <stdio.h>
 
@@ -39,20 +39,20 @@ static TaskHandle_t startTaskHandle;
 static void startTask(void *param);
 
 /************************************************
-º¯ÊıÃû³Æ £º main
-¹¦    ÄÜ £º Ö÷º¯ÊıÈë¿Ú
-²Î    Êı £º ÎŞ
-·µ »Ø Öµ £º int
-×÷    Õß £º 
+å‡½æ•°åç§° ï¼š main
+åŠŸ    èƒ½ ï¼š ä¸»å‡½æ•°å…¥å£
+å‚    æ•° ï¼š æ— 
+è¿” å› å€¼ ï¼š int
+ä½œ    è€… ï¼š 
 *************************************************/
 int main(void)
 {
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);							  /*ÖĞ¶ÏÅäÖÃ³õÊ¼»¯*/
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);							  /*ä¸­æ–­é…ç½®åˆå§‹åŒ–*/
 	delay_init();
 	uart_init(115200);
-	KEY_Init();																  //°´¼ü³õÊ¼»¯
-	LED_Init();																  //LEDµÆ³õÊ¼»¯
-	BEEP_Init();															  //Beep³õÊ¼»¯
+	KEY_Init();																  //æŒ‰é”®åˆå§‹åŒ–
+	LED_Init();																  //LEDç¯åˆå§‹åŒ–
+	BEEP_Init();															  //Beepåˆå§‹åŒ–
 
 	LED0 = 0;
 	LED1 = 0;
@@ -63,27 +63,27 @@ int main(void)
 	LED0 = 1;
 	LED1 = 1;
 
-	xTaskCreate(startTask, "START_TASK", 100, NULL, 2, &startTaskHandle); /*´´½¨ÆğÊ¼ÈÎÎñ*/
-	vTaskStartScheduler();												  /*¿ªÆôÈÎÎñµ÷¶È*/
+	xTaskCreate(startTask, "START_TASK", 100, NULL, 2, &startTaskHandle); /*åˆ›å»ºèµ·å§‹ä»»åŠ¡*/
+	vTaskStartScheduler();												  /*å¼€å¯ä»»åŠ¡è°ƒåº¦*/
 
 	while (1)
 	{
-	}; /* ÈÎÎñµ÷¶Èºó²»»áÖ´ĞĞµ½Õâ */
+	}; /* ä»»åŠ¡è°ƒåº¦åä¸ä¼šæ‰§è¡Œåˆ°è¿™ */
 }
 
-/*´´½¨ÈÎÎñ*/
+/*åˆ›å»ºä»»åŠ¡*/
 void startTask(void *param)
 {
-	taskENTER_CRITICAL();											/*½øÈëÁÙ½çÇø*/
+	taskENTER_CRITICAL();											/*è¿›å…¥ä¸´ç•ŒåŒº*/
 
-	xTaskCreate(vUsartTask, "USART", 100, NULL, 4, NULL);		/*´´½¨RadioÈÎÎñ*/
+	xTaskCreate(vUsartTask, "USART", 100, NULL, 4, NULL);		/*åˆ›å»ºRadioä»»åŠ¡*/
 	xTaskCreate(vLoraTask,"Lora",100,NULL,3,NULL);
-	xTaskCreate(vKeyTask, "Key", 100, NULL, 2, NULL);   /*´´½¨°´¼üÉ¨ÃèÈÎÎñ*/
-//	xTaskCreate(vBeepTask, "Beep", 100, NULL, 1, NULL); /*´´½¨beepÈÎÎñ*/
+	xTaskCreate(vKeyTask, "Key", 100, NULL, 2, NULL);   /*åˆ›å»ºæŒ‰é”®æ‰«æä»»åŠ¡*/
+//	xTaskCreate(vBeepTask, "Beep", 100, NULL, 1, NULL); /*åˆ›å»ºbeepä»»åŠ¡*/
 
-	vTaskDelete(startTaskHandle); /* É¾³ı¿ªÊ¼ÈÎÎñ */
+	vTaskDelete(startTaskHandle); /* åˆ é™¤å¼€å§‹ä»»åŠ¡ */
 
-	taskEXIT_CRITICAL(); /*ÍË³öÁÙ½çÇø*/
+	taskEXIT_CRITICAL(); /*é€€å‡ºä¸´ç•ŒåŒº*/
 }
 
 /**** Copyright (C)2018 Feisuo. All Rights Reserved **** END OF FILE ****/

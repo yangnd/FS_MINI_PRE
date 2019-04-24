@@ -11,7 +11,7 @@
  * All rights reserved
 ********************************************************************************/
 
-//²Ëµ¥µÄÎ»ÖÃ
+//èœå•çš„ä½ç½®
 #define   MEMU_POSX_1    20
 #define   MEMU_POSY_1    19
 
@@ -19,11 +19,11 @@ MenuItem_Typedef*  CurMenu = mainMenu;
 MenuItem_Typedef*  CurItem;
 
 static int selected;
-static int cur_sequence; //Ä³Ò»¼¶²Ëµ¥Ñ¡ÖĞÏîÄ¿µÄĞòºÅ
+static int cur_sequence; //æŸä¸€çº§èœå•é€‰ä¸­é¡¹ç›®çš„åºå·
 static bool isChangeMenu = true;
 const u8* defaultTitle = "FeiSuo";
 
-//´°Ìå
+//çª—ä½“
 WINDOWS MenuWindow={
 .x = 0,
 .y = 0,	
@@ -34,7 +34,7 @@ WINDOWS MenuWindow={
 .title = "FeiSuo",
 };
 
-//Ö÷´°Ìå¹ö¶¯Ìõ
+//ä¸»çª—ä½“æ»šåŠ¨æ¡
 Scrollbar_Typedef MenuScrollbar={
 .x = 118,
 .y = 14,
@@ -82,7 +82,7 @@ void gotoLastMenu(void)
 {
 	if(CurItem->parentMenu != NULL)
 	{
-		//»Ö¸´Ä¬ÈÏÑ¡ÖĞ
+		//æ¢å¤é»˜è®¤é€‰ä¸­
 		CurItem->isSelect = false;
 		CurItem = CurMenu + selected;
 		CurItem->isSelect = true;
@@ -100,7 +100,7 @@ void gotoLastMenu(void)
 	}
 }
 
-/*ÏÔÊ¾²Ëµ¥*/
+/*æ˜¾ç¤ºèœå•*/
 void DisplayMenuInit(MenuItem_Typedef* menu)
 {
 	u8 topitem;
@@ -134,12 +134,12 @@ void DisplayMenuInit(MenuItem_Typedef* menu)
 	CurItem = menu + cur_sequence;
 	CurItem->isSelect = true;
 	
-	GUI_Refresh();//Ë¢ĞÂÆÁÄ»
+	GUI_Refresh();//åˆ·æ–°å±å¹•
 	
 	isChangeMenu = false;
 }
 
-/*²Ëµ¥ÔËĞĞ*/
+/*èœå•è¿è¡Œ*/
 void Menu_Run(void)
 {
 	u8 keyState;
@@ -156,20 +156,20 @@ void Menu_Run(void)
 	}
 	switch(joystick2)
 	{
-		case BACK:	//PITCHÏòºó
-			//Çå³ı´°¿ÚÄÚÈİ
+		case BACK:	//PITCHå‘å
+			//æ¸…é™¤çª—å£å†…å®¹
 			GUI_RectangleFill(1, 18, 117, 62, 0);
 			CurItem = CurMenu + cur_sequence;
 			CurItem->isSelect = false;
 		
-			//²Ëµ¥ÏîÄ¿ĞòºÅ++
+			//èœå•é¡¹ç›®åºå·++
 			cur_sequence++;
 			if(cur_sequence >= CurMenu->menuItemCount-1)
 				cur_sequence = CurMenu->menuItemCount-1;
 			CurItem = CurMenu + cur_sequence;
 			CurItem->isSelect = true;
 			
-			//¹â±êÎ»ÖÃ++
+			//å…‰æ ‡ä½ç½®++
 			CurMenu->cursorPosition++;
 			if(CurMenu->menuItemCount <= MenuWindow.itemsperpage)
 			{
@@ -196,20 +196,20 @@ void Menu_Run(void)
 			GUI_Scrollbar_SetPos(&MenuScrollbar);				
 			break;
 					
-		case FORWARD:	//PITCHÏòÇ°
-			//Çå³ı´°¿ÚÄÚÈİ
+		case FORWARD:	//PITCHå‘å‰
+			//æ¸…é™¤çª—å£å†…å®¹
 			GUI_RectangleFill(1, 18, 117, 62, 0);
 			CurItem = CurMenu + cur_sequence;
 			CurItem->isSelect = false;
 		
-			//²Ëµ¥ÏîÄ¿ĞòºÅ--
+			//èœå•é¡¹ç›®åºå·--
 			cur_sequence--;
 			if(cur_sequence <= 0)
 				cur_sequence = 0;
 			CurItem = CurMenu + cur_sequence;
 			CurItem->isSelect = true;
 			
-			//¹â±êÎ»ÖÃ--
+			//å…‰æ ‡ä½ç½®--
 			CurMenu->cursorPosition--;
 			if(CurMenu->menuItemCount <= MenuWindow.itemsperpage)
 			{	
@@ -236,19 +236,19 @@ void Menu_Run(void)
 			GUI_Scrollbar_SetPos(&MenuScrollbar);      					
 			break;
 			
-		case RIGHT:  //ROLLÏòÓÒ
-			gotoNextMenu();//½øÈëÏÂÒ»¼¶²Ëµ¥
+		case RIGHT:  //ROLLå‘å³
+			gotoNextMenu();//è¿›å…¥ä¸‹ä¸€çº§èœå•
 			break;
 			
-		case LEFT:  //ROLLÏò×ó
-			gotoLastMenu();//½øÈëÉÏÒ»¼¶²Ëµ¥
+		case LEFT:  //ROLLå‘å·¦
+			gotoLastMenu();//è¿›å…¥ä¸Šä¸€çº§èœå•
 			break;
 		
 		default :break;
 	}
 	
 	keyState = getKeyState();
-	/*°´ÏÂÒ¡¸Ë¼üÖ´ĞĞ²Ëµ¥¶ÔÓ¦µÄ¶¯×÷*/
+	/*æŒ‰ä¸‹æ‘‡æ†é”®æ‰§è¡Œèœå•å¯¹åº”çš„åŠ¨ä½œ*/
 	if(keyState == KEY_J2_SHORT_PRESS)
 	{	
 		if(CurItem->Function != NULL)
@@ -256,13 +256,13 @@ void Menu_Run(void)
 			CurItem->Function();
 		}
 	}
-	/*³¬Ê±ÍË³ö²Ëµ¥*/
+	/*è¶…æ—¶é€€å‡ºèœå•*/
 	if(timeout++ > 100)
 	{
 		timeout = 0;
 		if(CurItem->parentMenu != NULL)
 		{
-			//»Ö¸´Ä¬ÈÏÑ¡ÖĞ
+			//æ¢å¤é»˜è®¤é€‰ä¸­
 			CurItem->isSelect = false;
 			CurItem = CurMenu + selected;
 			CurItem->isSelect = true;

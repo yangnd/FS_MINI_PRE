@@ -6,16 +6,16 @@
 
 #define BUTTON_RADIUS  8
 
-//µÃµ½×Ö·û´®µÄ³¤¶È£¨×Ö·ûÎª6*12£©
+//å¾—åˆ°å­—ç¬¦ä¸²çš„é•¿åº¦ï¼ˆå­—ç¬¦ä¸º6*12ï¼‰
 static uint16_t getBtnStringlen(uint8_t *str)
 {
 	uint16_t strlenth=0;
-	strlenth=strlen((const char*)str);//×Ö½ÚÊı
-	strlenth*=6;//Ò»¸ö×Ö½ÚË®Æ½6¸öµã(12x12ºº×Ö)
+	strlenth=strlen((const char*)str);//å­—èŠ‚æ•°
+	strlenth*=6;//ä¸€ä¸ªå­—èŠ‚æ°´å¹³6ä¸ªç‚¹(12x12æ±‰å­—)
 	return strlenth;
 }
 
-//ÉèÖÃ°´Å¥µÄ×´Ì¬
+//è®¾ç½®æŒ‰é’®çš„çŠ¶æ€
 void GUI_Button_Selected(Button_Typedef *btn,uint8_t state)
 {
 	if(btn->height<14) return;
@@ -25,7 +25,7 @@ void GUI_Button_Selected(Button_Typedef *btn,uint8_t state)
 	btn->state = state;
 	if(btn->state)
 	{
-		//Ìî³ä°´Å¥
+		//å¡«å……æŒ‰é’®
 		GUI_FloodFill(btn->x + BUTTON_RADIUS,btn->y + BUTTON_RADIUS, 1);
 		show_str(btn->x+(btn->width-getBtnStringlen(btn->title))/2, btn->y+(btn->height-12)/2, btn->title, 12,12,0);
 	}
@@ -45,7 +45,7 @@ void GUI_Button_Selected(Button_Typedef *btn,uint8_t state)
 		GUI_Arc4(btn->x+BUTTON_RADIUS, btn->y+ btn->height-1-BUTTON_RADIUS, BUTTON_RADIUS,2, 1);	
 		GUI_Line(btn->x+btn->width-1, btn->y+BUTTON_RADIUS, btn->x+btn->width-1,  btn->y+btn->height-1-BUTTON_RADIUS,1);			 
 
-		//ÏÔÊ¾×Ö·û
+		//æ˜¾ç¤ºå­—ç¬¦
 		show_str(btn->x+(btn->width-getBtnStringlen(btn->title))/2, btn->y+(btn->height-12)/2, btn->title, 12,12,1);
 	}
 }
@@ -53,7 +53,7 @@ void GUI_Button_Selected(Button_Typedef *btn,uint8_t state)
 
 
 
-//»­Ò»¸ö°´Å¥
+//ç”»ä¸€ä¸ªæŒ‰é’®
 void GUI_DrawButton(Button_Typedef *btn)
 {
 	if(btn->height<14) return;
@@ -75,7 +75,7 @@ void GUI_DrawButton(Button_Typedef *btn)
 
 	if(btn->state)
 	{
-		//Ìî³ä°´Å¥
+		//å¡«å……æŒ‰é’®
 		GUI_FloodFill(btn->x + BUTTON_RADIUS,btn->y + BUTTON_RADIUS, 1);
 		show_str(btn->x + (btn->width-getBtnStringlen(btn->title))/2, btn->y + (btn->height-12)/2,	btn->title, 12,12,0);
 	}
@@ -85,7 +85,7 @@ void GUI_DrawButton(Button_Typedef *btn)
 	}
 };
 
-//É¾³ı°´Å¥
+//åˆ é™¤æŒ‰é’®
 void GUI_ButtonDelete(Button_Typedef *btn)
 {
 	GUI_RectangleFill(btn->x, btn->y, btn->x+btn->width-1,  btn->y +btn->height-1, 0);
@@ -100,18 +100,18 @@ Button_Typedef button={
 1
 };
 
-//²âÊÔ°´Å¥
+//æµ‹è¯•æŒ‰é’®
 void test_Button(void)
 {
 	GUI_DrawButton(&button);
 	button.title = "set";
 	button.x = 60;
 	GUI_DrawButton(&button);
-	GUI_Refresh();								//Ë¢ĞÂÆÁÄ»
+	GUI_Refresh();								//åˆ·æ–°å±å¹•
 	delay_ms(2000);
 
 	GUI_Button_Selected(&button,0);
-	GUI_Refresh();								//Ë¢ĞÂÆÁÄ»
+	GUI_Refresh();								//åˆ·æ–°å±å¹•
 	delay_ms(2000);	
 	GUI_ButtonDelete(&button);
 }

@@ -8,7 +8,7 @@
 ********************************************************************************/
 #define PRESSED		0
 #define RELEASED	1
-//°´¼ü×´Ì¬
+//æŒ‰é”®çŠ¶æ€
 #define KEY_L_SHORT_PRESS	1	
 #define KEY_L_LONG_PRESS	2
 #define KEY_R_SHORT_PRESS	3	

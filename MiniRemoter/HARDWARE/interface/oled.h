@@ -11,10 +11,10 @@
 #define OLED_RST 	PBout(14) 	
 #define OLED_RS  	PBout(12)
 
-#define OLED_CMD  0	//Ğ´ÃüÁî
-#define OLED_DATA 1	//Ğ´Êı¾İ
+#define OLED_CMD  0	//å†™å‘½ä»¤
+#define OLED_DATA 1	//å†™æ•°æ®
 
-//OLED¿ØÖÆÓÃº¯Êı
+//OLEDæ§åˆ¶ç”¨å‡½æ•°
 void oled_wr_byte(u8 dat,u8 cmd);	    
 void oled_displayON(void);
 void oled_displayOFF(void);

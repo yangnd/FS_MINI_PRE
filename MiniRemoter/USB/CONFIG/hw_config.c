@@ -17,60 +17,60 @@
 #include "queue.h"
 
 //////////////////////////////////////////////////////////////////////////////////	 
-//±¾³ÌĞòÖ»¹©Ñ§Ï°Ê¹ÓÃ£¬Î´¾­×÷ÕßĞí¿É£¬²»µÃÓÃÓÚÆäËüÈÎºÎÓÃÍ¾
-//ALIENTEKÕ½½¢STM32¿ª·¢°åV3
-//USB-hw_config ´úÂë	   
-//ÕıµãÔ­×Ó@ALIENTEK
-//¼¼ÊõÂÛÌ³:www.openedv.com
-//´´½¨ÈÕÆÚ:2015/1/28
-//°æ±¾£ºV1.0
-//°æÈ¨ËùÓĞ£¬µÁ°æ±Ø¾¿¡£
-//Copyright(C) ¹ãÖİÊĞĞÇÒíµç×Ó¿Æ¼¼ÓĞÏŞ¹«Ë¾ 2009-2019
+//æœ¬ç¨‹åºåªä¾›å­¦ä¹ ä½¿ç”¨ï¼Œæœªç»ä½œè€…è®¸å¯ï¼Œä¸å¾—ç”¨äºå…¶å®ƒä»»ä½•ç”¨é€”
+//ALIENTEKæˆ˜èˆ°STM32å¼€å‘æ¿V3
+//USB-hw_config ä»£ç 	   
+//æ­£ç‚¹åŸå­@ALIENTEK
+//æŠ€æœ¯è®ºå›:www.openedv.com
+//åˆ›å»ºæ—¥æœŸ:2015/1/28
+//ç‰ˆæœ¬ï¼šV1.0
+//ç‰ˆæƒæ‰€æœ‰ï¼Œç›—ç‰ˆå¿…ç©¶ã€‚
+//Copyright(C) å¹¿å·å¸‚æ˜Ÿç¿¼ç”µå­ç§‘æŠ€æœ‰é™å…¬å¸ 2009-2019
 //All rights reserved									  
 ////////////////////////////////////////////////////////////////////////////////// 
  
-_usb_usart_fifo uu_txfifo;					//USB´®¿Ú·¢ËÍFIFO½á¹¹Ìå
-_usb_usart_fifo uu_rxfifo;					//USB´®¿Ú·¢ËÍFIFO½á¹¹Ìå
+_usb_usart_fifo uu_txfifo;					//USBä¸²å£å‘é€FIFOç»“æ„ä½“
+_usb_usart_fifo uu_rxfifo;					//USBä¸²å£å‘é€FIFOç»“æ„ä½“
 
-u8  USART_PRINTF_Buffer[USB_USART_REC_LEN];	//usb_printf·¢ËÍ»º³åÇø
+u8  USART_PRINTF_Buffer[USB_USART_REC_LEN];	//usb_printfå‘é€ç¼“å†²åŒº
 
-extern LINE_CODING linecoding;				//USBĞéÄâ´®¿ÚÅäÖÃĞÅÏ¢
-static xQueueHandle usbDataDelivery;		/*USBĞéÄâ´®¿ÚÊı¾İ½ÓÊÕ¶ÓÁĞ*/
+extern LINE_CODING linecoding;				//USBè™šæ‹Ÿä¸²å£é…ç½®ä¿¡æ¯
+static xQueueHandle usbDataDelivery;		/*USBè™šæ‹Ÿä¸²å£æ•°æ®æ¥æ”¶é˜Ÿåˆ—*/
 
 /////////////////////////////////////////////////////////////////////////////////
-//¸÷USBÀı³ÌÍ¨ÓÃ²¿·Ö´úÂë,ST¸÷¸÷USBÀı³Ì,´Ë²¿·Ö´úÂë¶¼¿ÉÒÔ¹²ÓÃ.
-//´Ë²¿·Ö´úÂëÒ»°ã²»ĞèÒªĞŞ¸Ä!
+//å„USBä¾‹ç¨‹é€šç”¨éƒ¨åˆ†ä»£ç ,STå„å„USBä¾‹ç¨‹,æ­¤éƒ¨åˆ†ä»£ç éƒ½å¯ä»¥å…±ç”¨.
+//æ­¤éƒ¨åˆ†ä»£ç ä¸€èˆ¬ä¸éœ€è¦ä¿®æ”¹!
 
-//USB»½ĞÑÖĞ¶Ï·şÎñº¯Êı
+//USBå”¤é†’ä¸­æ–­æœåŠ¡å‡½æ•°
 void USBWakeUp_IRQHandler(void) 
 {
-	EXTI_ClearITPendingBit(EXTI_Line18);//Çå³ıUSB»½ĞÑÖĞ¶Ï¹ÒÆğÎ»
+	EXTI_ClearITPendingBit(EXTI_Line18);//æ¸…é™¤USBå”¤é†’ä¸­æ–­æŒ‚èµ·ä½
 } 
 
-//USBÖĞ¶Ï´¦Àíº¯Êı
+//USBä¸­æ–­å¤„ç†å‡½æ•°
 void USB_LP_CAN1_RX0_IRQHandler(void) 
 {
 	USB_Istr();
 } 
 
-//USBÊ±ÖÓÅäÖÃº¯Êı,USBclk=48Mhz@HCLK=72Mhz
+//USBæ—¶é’Ÿé…ç½®å‡½æ•°,USBclk=48Mhz@HCLK=72Mhz
 void Set_USBClock(void)
 {
 	RCC_USBCLKConfig(RCC_USBCLKSource_PLLCLK_1Div5);//USBclk=PLLclk/1.5=48Mhz	
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USB, ENABLE);	 //USBÊ±ÖÓÊ¹ÄÜ		 
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USB, ENABLE);	 //USBæ—¶é’Ÿä½¿èƒ½		 
 } 
 
-//USB½øÈëµÍ¹¦ºÄÄ£Ê½
-//µ±USB½øÈësuspendÄ£Ê½Ê±,MCU½øÈëµÍ¹¦ºÄÄ£Ê½
-//Ğè×ÔĞĞÌí¼ÓµÍ¹¦ºÄ´úÂë(±ÈÈç¹ØÊ±ÖÓµÈ)
+//USBè¿›å…¥ä½åŠŸè€—æ¨¡å¼
+//å½“USBè¿›å…¥suspendæ¨¡å¼æ—¶,MCUè¿›å…¥ä½åŠŸè€—æ¨¡å¼
+//éœ€è‡ªè¡Œæ·»åŠ ä½åŠŸè€—ä»£ç (æ¯”å¦‚å…³æ—¶é’Ÿç­‰)
 void Enter_LowPowerMode(void)
 {
  	//printf("usb enter low power mode\r\n");
 	bDeviceState=SUSPENDED;
 } 
 
-//USBÍË³öµÍ¹¦ºÄÄ£Ê½
-//ÓÃ»§¿ÉÒÔ×ÔĞĞÌí¼ÓÏà¹Ø´úÂë(±ÈÈçÖØĞÂÅäÖÃÊ±ÖÓµÈ)
+//USBé€€å‡ºä½åŠŸè€—æ¨¡å¼
+//ç”¨æˆ·å¯ä»¥è‡ªè¡Œæ·»åŠ ç›¸å…³ä»£ç (æ¯”å¦‚é‡æ–°é…ç½®æ—¶é’Ÿç­‰)
 void Leave_LowPowerMode(void)
 {
 	DEVICE_INFO *pInfo=&Device_Info;
@@ -79,7 +79,7 @@ void Leave_LowPowerMode(void)
 	else bDeviceState = ATTACHED; 
 } 
 
-//USBÖĞ¶ÏÅäÖÃ
+//USBä¸­æ–­é…ç½®
 void USB_Interrupts_Config(void)
 { 
 	NVIC_InitTypeDef NVIC_InitStructure;
@@ -88,28 +88,28 @@ void USB_Interrupts_Config(void)
  
 	/* Configure the EXTI line 18 connected internally to the USB IP */
 	EXTI_ClearITPendingBit(EXTI_Line18);
-											  //  ¿ªÆôÏß18ÉÏµÄÖĞ¶Ï
+											  //  å¼€å¯çº¿18ä¸Šçš„ä¸­æ–­
 	EXTI_InitStructure.EXTI_Line = EXTI_Line18; // USB resume from suspend mode
-	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;	//line 18ÉÏÊÂ¼şÉÏÉı½µÑØ´¥·¢
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;	//line 18ä¸Šäº‹ä»¶ä¸Šå‡é™æ²¿è§¦å‘
 	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
 	EXTI_Init(&EXTI_InitStructure); 	 
 
 	/* Enable the USB interrupt */
-	NVIC_InitStructure.NVIC_IRQChannel = USB_LP_CAN1_RX0_IRQn;	//×é2£¬ÓÅÏÈ¼¶´ÎÖ® 
+	NVIC_InitStructure.NVIC_IRQChannel = USB_LP_CAN1_RX0_IRQn;	//ç»„2ï¼Œä¼˜å…ˆçº§æ¬¡ä¹‹ 
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 6;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 	
 	/* Enable the USB Wake-up interrupt */
-	NVIC_InitStructure.NVIC_IRQChannel = USBWakeUp_IRQn;   //×é2£¬ÓÅÏÈ¼¶×î¸ß	
+	NVIC_InitStructure.NVIC_IRQChannel = USBWakeUp_IRQn;   //ç»„2ï¼Œä¼˜å…ˆçº§æœ€é«˜	
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 6;
 	NVIC_Init(&NVIC_InitStructure);   
 }	
 
-//USB½Ó¿ÚÅäÖÃ(ÅäÖÃ1.5KÉÏÀ­µç×è,Õ½½¢V3²»ĞèÒªÅäÖÃ,ºãÉÏÀ­)
-//NewState:DISABLE,²»ÉÏÀ­
-//         ENABLE,ÉÏÀ­
+//USBæ¥å£é…ç½®(é…ç½®1.5Kä¸Šæ‹‰ç”µé˜»,æˆ˜èˆ°V3ä¸éœ€è¦é…ç½®,æ’ä¸Šæ‹‰)
+//NewState:DISABLE,ä¸ä¸Šæ‹‰
+//         ENABLE,ä¸Šæ‹‰
 void USB_Cable_Config (FunctionalState NewState)
 { 
 //	if (NewState!=DISABLE
@@ -118,24 +118,24 @@ void USB_Cable_Config (FunctionalState NewState)
 //		printf("usb pull up disable\r\n"); 
 }
 
-//USBÊ¹ÄÜÁ¬½Ó/¶ÏÏß
-//enable:0,¶Ï¿ª
-//       1,ÔÊĞíÁ¬½Ó	   
+//USBä½¿èƒ½è¿æ¥/æ–­çº¿
+//enable:0,æ–­å¼€
+//       1,å…è®¸è¿æ¥	   
 void USB_Port_Set(u8 enable)
 {
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);    //Ê¹ÄÜPORTAÊ±ÖÓ		 
-	if(enable)_SetCNTR(_GetCNTR()&(~(1<<1)));//ÍË³ö¶ÏµçÄ£Ê½
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);    //ä½¿èƒ½PORTAæ—¶é’Ÿ		 
+	if(enable)_SetCNTR(_GetCNTR()&(~(1<<1)));//é€€å‡ºæ–­ç”µæ¨¡å¼
 	else
 	{	  
-		_SetCNTR(_GetCNTR()|(1<<1));  // ¶ÏµçÄ£Ê½
+		_SetCNTR(_GetCNTR()|(1<<1));  // æ–­ç”µæ¨¡å¼
 		GPIOA->CRH&=0XFFF00FFF;
 		GPIOA->CRH|=0X00033000;
 		PAout(12)=0;	    		  
 	}
 }  
 
-//»ñÈ¡STM32µÄÎ¨Ò»ID
-//ÓÃÓÚUSBÅäÖÃĞÅÏ¢
+//è·å–STM32çš„å”¯ä¸€ID
+//ç”¨äºUSBé…ç½®ä¿¡æ¯
 void Get_SerialNum(void)
 {
 	u32 Device_Serial0, Device_Serial1, Device_Serial2;
@@ -150,10 +150,10 @@ void Get_SerialNum(void)
 	}
 } 
 
-//½«32Î»µÄÖµ×ª»»³Éunicode.
-//value,Òª×ª»»µÄÖµ(32bit)
-//pbuf:´æ´¢µØÖ·
-//len:Òª×ª»»µÄ³¤¶È
+//å°†32ä½çš„å€¼è½¬æ¢æˆunicode.
+//value,è¦è½¬æ¢çš„å€¼(32bit)
+//pbuf:å­˜å‚¨åœ°å€
+//len:è¦è½¬æ¢çš„é•¿åº¦
 void IntToUnicode (u32 value , u8 *pbuf , u8 len)
 {
 	u8 idx = 0;
@@ -173,11 +173,11 @@ void IntToUnicode (u32 value , u8 *pbuf , u8 len)
 }
 /////////////////////////////////////////////////////////////////////////////////
  
-//USB COM¿ÚµÄÅäÖÃĞÅÏ¢,Í¨¹ı´Ëº¯Êı´òÓ¡³öÀ´. 
+//USB COMå£çš„é…ç½®ä¿¡æ¯,é€šè¿‡æ­¤å‡½æ•°æ‰“å°å‡ºæ¥. 
 bool USART_Config(void)
 {
-	uu_txfifo.readptr=0;	//Çå¿Õ¶ÁÖ¸Õë
-	uu_txfifo.writeptr=0;	//Çå¿ÕĞ´Ö¸Õë
+	uu_txfifo.readptr=0;	//æ¸…ç©ºè¯»æŒ‡é’ˆ
+	uu_txfifo.writeptr=0;	//æ¸…ç©ºå†™æŒ‡é’ˆ
 	uu_rxfifo.readptr=0;	
 	uu_rxfifo.writeptr=0;
 	//printf("linecoding.format:%d\r\n",linecoding.format);
@@ -187,9 +187,9 @@ bool USART_Config(void)
 	return (TRUE);
 }
  
-//´¦Àí´ÓUSBĞéÄâ´®¿Ú½ÓÊÕµ½µÄÊı¾İ
-//databuffer:Êı¾İ»º´æÇø
-//Nb_bytes:½ÓÊÕµ½µÄ×Ö½ÚÊı.
+//å¤„ç†ä»USBè™šæ‹Ÿä¸²å£æ¥æ”¶åˆ°çš„æ•°æ®
+//databuffer:æ•°æ®ç¼“å­˜åŒº
+//Nb_bytes:æ¥æ”¶åˆ°çš„å­—èŠ‚æ•°.
 void USB_To_USART_Send_Data(u8* data_buffer, u8 Nb_bytes)
 { 
 //	u16 i;
@@ -199,7 +199,7 @@ void USB_To_USART_Send_Data(u8* data_buffer, u8 Nb_bytes)
 //		{
 //			uu_rxfifo.buffer[uu_txfifo.writeptr]=data_buffer[i];
 //			uu_rxfifo.writeptr++;
-//			if(uu_rxfifo.writeptr==USB_USART_TXFIFO_SIZE)//³¬¹ıbuf´óĞ¡ÁË,¹éÁã.
+//			if(uu_rxfifo.writeptr==USB_USART_TXFIFO_SIZE)//è¶…è¿‡bufå¤§å°äº†,å½’é›¶.
 //			{
 //				uu_rxfifo.writeptr=0;
 //			} 
@@ -213,12 +213,12 @@ void USB_To_USART_Send_Data(u8* data_buffer, u8 Nb_bytes)
 	}
 } 
 
-//·¢ËÍÒ»¸ö×Ö½ÚÊı¾İµ½USBĞéÄâ´®¿Ú
+//å‘é€ä¸€ä¸ªå­—èŠ‚æ•°æ®åˆ°USBè™šæ‹Ÿä¸²å£
 void USB_SendData(u8 data)
 {
 	uu_txfifo.buffer[uu_txfifo.writeptr]=data;
 	uu_txfifo.writeptr++;
-	if(uu_txfifo.writeptr==USB_USART_TXFIFO_SIZE)//³¬¹ıbuf´óĞ¡ÁË,¹éÁã.
+	if(uu_txfifo.writeptr==USB_USART_TXFIFO_SIZE)//è¶…è¿‡bufå¤§å°äº†,å½’é›¶.
 	{
 		uu_txfifo.writeptr=0;
 	} 
@@ -228,14 +228,14 @@ void usbsendData(u8* data, u16 length)
 {
 	u16 i,j;
 	i = length;
-	for(j=0;j<i;j++)//Ñ­»··¢ËÍÊı¾İ
+	for(j=0;j<i;j++)//å¾ªç¯å‘é€æ•°æ®
 	{
 		USB_SendData(data[j]); 
 	}
 }
 
-//usbĞéÄâ´®¿Ú,printf º¯Êı
-//È·±£Ò»´Î·¢ËÍÊı¾İ²»³¬USB_USART_REC_LEN×Ö½Ú
+//usbè™šæ‹Ÿä¸²å£,printf å‡½æ•°
+//ç¡®ä¿ä¸€æ¬¡å‘é€æ•°æ®ä¸è¶…USB_USART_REC_LENå­—èŠ‚
 void usb_printf(char* fmt,...)  
 {  
 	u16 i,j;
@@ -243,22 +243,22 @@ void usb_printf(char* fmt,...)
 	va_start(ap,fmt);
 	vsprintf((char*)USART_PRINTF_Buffer,fmt,ap);
 	va_end(ap);
-	i=strlen((const char*)USART_PRINTF_Buffer);//´Ë´Î·¢ËÍÊı¾İµÄ³¤¶È
-	for(j=0;j<i;j++)//Ñ­»··¢ËÍÊı¾İ
+	i=strlen((const char*)USART_PRINTF_Buffer);//æ­¤æ¬¡å‘é€æ•°æ®çš„é•¿åº¦
+	for(j=0;j<i;j++)//å¾ªç¯å‘é€æ•°æ®
 	{
 		USB_SendData(USART_PRINTF_Buffer[j]); 
 	}
 }
 
-//usbĞéÄâ´®¿Ú³õÊ¼»¯
+//usbè™šæ‹Ÿä¸²å£åˆå§‹åŒ–
 void usb_vcp_init(void)
 {
 	Set_USBClock();   
  	USB_Interrupts_Config();    
  	USB_Init();
-	USB_Port_Set(0); 	//USBÏÈ¶Ï¿ª
+	USB_Port_Set(0); 	//USBå…ˆæ–­å¼€
 	delay_ms(100);
-	USB_Port_Set(1);	//USBÔÙ´ÎÁ¬½Ó
+	USB_Port_Set(1);	//USBå†æ¬¡è¿æ¥
 	
 	usbDataDelivery = xQueueCreate(128, sizeof(uint8_t));
 }

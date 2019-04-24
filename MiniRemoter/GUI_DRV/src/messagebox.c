@@ -5,12 +5,12 @@
 #include "delay.h"
 #include "text.h"
 
-//µÃµ½×Ö·û´®µÄ³¤¶È
+//å¾—åˆ°å­—ç¬¦ä¸²çš„é•¿åº¦
 uint16_t getMessageBoxStringlen(uint8_t *str)
 {
 	uint16_t strlenth=0;
-	strlenth=strlen((const char*)str);//×Ö½ÚÊı
-	strlenth*=6;//Ò»¸ö×Ö½ÚË®Æ½6¸öµã(12x12ºº×Ö)
+	strlenth=strlen((const char*)str);//å­—èŠ‚æ•°
+	strlenth*=6;//ä¸€ä¸ªå­—èŠ‚æ°´å¹³6ä¸ªç‚¹(12x12æ±‰å­—)
 	return strlenth;
 }
 
@@ -33,49 +33,49 @@ Button_Typedef btn_cancel_messagebox={
 };
 
 
-//»­ÏûÏ¢¿ò
+//ç”»æ¶ˆæ¯æ¡†
 uint8_t GUI_MessageBoxDraw(MessageBox_Typedef* messagebox)
 {
-	/* ²ÎÊı¹ıÂË£¬Èô´°¿ÚÆğ³ö·¶Î§£¬Ôò·µ»Ø0 */
-	if( ( (messagebox->with)<20 ) || ( (messagebox->hight)<20 ) ) return(0);// ¿í¶È¡¢¸ß¶È¼ì²é£¬ÏŞÖÆ×îĞ¡´°¿Ú
-	if( (messagebox->x + messagebox->with ) > GUI_LCM_XMAX ) return(0);		// ´°¿Ú¿í¶ÈÊÇ·ñÒç³ö
-	if( (messagebox->y + messagebox->hight ) > GUI_LCM_YMAX ) return(0);	// ´°¿Ú¸ß¶ÈÊÇ·ñÒç³ö
+	/* å‚æ•°è¿‡æ»¤ï¼Œè‹¥çª—å£èµ·å‡ºèŒƒå›´ï¼Œåˆ™è¿”å›0 */
+	if( ( (messagebox->with)<20 ) || ( (messagebox->hight)<20 ) ) return(0);// å®½åº¦ã€é«˜åº¦æ£€æŸ¥ï¼Œé™åˆ¶æœ€å°çª—å£
+	if( (messagebox->x + messagebox->with ) > GUI_LCM_XMAX ) return(0);		// çª—å£å®½åº¦æ˜¯å¦æº¢å‡º
+	if( (messagebox->y + messagebox->hight ) > GUI_LCM_YMAX ) return(0);	// çª—å£é«˜åº¦æ˜¯å¦æº¢å‡º
 
-	/* ¿ªÊ¼»­´°¿Ú */
-	GUI_RectangleFill(messagebox->x, messagebox->y, messagebox->x + messagebox->with - 1, messagebox->y + messagebox->hight - 1, 0);//ÇåÆÁ
-	GUI_Rectangle(messagebox->x, messagebox->y, messagebox->x + messagebox->with - 1, messagebox->y + messagebox->hight - 1, 1);// »­´°¿Ú(±ß¿ò)
-	GUI_HLine(messagebox->x, messagebox->y + 14, messagebox->x + messagebox->with - 1, disp_color);		// »­±êÌâÏÂ±ß¿ò	 
+	/* å¼€å§‹ç”»çª—å£ */
+	GUI_RectangleFill(messagebox->x, messagebox->y, messagebox->x + messagebox->with - 1, messagebox->y + messagebox->hight - 1, 0);//æ¸…å±
+	GUI_Rectangle(messagebox->x, messagebox->y, messagebox->x + messagebox->with - 1, messagebox->y + messagebox->hight - 1, 1);// ç”»çª—å£(è¾¹æ¡†)
+	GUI_HLine(messagebox->x, messagebox->y + 14, messagebox->x + messagebox->with - 1, disp_color);		// ç”»æ ‡é¢˜ä¸‹è¾¹æ¡†	 
 
-	//Ìî³ä±êÌâÀ¸
+	//å¡«å……æ ‡é¢˜æ 
 	GUI_RectangleFill(messagebox->x, messagebox->y, messagebox->x + messagebox->with - 1, messagebox->y + 14-1, 1);
 	if(getMessageBoxStringlen(messagebox->title)>(messagebox->with-2))
 	{  	
-		return 0;//ÏÔÊ¾µÄ±êÌâ³¬¹ıÁË´°ÌåµÄ¿í¶È
+		return 0;//æ˜¾ç¤ºçš„æ ‡é¢˜è¶…è¿‡äº†çª—ä½“çš„å®½åº¦
 	} 
-	//ÏÔÊ¾±êÌâ
+	//æ˜¾ç¤ºæ ‡é¢˜
 	show_str_mid(messagebox->x, messagebox->y+1,messagebox->title,12,12,0,messagebox->with);
 
 
-	//È·¶¨°´Å¥
+	//ç¡®å®šæŒ‰é’®
 	btn_ok_messagebox.state = 0;
 	btn_ok_messagebox.title = messagebox->ok;
 	btn_ok_messagebox.x = messagebox->x+5;
 	btn_ok_messagebox.y = messagebox->y+messagebox->hight-1 -btn_ok_messagebox.height -3;
 	GUI_DrawButton(&btn_ok_messagebox);
 
-	//È¡Ïû°´Å¥	  
+	//å–æ¶ˆæŒ‰é’®	  
 	btn_cancel_messagebox.state = 1;
 	btn_cancel_messagebox.title = messagebox->cancel;
 	btn_cancel_messagebox.x = messagebox->x+ messagebox->with -btn_cancel_messagebox.width-1-5;
 	btn_cancel_messagebox.y = messagebox->y+messagebox->hight-1 -btn_cancel_messagebox.height-3;	 
 	GUI_DrawButton(&btn_cancel_messagebox); 
 
-	//ÏÔÊ¾ÏûÏ¢
+	//æ˜¾ç¤ºæ¶ˆæ¯
 	show_str(messagebox->x+6, messagebox->y+1+16,messagebox->msg, 12,12,1);
 	return(1);
 }
 
-//ÉèÖÃ°´Å¥×´Ì¬
+//è®¾ç½®æŒ‰é’®çŠ¶æ€
 void GUI_MessageBoxButtonStatus(MessageBox_Typedef* messagebox, uint8_t status)
 {	
 	uint8_t ok_status;
@@ -90,28 +90,28 @@ void GUI_MessageBoxButtonStatus(MessageBox_Typedef* messagebox, uint8_t status)
 		ok_status =0;
 		cancel_status  =1;	
 	}
-	//È·¶¨°´Å¥
+	//ç¡®å®šæŒ‰é’®
 	GUI_Button_Selected(&btn_ok_messagebox,ok_status);
 
-	//È¡Ïû°´Å¥	  
+	//å–æ¶ˆæŒ‰é’®	  
 	GUI_Button_Selected(&btn_cancel_messagebox,cancel_status);
 
 }
 
-//µÃµ½µ±Ç°Ñ¡Ôñ½á¹û
+//å¾—åˆ°å½“å‰é€‰æ‹©ç»“æœ
 uint8_t GUI_MessageBoxResult(MessageBox_Typedef* messagebox)
 {
 	return btn_ok_messagebox.state;	
 }
 
-//É¾³ıÏûÏ¢¿ò
+//åˆ é™¤æ¶ˆæ¯æ¡†
 uint8_t GUI_MessageBoxDelete(MessageBox_Typedef* messagebox)
 {	
-   if( ( (messagebox->with)<20 ) || ( (messagebox->hight)<20 ) ) return(0);		// ¿í¶È¡¢¸ß¶È¼ì²é£¬ÏŞÖÆ×îĞ¡´°¿Ú
-   if( (messagebox->x + messagebox->with ) > GUI_LCM_XMAX ) return(0);			// ´°¿Ú¿í¶ÈÊÇ·ñÒç³ö
-   if( (messagebox->y + messagebox->hight ) > GUI_LCM_YMAX ) return(0);			// ´°¿Ú¸ß¶ÈÊÇ·ñÒç³ö
+   if( ( (messagebox->with)<20 ) || ( (messagebox->hight)<20 ) ) return(0);		// å®½åº¦ã€é«˜åº¦æ£€æŸ¥ï¼Œé™åˆ¶æœ€å°çª—å£
+   if( (messagebox->x + messagebox->with ) > GUI_LCM_XMAX ) return(0);			// çª—å£å®½åº¦æ˜¯å¦æº¢å‡º
+   if( (messagebox->y + messagebox->hight ) > GUI_LCM_YMAX ) return(0);			// çª—å£é«˜åº¦æ˜¯å¦æº¢å‡º
     
-   /* ÏûÒş´°¿Ú */
+   /* æ¶ˆéšçª—å£ */
    GUI_RectangleFill(messagebox->x, messagebox->y, messagebox->x + messagebox->with - 1, messagebox->y + messagebox->hight - 1, back_color);
    return(1);
 }
@@ -128,7 +128,7 @@ uint8_t GUI_MessageBoxDelete(MessageBox_Typedef* messagebox)
 //};
 
 
-////²âÊÔÏûÏ¢¿ò
+////æµ‹è¯•æ¶ˆæ¯æ¡†
 //void test_MessageBox(void)
 //{
 // GUI_MessageBoxDraw(&MessageBox);

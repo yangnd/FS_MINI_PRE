@@ -44,12 +44,12 @@ void setMaxThrottle_ui(void)
 	sprintf(str,"Save&Exit");
 	oled_showString(73,51,(u8*)str,6,12);
 	
-	if(keyState==KEY_R_SHORT_PRESS)	/*¶Ì°´KEY_R±£´æ²¢ÍË³ö*/
+	if(keyState==KEY_R_SHORT_PRESS)	/*çŸ­æŒ‰KEY_Rä¿å­˜å¹¶é€€å‡º*/
 	{
 		writeConfigParamToFlash();
 		setShow_ui(MAIN_UI);
 	}
-		else if(keyState == KEY_L_SHORT_PRESS)/*¶Ì°´KEY_LÍË³ö*/
+		else if(keyState == KEY_L_SHORT_PRESS)/*çŸ­æŒ‰KEY_Lé€€å‡º*/
 	{
 		setShow_ui(MAIN_UI);
 	}

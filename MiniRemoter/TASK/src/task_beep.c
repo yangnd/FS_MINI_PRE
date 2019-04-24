@@ -9,7 +9,7 @@
 ********************************************************************************/
 
 
-/*·äÃùÆ÷¶ÔÓ¦±¨¾¯µÄÑÓÊ±Ê±¼ä£¨ms£©*/
+/*èœ‚é¸£å™¨å¯¹åº”æŠ¥è­¦çš„å»¶æ—¶æ—¶é—´ï¼ˆmsï¼‰*/
 #define  TRIM			100
 #define  FLIP			50 
 #define  LOWPOWER		500
@@ -23,7 +23,7 @@ beepSeq_t beepAction[] =
 	{false, false, CANFLY},
 };
 
-#define  ACTION_NUM	(sizeof(beepAction)/sizeof(beepSeq_t))//¶¯×÷¸öÊı
+#define  ACTION_NUM	(sizeof(beepAction)/sizeof(beepSeq_t))//åŠ¨ä½œä¸ªæ•°
 
 
 static bool isInit;
@@ -31,12 +31,12 @@ static bool beepEnable;
 static TimerHandle_t beepTimer;
 enum beepAction currentRun;
 	
-/* ·äÃùÆ÷IO¿Ú³õÊ¼»¯ */
+/* èœ‚é¸£å™¨IOå£åˆå§‹åŒ– */
 static void beepIO_Init(void)
 {
 	GPIO_InitTypeDef  GPIO_InitStructure;
 	
- 	/* ³õÊ¼»¯·äÃùÆ÷(PC14) */
+ 	/* åˆå§‹åŒ–èœ‚é¸£å™¨(PC14) */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
@@ -61,7 +61,7 @@ static void runBeepseq(xTimerHandle xTimer)
 			break;
 		}
 	}
-	if(i == ACTION_NUM)/*µ±Ç°ÎŞ¶¯×÷ÔËĞĞ*/
+	if(i == ACTION_NUM)/*å½“å‰æ— åŠ¨ä½œè¿è¡Œ*/
 	{
 		beepEnable = false;
 	}

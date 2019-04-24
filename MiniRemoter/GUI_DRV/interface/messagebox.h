@@ -3,19 +3,19 @@
 
 #include "gui_config.h"
 
-/* ¶¨Òå´°¿ÚÊı¾İ½á¹¹ */
+/* å®šä¹‰çª—å£æ•°æ®ç»“æ„ */
 typedef  struct
 {  
-	uint32_t  x;		// ´°¿ÚÎ»ÖÃ(×óÉÏ½ÇµÄx×ø±ê)
-	uint32_t  y;		// ´°¿ÚÎ»ÖÃ(×óÉÏ½ÇµÄy×ø±ê)
+	uint32_t  x;		// çª—å£ä½ç½®(å·¦ä¸Šè§’çš„xåæ ‡)
+	uint32_t  y;		// çª—å£ä½ç½®(å·¦ä¸Šè§’çš„yåæ ‡)
 
-	uint32_t  with;		// ´°¿Ú¿í¶È
-	uint32_t  hight;	// ´°¿Ú¸ß¶È
+	uint32_t  with;		// çª—å£å®½åº¦
+	uint32_t  hight;	// çª—å£é«˜åº¦
 
-	uint8_t   *title;	// ¶¨Òå±êÌâÀ¸Ö¸Õë 
-	uint8_t   *msg;		//ÏûÏ¢
-	uint8_t   *ok;		//È·¶¨
-	uint8_t   *cancel;	//È¡Ïû
+	uint8_t   *title;	// å®šä¹‰æ ‡é¢˜æ æŒ‡é’ˆ 
+	uint8_t   *msg;		//æ¶ˆæ¯
+	uint8_t   *ok;		//ç¡®å®š
+	uint8_t   *cancel;	//å–æ¶ˆ
 } MessageBox_Typedef;
 
 

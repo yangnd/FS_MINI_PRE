@@ -10,54 +10,54 @@
 #define  LCD_HIGH		64
 
  const char* font1212_table = {
-"¿ØÖÆÄ£Ê½·ÉĞĞËÙ¶È·­¹öÊ¹ÄÜÒ¡¸ËĞ£×¼\
-Æ¥ÅäËÄÖáÓïÑÔÑ¡ÔñÖØÖÃÍË³öÀ©Õ¹¿éïw\
-L“u—UœÊİSÕZßx“ñ”U‰K¶¨¸ßÊÖ¶¯µã„Ó\
-ücÎŞÍ·ÓĞŸoî^µÍÖĞ¿ªÆô¹Ø±Õé_†¢êPé]\
-¼òÌåÎÄ·±Î´·¢ÏÖ£¡µÆ»·ÉãÏñ¹âÁ÷°l¬F\
-Ÿô­h”zÁ½¸öÒ»È¦ƒÉ‚€°´ÏÂ²½±£³Ö»ØÍê\
-³ÉÌáÊ¾£ºÒÑ¡­Í¨ĞÅÊ§°ÜÇëÏÈÒ£ºÍÔÙ¡£\
-”¡Õˆßb¹¦È·»Ö¸´ÎªÄ¬ÈÏÉè£¿´_ÍéÕJ\
-ÔOÈ¡ÏûÑÕÉ«²âÊÔ×ËÌ¬¸ĞÓ¦ÍÓÂİÉÁË¸¾¯\
-±¨µçÍ²ºôÎüË®îœyÔ‡‘B‘ªéW qˆóëŠ"
+"æ§åˆ¶æ¨¡å¼é£è¡Œé€Ÿåº¦ç¿»æ»šä½¿èƒ½æ‘‡æ†æ ¡å‡†\
+åŒ¹é…å››è½´è¯­è¨€é€‰æ‹©é‡ç½®é€€å‡ºæ‰©å±•å—é£›\
+æ»¾æ–æ¡¿æº–è»¸èªé¸æ“‡æ“´å¡Šå®šé«˜æ‰‹åŠ¨ç‚¹å‹•\
+é»æ— å¤´æœ‰ç„¡é ­ä½ä¸­å¼€å¯å…³é—­é–‹å•Ÿé—œé–‰\
+ç®€ä½“æ–‡ç¹æœªå‘ç°ï¼ç¯ç¯æ‘„åƒå…‰æµç™¼ç¾\
+ç‡ˆç’°æ”ä¸¤ä¸ªä¸€åœˆå…©å€‹æŒ‰ä¸‹æ­¥ä¿æŒå›å®Œ\
+æˆæç¤ºï¼šå·²â€¦é€šä¿¡å¤±è´¥è¯·å…ˆé¥å’Œå†ã€‚\
+æ•—è«‹é™åŠŸç¡®æ¢å¤ä¸ºé»˜è®¤è®¾ï¼Ÿç¢ºå¾©ç‚ºèª\
+è¨­å–æ¶ˆé¢œè‰²æµ‹è¯•å§¿æ€æ„Ÿåº”é™€èºé—ªçƒè­¦\
+æŠ¥ç”µç­’å‘¼å¸æ°´é¡æ¸¬è©¦æ…‹æ‡‰é–ƒçˆå ±é›»"
 };
  
  const char* font2424_table = {
-"¿ØËÄÒ£ßbÖáİS"
+"æ§å››é¥é™è½´è»¸"
 };
 
-//ÏÔÊ¾Ò»¸öÖ¸¶¨´óĞ¡µÄºº×Ö
-//x,y :ºº×ÖµÄ×ø±ê
-//font:ºº×ÖGBKÂë
-//f_w:×Ö¿í
-//f_h:×Ö¸ß
-//mode:0,Õı³£ÏÔÊ¾,1,µş¼ÓÏÔÊ¾
+//æ˜¾ç¤ºä¸€ä¸ªæŒ‡å®šå¤§å°çš„æ±‰å­—
+//x,y :æ±‰å­—çš„åæ ‡
+//font:æ±‰å­—GBKç 
+//f_w:å­—å®½
+//f_h:å­—é«˜
+//mode:0,æ­£å¸¸æ˜¾ç¤º,1,å åŠ æ˜¾ç¤º
 static void show_font(uint16_t x,uint16_t y,const uint8_t *font,uint8_t f_w,uint8_t f_h,uint8_t mode)
 {
 	const char* font_table;
 	uint16_t fontSeq;
 	uint8_t temp,t,t1;
 	uint16_t y0=y; 
-	uint8_t csize=(f_h/8+((f_h%8)?1:0))*f_w;//µÃµ½×ÔÓÉ·Ö±æ×Ö·ûËùÕ¼µÄ×Ö½ÚÊı 
+	uint8_t csize=(f_h/8+((f_h%8)?1:0))*f_w;//å¾—åˆ°è‡ªç”±åˆ†è¾¨å­—ç¬¦æ‰€å çš„å­—èŠ‚æ•° 
 
 	if(f_w==12 && f_h==12)
 		font_table = font1212_table;
 	else if(f_w==24 && f_h==24)
 		font_table = font2424_table;
-	else return;/*Ã»ÓĞµÄ×Ö¿â*/
-	for(fontSeq=0; fontSeq<strlen(font_table)/2; fontSeq++)/*¼ÆËãfont_table¶ÔÓ¦×Ö¿âµÄÊı×éÏÂ±ê*/
+	else return;/*æ²¡æœ‰çš„å­—åº“*/
+	for(fontSeq=0; fontSeq<strlen(font_table)/2; fontSeq++)/*è®¡ç®—font_tableå¯¹åº”å­—åº“çš„æ•°ç»„ä¸‹æ ‡*/
 	{
 		if(font_table[2*fontSeq]==font[0] && font_table[2*fontSeq+1]==font[1])
 			break;
 	}
-	if(fontSeq >= strlen(font_table)/2) return;/*font_tableÖĞÃ»ÓĞfont¸Ã×Ö*/
+	if(fontSeq >= strlen(font_table)/2) return;/*font_tableä¸­æ²¡æœ‰fontè¯¥å­—*/
 
 	for(t=0;t<csize;t++)
 	{   												   
 		if(f_w==12 && f_h==12)
-			temp = font_1212[fontSeq][t];/*µ÷ÓÃfont_1212×Ö¿â*/
+			temp = font_1212[fontSeq][t];/*è°ƒç”¨font_1212å­—åº“*/
 		else if(f_w==24 && f_h==24)
-			temp = font_2424[fontSeq][t];/*µ÷ÓÃfont_2424×Ö¿â*/
+			temp = font_2424[fontSeq][t];/*è°ƒç”¨font_2424å­—åº“*/
 		for(t1=0;t1<8;t1++)
 		{
 			if(temp&0x80)oled_drawPoint(x,y,mode);
@@ -73,60 +73,60 @@ static void show_font(uint16_t x,uint16_t y,const uint8_t *font,uint8_t f_w,uint
 		}  	 
 	}  
 }
-//ÔÚÖ¸¶¨Î»ÖÃ¿ªÊ¼ÏÔÊ¾Ò»¸ö×Ö·û´®	    
-//Ö§³Ö×Ô¶¯»»ĞĞ
-//(x,y):ÆğÊ¼×ø±ê
-//width,height:ÇøÓò
-//str  :×Ö·û´®
-//f_w:×Ö¿í
-//f_h:×Ö¸ß
-//mode:0,·Çµş¼Ó·½Ê½;1,µş¼Ó·½Ê½    	   		   
+//åœ¨æŒ‡å®šä½ç½®å¼€å§‹æ˜¾ç¤ºä¸€ä¸ªå­—ç¬¦ä¸²	    
+//æ”¯æŒè‡ªåŠ¨æ¢è¡Œ
+//(x,y):èµ·å§‹åæ ‡
+//width,height:åŒºåŸŸ
+//str  :å­—ç¬¦ä¸²
+//f_w:å­—å®½
+//f_h:å­—é«˜
+//mode:0,éå åŠ æ–¹å¼;1,å åŠ æ–¹å¼    	   		   
 void show_str(uint16_t x,uint16_t y,const uint8_t*str,uint8_t f_w,uint8_t f_h,uint8_t mode)
 {					
 	uint16_t x0=x;
 	uint16_t y0=y;							  	  
-    uint8_t bHz=0;     //×Ö·û»òÕßÖĞÎÄ  	    				    				  	  
-    while(*str!=0)//Êı¾İÎ´½áÊø
+    uint8_t bHz=0;     //å­—ç¬¦æˆ–è€…ä¸­æ–‡  	    				    				  	  
+    while(*str!=0)//æ•°æ®æœªç»“æŸ
     { 
         if(!bHz)
         {
-	        if(*str>0x80)bHz=1;//ÖĞÎÄ 
-	        else               //×Ö·û
+	        if(*str>0x80)bHz=1;//ä¸­æ–‡ 
+	        else               //å­—ç¬¦
 	        {      
-                if(x>(x0+LCD_WIDTH-f_h/2))//»»ĞĞ
+                if(x>(x0+LCD_WIDTH-f_h/2))//æ¢è¡Œ
 				{				   
 					y+=f_h;
 					x=x0;	   
 				}							    
-		        if(y>(y0+LCD_HIGH-f_h))break;//Ô½½ç·µ»Ø      
-		        if(*str==13)//»»ĞĞ·ûºÅ
+		        if(y>(y0+LCD_HIGH-f_h))break;//è¶Šç•Œè¿”å›      
+		        if(*str==13)//æ¢è¡Œç¬¦å·
 		        {         
 		            y+=f_h;
 					x=x0;
 		            str++; 
 		        }  
-		        else oled_showChar(x,y,*str,f_w/2,f_h,mode);//ÓĞĞ§²¿·ÖĞ´Èë 
+		        else oled_showChar(x,y,*str,f_w/2,f_h,mode);//æœ‰æ•ˆéƒ¨åˆ†å†™å…¥ 
 				str++; 
-		        x+=f_h/2; //×Ö·û,ÎªÈ«×ÖµÄÒ»°ë 
+		        x+=f_h/2; //å­—ç¬¦,ä¸ºå…¨å­—çš„ä¸€åŠ 
 	        }
-        }else//ÖĞÎÄ 
+        }else//ä¸­æ–‡ 
         {     
-            bHz=0;//ÓĞºº×Ö¿â    
-            if(x>(x0+LCD_WIDTH-f_h))//»»ĞĞ
+            bHz=0;//æœ‰æ±‰å­—åº“    
+            if(x>(x0+LCD_WIDTH-f_h))//æ¢è¡Œ
 			{	    
-				y+=f_h+2;//2ÎªĞĞ¼ä¾à
+				y+=f_h+2;//2ä¸ºè¡Œé—´è·
 				x=x0;		  
 			}
-	        if(y>(y0+LCD_HIGH-f_h))break;//Ô½½ç·µ»Ø  						     
-	        show_font(x,y,str,f_w,f_h,mode); //ÏÔÊ¾Õâ¸öºº×Ö,¿ÕĞÄÏÔÊ¾ 
+	        if(y>(y0+LCD_HIGH-f_h))break;//è¶Šç•Œè¿”å›  						     
+	        show_font(x,y,str,f_w,f_h,mode); //æ˜¾ç¤ºè¿™ä¸ªæ±‰å­—,ç©ºå¿ƒæ˜¾ç¤º 
 	        str+=2; 
-	        x+=f_h;//ÏÂÒ»¸öºº×ÖÆ«ÒÆ	    
+	        x+=f_h;//ä¸‹ä¸€ä¸ªæ±‰å­—åç§»	    
         }						 
     }   
 }  			 		 
-//ÔÚÖ¸¶¨¿í¶ÈµÄÖĞ¼äÏÔÊ¾×Ö·û´®
-//Èç¹û×Ö·û³¤¶È³¬¹ıÁËlen,ÔòÓÃShow_StrÏÔÊ¾
-//len:Ö¸¶¨ÒªÏÔÊ¾µÄ¿í¶È			  
+//åœ¨æŒ‡å®šå®½åº¦çš„ä¸­é—´æ˜¾ç¤ºå­—ç¬¦ä¸²
+//å¦‚æœå­—ç¬¦é•¿åº¦è¶…è¿‡äº†len,åˆ™ç”¨Show_Stræ˜¾ç¤º
+//len:æŒ‡å®šè¦æ˜¾ç¤ºçš„å®½åº¦			  
 void show_str_mid(uint16_t x,uint16_t y,const uint8_t*str,uint8_t f_w,uint8_t f_h,uint8_t mode,uint16_t len)
 {
 	uint16_t strlenth=0;

@@ -1,18 +1,18 @@
 #include "brake.h"
 
-//³õÊ¼»¯PF0/2/4ÎªÊä³ö¿Ú.²¢Ê¹ÄÜÕâÊ±ÖÓ
-//BRAKE IO³õÊ¼»¯
+//åˆå§‹åŒ–PF0/2/4ä¸ºè¾“å‡ºå£.å¹¶ä½¿èƒ½è¿™æ—¶é’Ÿ
+//BRAKE IOåˆå§‹åŒ–
 void BRAKE_Init(void)
 {
 
     GPIO_InitTypeDef GPIO_InitStructure;
 
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE); //Ê¹ÄÜPB,PE¶Ë¿ÚÊ±ÖÓ
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE); //ä½¿èƒ½PB,PEç«¯å£æ—¶é’Ÿ
 
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_2 | GPIO_Pin_4; //¶Ë¿ÚÅäÖÃ0/2/4
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;                    //ÍÆÍìÊä³ö
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;                   //IO¿ÚËÙ¶ÈÎª50MHz
-    GPIO_Init(GPIOF, &GPIO_InitStructure);                              //¸ù¾İÉè¶¨²ÎÊı³õÊ¼»¯GPIOF.0/2/4
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_2 | GPIO_Pin_4; //ç«¯å£é…ç½®0/2/4
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;                    //æ¨æŒ½è¾“å‡º
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;                   //IOå£é€Ÿåº¦ä¸º50MHz
+    GPIO_Init(GPIOF, &GPIO_InitStructure);                              //æ ¹æ®è®¾å®šå‚æ•°åˆå§‹åŒ–GPIOF.0/2/4
     BRAKE_EN = 0;
     BRAKE_IN1 = 0;
     BRAKE_IN2 = 0;

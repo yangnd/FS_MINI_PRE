@@ -3,17 +3,17 @@
 #include "adc.h"
 
 
-//Ò¡¸ËÖĞ¼äÈí¼şËÀÇøÖµ£¨ADCÖµ£©
+//æ‘‡æ†ä¸­é—´è½¯ä»¶æ­»åŒºå€¼ï¼ˆADCå€¼ï¼‰
 #define MID_DB_RH			150
 #define MID_DB_THROTTLE		150
 #define MID_DB_LH			150
 #define MID_DB_BREAK		150
 
 
-//Ò¡¸ËÉÏÏÂÁ¿³ÌËÀÇøÖµ£¨ADCÖµ£©
+//æ‘‡æ†ä¸Šä¸‹é‡ç¨‹æ­»åŒºå€¼ï¼ˆADCå€¼ï¼‰
 #define DB_RANGE			10
 
-//»ñÈ¡Ò¡¸Ë·½ÏòÊ±¶¨ÒåÔÚÖĞ¼äµÄ·¶Î§Öµ£¨ADCÖµ£©
+//è·å–æ‘‡æ†æ–¹å‘æ—¶å®šä¹‰åœ¨ä¸­é—´çš„èŒƒå›´å€¼ï¼ˆADCå€¼ï¼‰
 #define DIR_MID_RH		800
 #define DIR_MID_THROTTLE			800
 #define DIR_MID_LH		800
@@ -22,7 +22,7 @@
 
 static bool isInit;
 
-/*È¥³ıËÀÇøº¯Êı*/
+/*å»é™¤æ­»åŒºå‡½æ•°*/
 int deadband(int value, const int threshold)
 {
 	if (abs(value) < threshold)
@@ -40,7 +40,7 @@ int deadband(int value, const int threshold)
 	return value;
 }
 
-/*Ò¡¸Ë³õÊ¼»¯*/
+/*æ‘‡æ†åˆå§‹åŒ–*/
 void joystickInit(void)
 {
 	if(isInit) return;
@@ -48,7 +48,7 @@ void joystickInit(void)
 	isInit = true;
 }
 
-/*»ñÈ¡Ò¡¸ËADCÖµ*/
+/*è·å–æ‘‡æ†ADCå€¼*/
 void getCtrlDataADCValue(uJoyStick *adcValue)
 {
 	adcValue->RH=getAdcValue(ADC_RH);
@@ -57,41 +57,41 @@ void getCtrlDataADCValue(uJoyStick *adcValue)
 	adcValue->Break = getAdcValue(ADC_BREAK);	
 }
 
-/*ADCÖµ×ª»»³É¿ØÖÆÊı¾İ°Ù·Ö±È*/
+/*ADCå€¼è½¬æ¢æˆæ§åˆ¶æ•°æ®ç™¾åˆ†æ¯”*/
 void ADCtoCtrlDataPercent(fJoyStick *percent)
 {
 	s16 adcValue;
 	//RH
-	adcValue=getAdcValue(ADC_RH)-2048;		//¼õÈ¥ÖĞ¼äÖµ
+	adcValue=getAdcValue(ADC_RH)-2048;		//å‡å»ä¸­é—´å€¼
 	adcValue=deadband(adcValue,MID_DB_RH);
 	if(adcValue>=0)
 		percent->RH=(float)adcValue/(4095-2048);
 	else
 		percent->RH=0;
 	//Throttle
-	adcValue=getAdcValue(ADC_THROTTLE)-2048;		//¼õÈ¥ÖĞ¼äÖµ
+	adcValue=getAdcValue(ADC_THROTTLE)-2048;		//å‡å»ä¸­é—´å€¼
 	adcValue=deadband(adcValue,MID_DB_THROTTLE);
 	if(adcValue>=0)
 		percent->Throttle=(float)adcValue/(4095-2048);
 	else
 		percent->Throttle=0;
 	//LH
-	adcValue=getAdcValue(ADC_LH)-2048;		//¼õÈ¥ÖĞ¼äÖµ
+	adcValue=getAdcValue(ADC_LH)-2048;		//å‡å»ä¸­é—´å€¼
 	adcValue=deadband(adcValue,MID_DB_RH);
 	if(adcValue>=0)
 		percent->LH=(float)adcValue/(4095-2048);
 	else
 		percent->LH=0;
 	//Break
-	adcValue=getAdcValue(ADC_BREAK)-2048;		//¼õÈ¥ÖĞ¼äÖµ
+	adcValue=getAdcValue(ADC_BREAK)-2048;		//å‡å»ä¸­é—´å€¼
 	adcValue=deadband(adcValue,MID_DB_BREAK);
 	if(adcValue>=0)
 		percent->Break=(float)adcValue/(4095-2048);
 	else
 		percent->Break=0;
 }
-/*»ñÈ¡Ò¡¸Ë1·½Ïò*/
-/*mode:0,²»Ö§³ÖÁ¬Ğø°´;1,Ö§³ÖÁ¬Ğø°´*/
+/*è·å–æ‘‡æ†1æ–¹å‘*/
+/*mode:0,ä¸æ”¯æŒè¿ç»­æŒ‰;1,æ”¯æŒè¿ç»­æŒ‰*/
 enum dir_e getJoystick1Dir(u8 mode)
 {
 	enum dir_e ret=CENTER;
@@ -100,7 +100,7 @@ enum dir_e getJoystick1Dir(u8 mode)
 	
 	getCtrlDataADCValue(&adcValue);
 	if(mode) havebackToCenter = true;
-	if(havebackToCenter == true)//Ò¡¸Ë»Øµ½¹ıÖĞ¼äÎ»ÖÃ
+	if(havebackToCenter == true)//æ‘‡æ†å›åˆ°è¿‡ä¸­é—´ä½ç½®
 	{
 		if(adcValue.Break > (2048+DIR_MID_BREAK))
 			ret = FORWARD;
@@ -116,14 +116,14 @@ enum dir_e getJoystick1Dir(u8 mode)
 		else if(adcValue.LH < (2048-DIR_MID_LH))
 			ret = LEFT;
 		
-		havebackToCenter = false;//Ò¡¸ËÀë¿ªÁËÖĞ¼äÎ»ÖÃ
-		if(ret == CENTER)//Ò¡¸ËÒÀÈ»ÔÚÖĞ¼äÎ»ÖÃ
+		havebackToCenter = false;//æ‘‡æ†ç¦»å¼€äº†ä¸­é—´ä½ç½®
+		if(ret == CENTER)//æ‘‡æ†ä¾ç„¶åœ¨ä¸­é—´ä½ç½®
 			havebackToCenter = true;
 	}
 	else if( adcValue.Break >= (2048-DIR_MID_BREAK) &&
 			 adcValue.Break <= (2048+DIR_MID_BREAK) &&
 			 adcValue.LH >= (2048-DIR_MID_LH) &&
-			 adcValue.LH <= (2048+DIR_MID_LH) )//Ò¡¸ËÀë¿ªÁËÖĞ¼äÎ»ÖÃ£¬ÏÖÔÚ²éÑ¯Ò¡¸ËÊÇ·ñ»ØÖĞ
+			 adcValue.LH <= (2048+DIR_MID_LH) )//æ‘‡æ†ç¦»å¼€äº†ä¸­é—´ä½ç½®ï¼Œç°åœ¨æŸ¥è¯¢æ‘‡æ†æ˜¯å¦å›ä¸­
 	{
 		havebackToCenter = true;
 		ret = CENTER;
@@ -132,8 +132,8 @@ enum dir_e getJoystick1Dir(u8 mode)
 	return ret;
 }
 
-/*»ñÈ¡Ò¡¸Ë2·½Ïò*/
-/*mode:0,²»Ö§³ÖÁ¬Ğø°´;1,Ö§³ÖÁ¬Ğø°´*/
+/*è·å–æ‘‡æ†2æ–¹å‘*/
+/*mode:0,ä¸æ”¯æŒè¿ç»­æŒ‰;1,æ”¯æŒè¿ç»­æŒ‰*/
 enum dir_e getJoystick2Dir(u8 mode)
 {
 	enum dir_e ret = CENTER;
@@ -142,7 +142,7 @@ enum dir_e getJoystick2Dir(u8 mode)
 	
 	getCtrlDataADCValue(&adcValue);
 	if(mode) havebackToCenter = true;
-	if(havebackToCenter == true)//Ò¡¸Ë»Øµ½¹ıÖĞ¼äÎ»ÖÃ
+	if(havebackToCenter == true)//æ‘‡æ†å›åˆ°è¿‡ä¸­é—´ä½ç½®
 	{	
 		if(adcValue.Throttle > (2048+DIR_MID_THROTTLE))
 			ret = FORWARD;
@@ -158,15 +158,15 @@ enum dir_e getJoystick2Dir(u8 mode)
 		else if(adcValue.RH<(2048-DIR_MID_RH))
 			ret = LEFT;
 
-		havebackToCenter = false;//Ò¡¸ËÀë¿ªÁËÖĞ¼äÎ»ÖÃ
-		if(ret == CENTER)//Ò¡¸ËÒÀÈ»ÔÚÖĞ¼äÎ»ÖÃ
+		havebackToCenter = false;//æ‘‡æ†ç¦»å¼€äº†ä¸­é—´ä½ç½®
+		if(ret == CENTER)//æ‘‡æ†ä¾ç„¶åœ¨ä¸­é—´ä½ç½®
 			havebackToCenter = true;
 	}
 	else if( adcValue.Throttle >= (2048-DIR_MID_THROTTLE) &&
 			 adcValue.Throttle <= (2048+DIR_MID_THROTTLE) &&
 			 adcValue.RH >= (2048-DIR_MID_RH) &&
 			 adcValue.RH <= (2048+DIR_MID_RH) 
-		   )//Ò¡¸ËÀë¿ªÁËÖĞ¼äÎ»ÖÃ£¬ÏÖÔÚ²éÑ¯Ò¡¸ËÊÇ·ñ»ØÖĞ
+		   )//æ‘‡æ†ç¦»å¼€äº†ä¸­é—´ä½ç½®ï¼Œç°åœ¨æŸ¥è¯¢æ‘‡æ†æ˜¯å¦å›ä¸­
 	{
 		havebackToCenter = true;
 		ret = CENTER;
@@ -175,8 +175,8 @@ enum dir_e getJoystick2Dir(u8 mode)
 	return ret;
 }
 
-///*»ñÈ¡Ò¡¸Ë1·½Ïò*/
-///*mode:0,²»Ö§³ÖÁ¬Ğø°´;1,Ö§³ÖÁ¬Ğø°´*/
+///*è·å–æ‘‡æ†1æ–¹å‘*/
+///*mode:0,ä¸æ”¯æŒè¿ç»­æŒ‰;1,æ”¯æŒè¿ç»­æŒ‰*/
 //enum dir_e getJoystick1DirD(void)
 //{
 //	enum dir_e ret=CENTER;
@@ -185,7 +185,7 @@ enum dir_e getJoystick2Dir(u8 mode)
 //	
 //	getCtrlDataADCValue(&adcValue);
 ////	if(mode) havebackToCenter = true;
-//	if(havebackToCenter == true)//Ò¡¸Ë»Øµ½¹ıÖĞ¼äÎ»ÖÃ
+//	if(havebackToCenter == true)//æ‘‡æ†å›åˆ°è¿‡ä¸­é—´ä½ç½®
 //	{
 //		if(adcValue.Break > (2048+DIR_MID_BREAK))
 //			ret = FORWARD;
@@ -201,14 +201,14 @@ enum dir_e getJoystick2Dir(u8 mode)
 //		else if(adcValue.LH < (2048-DIR_MID_LH))
 //			ret = LEFT;
 //		
-//		havebackToCenter = false;//Ò¡¸ËÀë¿ªÁËÖĞ¼äÎ»ÖÃ
-//		if(ret == CENTER)//Ò¡¸ËÒÀÈ»ÔÚÖĞ¼äÎ»ÖÃ
+//		havebackToCenter = false;//æ‘‡æ†ç¦»å¼€äº†ä¸­é—´ä½ç½®
+//		if(ret == CENTER)//æ‘‡æ†ä¾ç„¶åœ¨ä¸­é—´ä½ç½®
 //			havebackToCenter = true;
 //	}
 //	else if( adcValue.Break >= (2048-DIR_MID_BREAK) &&
 //			 adcValue.Break <= (2048+DIR_MID_BREAK) &&
 //			 adcValue.LH >= (2048-DIR_MID_LH) &&
-//			 adcValue.LH <= (2048+DIR_MID_LH) )//Ò¡¸ËÀë¿ªÁËÖĞ¼äÎ»ÖÃ£¬ÏÖÔÚ²éÑ¯Ò¡¸ËÊÇ·ñ»ØÖĞ
+//			 adcValue.LH <= (2048+DIR_MID_LH) )//æ‘‡æ†ç¦»å¼€äº†ä¸­é—´ä½ç½®ï¼Œç°åœ¨æŸ¥è¯¢æ‘‡æ†æ˜¯å¦å›ä¸­
 //	{
 //		havebackToCenter = true;
 //		ret = CENTER;
@@ -217,8 +217,8 @@ enum dir_e getJoystick2Dir(u8 mode)
 //	return ret;
 //}
 
-///*»ñÈ¡Ò¡¸Ë2·½Ïò*/
-///*mode:0,²»Ö§³ÖÁ¬Ğø°´;1,Ö§³ÖÁ¬Ğø°´*/
+///*è·å–æ‘‡æ†2æ–¹å‘*/
+///*mode:0,ä¸æ”¯æŒè¿ç»­æŒ‰;1,æ”¯æŒè¿ç»­æŒ‰*/
 //enum dir_e getJoystick2DirD(void)
 //{
 //	enum dir_e ret = CENTER;
@@ -227,7 +227,7 @@ enum dir_e getJoystick2Dir(u8 mode)
 //	
 //	getCtrlDataADCValue(&adcValue);
 ////	if(mode) havebackToCenter = true;
-//	if(havebackToCenter == true)//Ò¡¸Ë»Øµ½¹ıÖĞ¼äÎ»ÖÃ
+//	if(havebackToCenter == true)//æ‘‡æ†å›åˆ°è¿‡ä¸­é—´ä½ç½®
 //	{	
 //		if(adcValue.Throttle > (2048+DIR_MID_THROTTLE))
 //			ret = FORWARD;
@@ -243,15 +243,15 @@ enum dir_e getJoystick2Dir(u8 mode)
 //		else if(adcValue.RH<(2048-DIR_MID_RH))
 //			ret = LEFT;
 
-//		havebackToCenter = false;//Ò¡¸ËÀë¿ªÁËÖĞ¼äÎ»ÖÃ
-//		if(ret == CENTER)//Ò¡¸ËÒÀÈ»ÔÚÖĞ¼äÎ»ÖÃ
+//		havebackToCenter = false;//æ‘‡æ†ç¦»å¼€äº†ä¸­é—´ä½ç½®
+//		if(ret == CENTER)//æ‘‡æ†ä¾ç„¶åœ¨ä¸­é—´ä½ç½®
 //			havebackToCenter = true;
 //	}
 //	else if( adcValue.Throttle >= (2048-DIR_MID_THROTTLE) &&
 //			 adcValue.Throttle <= (2048+DIR_MID_THROTTLE) &&
 //			 adcValue.RH >= (2048-DIR_MID_RH) &&
 //			 adcValue.RH <= (2048+DIR_MID_RH) 
-//		   )//Ò¡¸ËÀë¿ªÁËÖĞ¼äÎ»ÖÃ£¬ÏÖÔÚ²éÑ¯Ò¡¸ËÊÇ·ñ»ØÖĞ
+//		   )//æ‘‡æ†ç¦»å¼€äº†ä¸­é—´ä½ç½®ï¼Œç°åœ¨æŸ¥è¯¢æ‘‡æ†æ˜¯å¦å›ä¸­
 //	{
 //		havebackToCenter = true;
 //		ret = CENTER;
@@ -260,8 +260,8 @@ enum dir_e getJoystick2Dir(u8 mode)
 //	return ret;
 //}
 
-///*»ñÈ¡Ò¡¸Ë1·½Ïò*/
-///*Ö§³ÖÁ¬Ğø°´*/
+///*è·å–æ‘‡æ†1æ–¹å‘*/
+///*æ”¯æŒè¿ç»­æŒ‰*/
 //enum dir_e getJoystick1DirC(void)
 //{
 //	enum dir_e ret=CENTER;
@@ -270,7 +270,7 @@ enum dir_e getJoystick2Dir(u8 mode)
 //	
 //	getCtrlDataADCValue(&adcValue);
 //	havebackToCenter = true;
-//	if(havebackToCenter == true)//Ò¡¸Ë»Øµ½¹ıÖĞ¼äÎ»ÖÃ
+//	if(havebackToCenter == true)//æ‘‡æ†å›åˆ°è¿‡ä¸­é—´ä½ç½®
 //	{
 //		if(adcValue.Break > (2048+DIR_MID_BREAK))
 //			ret = FORWARD;
@@ -286,14 +286,14 @@ enum dir_e getJoystick2Dir(u8 mode)
 //		else if(adcValue.LH < (2048-DIR_MID_LH))
 //			ret = LEFT;
 //		
-//		havebackToCenter = false;//Ò¡¸ËÀë¿ªÁËÖĞ¼äÎ»ÖÃ
-//		if(ret == CENTER)//Ò¡¸ËÒÀÈ»ÔÚÖĞ¼äÎ»ÖÃ
+//		havebackToCenter = false;//æ‘‡æ†ç¦»å¼€äº†ä¸­é—´ä½ç½®
+//		if(ret == CENTER)//æ‘‡æ†ä¾ç„¶åœ¨ä¸­é—´ä½ç½®
 //			havebackToCenter = true;
 //	}
 //	else if( adcValue.Break >= (2048-DIR_MID_BREAK) &&
 //			 adcValue.Break <= (2048+DIR_MID_BREAK) &&
 //			 adcValue.LH >= (2048-DIR_MID_LH) &&
-//			 adcValue.LH <= (2048+DIR_MID_LH) )//Ò¡¸ËÀë¿ªÁËÖĞ¼äÎ»ÖÃ£¬ÏÖÔÚ²éÑ¯Ò¡¸ËÊÇ·ñ»ØÖĞ
+//			 adcValue.LH <= (2048+DIR_MID_LH) )//æ‘‡æ†ç¦»å¼€äº†ä¸­é—´ä½ç½®ï¼Œç°åœ¨æŸ¥è¯¢æ‘‡æ†æ˜¯å¦å›ä¸­
 //	{
 //		havebackToCenter = true;
 //		ret = CENTER;
@@ -302,8 +302,8 @@ enum dir_e getJoystick2Dir(u8 mode)
 //	return ret;
 //}
 
-///*»ñÈ¡Ò¡¸Ë2·½Ïò*/
-///*Ö§³ÖÁ¬Ğø°´*/
+///*è·å–æ‘‡æ†2æ–¹å‘*/
+///*æ”¯æŒè¿ç»­æŒ‰*/
 //enum dir_e getJoystick2DirC(void)
 //{
 //	enum dir_e ret = CENTER;
@@ -312,7 +312,7 @@ enum dir_e getJoystick2Dir(u8 mode)
 //	
 //	getCtrlDataADCValue(&adcValue);
 //	havebackToCenter = true;
-//	if(havebackToCenter == true)//Ò¡¸Ë»Øµ½¹ıÖĞ¼äÎ»ÖÃ
+//	if(havebackToCenter == true)//æ‘‡æ†å›åˆ°è¿‡ä¸­é—´ä½ç½®
 //	{	
 //		if(adcValue.Throttle > (2048+DIR_MID_THROTTLE))
 //			ret = FORWARD;
@@ -328,15 +328,15 @@ enum dir_e getJoystick2Dir(u8 mode)
 //		else if(adcValue.RH<(2048-DIR_MID_RH))
 //			ret = LEFT;
 
-//		havebackToCenter = false;//Ò¡¸ËÀë¿ªÁËÖĞ¼äÎ»ÖÃ
-//		if(ret == CENTER)//Ò¡¸ËÒÀÈ»ÔÚÖĞ¼äÎ»ÖÃ
+//		havebackToCenter = false;//æ‘‡æ†ç¦»å¼€äº†ä¸­é—´ä½ç½®
+//		if(ret == CENTER)//æ‘‡æ†ä¾ç„¶åœ¨ä¸­é—´ä½ç½®
 //			havebackToCenter = true;
 //	}
 //	else if( adcValue.Throttle >= (2048-DIR_MID_THROTTLE) &&
 //			 adcValue.Throttle <= (2048+DIR_MID_THROTTLE) &&
 //			 adcValue.RH >= (2048-DIR_MID_RH) &&
 //			 adcValue.RH <= (2048+DIR_MID_RH) 
-//		   )//Ò¡¸ËÀë¿ªÁËÖĞ¼äÎ»ÖÃ£¬ÏÖÔÚ²éÑ¯Ò¡¸ËÊÇ·ñ»ØÖĞ
+//		   )//æ‘‡æ†ç¦»å¼€äº†ä¸­é—´ä½ç½®ï¼Œç°åœ¨æŸ¥è¯¢æ‘‡æ†æ˜¯å¦å›ä¸­
 //	{
 //		havebackToCenter = true;
 //		ret = CENTER;

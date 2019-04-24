@@ -14,19 +14,19 @@
 #include "remoter_ctrl.h"
 
 /********************************************************************************	 
- * ±¾³ÌÐòÖ»¹©Ñ§Ï°Ê¹ÓÃ£¬Î´¾­×÷ÕßÐí¿É£¬²»µÃÓÃÓÚÆäËüÈÎºÎÓÃÍ¾
+ * æœ¬ç¨‹åºåªä¾›å­¦ä¹ ä½¿ç”¨ï¼Œæœªç»ä½œè€…è®¸å¯ï¼Œä¸å¾—ç”¨äºŽå…¶å®ƒä»»ä½•ç”¨é€”
  * ALIENTEK MiniFly_Remotor
- * ¶þ¼¶²Ëµ¥Çý¶¯´úÂë	
- * ÕýµãÔ­×Ó@ALIENTEK
- * ¼¼ÊõÂÛÌ³:www.openedv.com
- * ´´½¨ÈÕÆÚ:2018/6/1
- * °æ±¾£ºV1.0
- * °æÈ¨ËùÓÐ£¬µÁ°æ±Ø¾¿¡£
- * Copyright(C) ¹ãÖÝÊÐÐÇÒíµç×Ó¿Æ¼¼ÓÐÏÞ¹«Ë¾ 2014-2024
+ * äºŒçº§èœå•é©±åŠ¨ä»£ç 	
+ * æ­£ç‚¹åŽŸå­@ALIENTEK
+ * æŠ€æœ¯è®ºå›:www.openedv.com
+ * åˆ›å»ºæ—¥æœŸ:2018/6/1
+ * ç‰ˆæœ¬ï¼šV1.0
+ * ç‰ˆæƒæ‰€æœ‰ï¼Œç›—ç‰ˆå¿…ç©¶ã€‚
+ * Copyright(C) å¹¿å·žå¸‚æ˜Ÿç¿¼ç”µå­ç§‘æŠ€æœ‰é™å…¬å¸ 2014-2024
  * All rights reserved
 ********************************************************************************/
 
-/*²Ëµ¥ÏîÊý*/
+/*èœå•é¡¹æ•°*/
 #define  LED_RING_MENU_NUM   	10
 #define  WIFI_CAMERA_MENU_NUM  	2
 
@@ -35,16 +35,16 @@ MenuItem_Typedef  cameraMenu[WIFI_CAMERA_MENU_NUM];
 
 const u8* ledringLanguage[3][LED_RING_MENU_NUM]={
 {
-"¹Ø±Õ",
-"ÑÕÉ«²âÊÔ",
-"×ËÌ¬¸ÐÓ¦",
-"ÍÓÂÝ¸ÐÓ¦",
-"ÉÁË¸¾¯±¨",
-"ÊÖµçÍ²",
-"ºôÎüµÆ",
-"Á÷Ë®µÆ1",
-"Á÷Ë®µÆ2",
-"Á÷Ë®µÆ3",
+"å…³é—­",
+"é¢œè‰²æµ‹è¯•",
+"å§¿æ€æ„Ÿåº”",
+"é™€èžºæ„Ÿåº”",
+"é—ªçƒè­¦æŠ¥",
+"æ‰‹ç”µç­’",
+"å‘¼å¸ç¯",
+"æµæ°´ç¯1",
+"æµæ°´ç¯2",
+"æµæ°´ç¯3",
 },
 {
 "Turn off",
@@ -59,30 +59,30 @@ const u8* ledringLanguage[3][LED_RING_MENU_NUM]={
 "Spin Effect3",
 },
 {
-"êPé]",
-"îÉ«œyÔ‡",
-"×Ë‘B¸Ð‘ª",
-"ÍÓÂÝ¸Ð‘ª",
-"éW q¾¯ˆó",
-"ÊÖëŠÍ²",
-"ºôÎüŸô",
-"Á÷Ë®Ÿô1",
-"Á÷Ë®Ÿô2",
-"Á÷Ë®Ÿô3",
+"é—œé–‰",
+"é¡è‰²æ¸¬è©¦",
+"å§¿æ…‹æ„Ÿæ‡‰",
+"é™€èžºæ„Ÿæ‡‰",
+"é–ƒçˆè­¦å ±",
+"æ‰‹é›»ç­’",
+"å‘¼å¸ç‡ˆ",
+"æµæ°´ç‡ˆ1",
+"æµæ°´ç‡ˆ2",
+"æµæ°´ç‡ˆ3",
 },
 };
 const u8* cameraLanguage[3][WIFI_CAMERA_MENU_NUM]={
 {
-"¿ªÆô",
-"¹Ø±Õ",
+"å¼€å¯",
+"å…³é—­",
 },
 {
 "Turn on",
 "Turn off",
 },
 {
-"é_†¢",
-"êPé]",
+"é–‹å•Ÿ",
+"é—œé–‰",
 }	
 };
 
@@ -147,7 +147,7 @@ static void setLedringEffect9(void)
 	sendRmotorCmd(CMD_LEDRING_EFFECT, 9);
 }
 
-/*³õÊ¼»¯ledring²Ëµ¥*/
+/*åˆå§‹åŒ–ledringèœå•*/
 void ledringMenuInit(void)
 {	
 	for(int i=0; i<LED_RING_MENU_NUM; i++)
@@ -185,7 +185,7 @@ static void turnOffExpModule(void)
 	exitMenu();
 	sendRmotorCmd(CMD_POWER_MODULE, 0);
 }
-/*³õÊ¼ÉãÏñÍ·ÉèÖÃ²Ëµ¥*/
+/*åˆå§‹æ‘„åƒå¤´è®¾ç½®èœå•*/
 void cameraMenuInit(void)
 {	
 	for(int i=0; i<WIFI_CAMERA_MENU_NUM; i++)

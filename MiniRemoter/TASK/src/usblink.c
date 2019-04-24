@@ -8,15 +8,15 @@
 #include "queue.h"
 
 /********************************************************************************	 
- * ±¾³ÌĞòÖ»¹©Ñ§Ï°Ê¹ÓÃ£¬Î´¾­×÷ÕßĞí¿É£¬²»µÃÓÃÓÚÆäËüÈÎºÎÓÃÍ¾
+ * æœ¬ç¨‹åºåªä¾›å­¦ä¹ ä½¿ç”¨ï¼Œæœªç»ä½œè€…è®¸å¯ï¼Œä¸å¾—ç”¨äºå…¶å®ƒä»»ä½•ç”¨é€”
  * ALIENTEK MiniFly_Remotor
- * USBÍ¨ĞÅÇı¶¯´úÂë	
- * ÕıµãÔ­×Ó@ALIENTEK
- * ¼¼ÊõÂÛÌ³:www.openedv.com
- * ´´½¨ÈÕÆÚ:2018/6/1
- * °æ±¾£ºV1.0
- * °æÈ¨ËùÓĞ£¬µÁ°æ±Ø¾¿¡£
- * Copyright(C) ¹ãÖİÊĞĞÇÒíµç×Ó¿Æ¼¼ÓĞÏŞ¹«Ë¾ 2014-2024
+ * USBé€šä¿¡é©±åŠ¨ä»£ç 	
+ * æ­£ç‚¹åŸå­@ALIENTEK
+ * æŠ€æœ¯è®ºå›:www.openedv.com
+ * åˆ›å»ºæ—¥æœŸ:2018/6/1
+ * ç‰ˆæœ¬ï¼šV1.0
+ * ç‰ˆæƒæ‰€æœ‰ï¼Œç›—ç‰ˆå¿…ç©¶ã€‚
+ * Copyright(C) å¹¿å·å¸‚æ˜Ÿç¿¼ç”µå­ç§‘æŠ€æœ‰é™å…¬å¸ 2014-2024
  * All rights reserved
 ********************************************************************************/
 
@@ -39,7 +39,7 @@ static xQueueHandle  txQueue;
 static xQueueHandle  rxQueue;
 
 
-/*usbÁ¬½Ó³õÊ¼»¯*/
+/*usbè¿æ¥åˆå§‹åŒ–*/
 void usblinkInit(void)
 {
 	if (isInit) return;
@@ -50,7 +50,7 @@ void usblinkInit(void)
 	isInit = true;
 }
 
-/*usbÁ¬½Ó·¢ËÍatkpPacket*/
+/*usbè¿æ¥å‘é€atkpPacket*/
 bool usblinkSendPacket(const atkp_t *p)
 {
 	ASSERT(p);
@@ -64,7 +64,7 @@ bool usblinkSendPacketBlocking(const atkp_t *p)
 	return xQueueSend(txQueue, p, portMAX_DELAY);
 }
 
-/*usbÁ¬½Ó½ÓÊÕatkpPacket*/
+/*usbè¿æ¥æ¥æ”¶atkpPacket*/
 bool usblinkReceivePacket(atkp_t *p)
 {
 	ASSERT(p);
@@ -76,23 +76,23 @@ bool usblinkReceivePacketBlocking(atkp_t *p)
 	return xQueueReceive(rxQueue, p, portMAX_DELAY);
 }
 
-/*usbÁ¬½Ó·¢ËÍÈÎÎñ*/
+/*usbè¿æ¥å‘é€ä»»åŠ¡*/
 void usblinkTxTask(void* param)
 {
 	atkp_t p;
 	u8 sendBuffer[64];
 	u8 cksum;
 	u8 dataLen;
-	while(bDeviceState != CONFIGURED)//µÈusbÅäÖÃ³É¹¦
+	while(bDeviceState != CONFIGURED)//ç­‰usbé…ç½®æˆåŠŸ
 	{
 		vTaskDelay(1000);
 	}
 	while(1)
 	{
 		xQueueReceive(txQueue, &p, portMAX_DELAY);
-		if(p.msgID != UP_RADIO)/*NRF51822µÄÊı¾İ°ü²»ÉÏ´«*/
+		if(p.msgID != UP_RADIO)/*NRF51822çš„æ•°æ®åŒ…ä¸ä¸Šä¼ */
 		{
-			if(p.msgID == UP_PRINTF)/*´òÓ¡Êı¾İ°üÈ¥µôÖ¡Í·*/
+			if(p.msgID == UP_PRINTF)/*æ‰“å°æ•°æ®åŒ…å»æ‰å¸§å¤´*/
 			{
 				memcpy(&sendBuffer, p.data, p.dataLen);
 				dataLen = p.dataLen;
@@ -117,7 +117,7 @@ void usblinkTxTask(void* param)
 	}
 }
 
-/*usbÁ¬½Ó½ÓÊÕÈÎÎñ*/
+/*usbè¿æ¥æ¥æ”¶ä»»åŠ¡*/
 void usblinkRxTask(void *param)
 {
 	u8 c;
@@ -148,7 +148,7 @@ void usblinkRxTask(void *param)
 					{
 						rxPacket.dataLen = c;
 						dataIndex = 0;
-						rxState = (c > 0) ? waitForData : waitForChksum1;	/*c=0,Êı¾İ³¤¶ÈÎª0£¬Ğ£Ñé1*/
+						rxState = (c > 0) ? waitForData : waitForChksum1;	/*c=0,æ•°æ®é•¿åº¦ä¸º0ï¼Œæ ¡éªŒ1*/
 						cksum += c;
 					} else 
 					{
@@ -165,7 +165,7 @@ void usblinkRxTask(void *param)
 					}
 					break;
 				case waitForChksum1:
-					if (cksum == c)/*ËùÓĞĞ£ÑéÕıÈ·*/
+					if (cksum == c)/*æ‰€æœ‰æ ¡éªŒæ­£ç¡®*/
 					{
 						xQueueSend(rxQueue, &rxPacket, 0);
 					} 
@@ -179,7 +179,7 @@ void usblinkRxTask(void *param)
 					break;
 			}
 		}
-		else	/*³¬Ê±´¦Àí*/
+		else	/*è¶…æ—¶å¤„ç†*/
 		{
 			rxState = waitForStartByte1;
 		}

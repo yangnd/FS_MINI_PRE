@@ -13,7 +13,7 @@
 #define MOTO_R_CANID3	0x10F8148D
 #define MOTO_R_CANID4	0x10F8147B
 
-//Moto CAN控制数据结构
+//Moto CAN鎺у埗鏁版嵁缁撴瀯
 typedef struct
 {
 	u8 Gear;

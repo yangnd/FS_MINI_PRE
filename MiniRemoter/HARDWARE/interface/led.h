@@ -8,6 +8,6 @@
 #define LED_BLUE 		PBout(3)
 #define LED_RED 		PBout(7)
 
-void ledInit(void);/* LED³õÊ¼»¯ */
+void ledInit(void);/* LEDåˆå§‹åŒ– */
 			    
 #endif

@@ -12,7 +12,7 @@
 /********************************************************************************	 
 ********************************************************************************/
 
-/*·¢ËÍºÍ½ÓÊÕ¶ÓÁĞĞÅÏ¢¸öÊı*/
+/*å‘é€å’Œæ¥æ”¶é˜Ÿåˆ—ä¿¡æ¯ä¸ªæ•°*/
 #define  RADIOLINK_TX_QUEUE_SIZE  10
 #define  RADIOLINK_RX_QUEUE_SIZE  10
 
@@ -31,15 +31,15 @@ static u16 failRxCount;
 static u16 failReceiveNum;
 static TickType_t failRxcountTime;
 
-/*nrfÍâ²¿ÖĞ¶Ï»Øµ÷º¯Êı*/
+/*nrfå¤–éƒ¨ä¸­æ–­å›è°ƒå‡½æ•°*/
 static void nrf_interruptCallback(void)
 {
 	portBASE_TYPE  xHigherPriorityTaskWoken = pdFALSE;
 	xSemaphoreGiveFromISR(nrfIT, &xHigherPriorityTaskWoken);
-//	portYIELD_FROM_ISR(xHigherPriorityTaskWoken);//Èç¹ûĞèÒªµÄ»°½øĞĞÒ»´ÎÈÎÎñÇĞ»»
+//	portYIELD_FROM_ISR(xHigherPriorityTaskWoken);//å¦‚æœéœ€è¦çš„è¯è¿›è¡Œä¸€æ¬¡ä»»åŠ¡åˆ‡æ¢
 }
 
-/*ÎŞÏßÅäÖÃ³õÊ¼»¯£¨µØÖ·¡¢Í¨µÀ¡¢ËÙÂÊ£©*/
+/*æ— çº¿é…ç½®åˆå§‹åŒ–ï¼ˆåœ°å€ã€é€šé“ã€é€Ÿç‡ï¼‰*/
 static void radioInit(void)
 {
 	uint64_t addr = DEFAULT_ADDR;
@@ -60,7 +60,7 @@ static void radioInit(void)
 	nrf_setDataRate(DEFAULT_DATARATE);
 }
 
-/*ÎŞÏßÁ¬½Ó³õÊ¼»¯*/
+/*æ— çº¿è¿æ¥åˆå§‹åŒ–*/
 void radiolinkInit(void)
 {
 	if (isInit) return;
@@ -76,7 +76,7 @@ void radiolinkInit(void)
 	connectStatus = false;
 	isInit = true;
 }
-/*ÎŞÏß·¢ËÍctrlData Packet*/
+/*æ— çº¿å‘é€ctrlData Packet*/
 bool radioSendPacket(const ctrlData *p)
 {
 	ASSERT(p);
@@ -88,7 +88,7 @@ bool radioSendPacketBlocking(const ctrlData *p)
 	return xQueueSend(txQueue, p, 100);//portMAX_DELAY
 }
 
-/*ÎŞÏß½ÓÊÕfbData Packet*/
+/*æ— çº¿æ¥æ”¶fbData Packet*/
 bool radioReceivePacket(fdbkData *p)
 {
 	ASSERT(p);
@@ -99,7 +99,7 @@ bool radioReceivePacketBlocking(fdbkData *p)
 	ASSERT(p);
 	return xQueueReceive(rxQueue, p, portMAX_DELAY);
 }
-/*ÎŞÏßÁ¬½ÓÈÎÎñ*/
+/*æ— çº¿è¿æ¥ä»»åŠ¡*/
 void vRadioTask(void* param)
 {
 	u8 rx_len;
@@ -118,7 +118,7 @@ void vRadioTask(void* param)
 		xSemaphoreTake(nrfIT,1000);
 //		LED_BLUE=!LED_BLUE;
 		nrfEvent_e status = nrf_checkEventandRxPacket((u8*)&rx_p, &rx_len);
-		if(status == RX_DR)//·¢ËÍ³É¹¦
+		if(status == RX_DR)//å‘é€æˆåŠŸ
 		{	
 			LED_BLUE = 0;
 			LED_RED  = 1;
@@ -129,19 +129,19 @@ void vRadioTask(void* param)
 				xQueueSend(rxQueue, &rx_p, portMAX_DELAY);
 			}
 		}
-		else if(status == MAX_RT)//·¢ËÍÊ§°Ü
+		else if(status == MAX_RT)//å‘é€å¤±è´¥
 		{
 			LED_BLUE = 1;
 			LED_RED  = 0;
 			failRxCount++;
-			if(++statusCount > 10)//Á¬Ğø10´ÎÎŞÓ¦´ğÔòÍ¨Ñ¶Ê§°Ü
+			if(++statusCount > 10)//è¿ç»­10æ¬¡æ— åº”ç­”åˆ™é€šè®¯å¤±è´¥
 			{
 				statusCount = 0;
 				connectStatus = false;
 			}
 		}
 		
-		/*1000msÍ³¼ÆÒ»´Î·¢ËÍ´ÎÊıºÍÊÕ·¢Ê§°Ü´ÎÊı*/
+		/*1000msç»Ÿè®¡ä¸€æ¬¡å‘é€æ¬¡æ•°å’Œæ”¶å‘å¤±è´¥æ¬¡æ•°*/
 		if( xTaskGetTickCount()>=failRxcountTime+1000)
 		{
 			failRxcountTime = xTaskGetTickCount();
@@ -155,25 +155,25 @@ void vRadioTask(void* param)
 	}
 }
 
-/*»ñÈ¡¶ª°ü¸öÊı*/
+/*è·å–ä¸¢åŒ…ä¸ªæ•°*/
 u16 radioFailRxcount(void)
 {
 	return failReceiveNum;
 }
-/*»ñÈ¡·¢°ü¸öÊı*/
+/*è·å–å‘åŒ…ä¸ªæ•°*/
 u16 radioTxcount(void)
 {
 	return txCountNum;
 }
 
 
-/*»ñÈ¡ÎŞÏßÁ¬½Ó×´Ì¬*/
+/*è·å–æ— çº¿è¿æ¥çŠ¶æ€*/
 bool radioConnectStatus(void)
 {
 	return connectStatus;
 }
 
-/*Ê¹ÄÜradiolink*/
+/*ä½¿èƒ½radiolink*/
 void radioEnable(FunctionalState state)
 {
 	if(state == ENABLE)

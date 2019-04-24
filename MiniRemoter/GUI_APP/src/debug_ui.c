@@ -42,14 +42,14 @@ void debug_ui(void)
 	if(strlen(str)>21) str[21]='\0';
 	oled_showString(0,56,(u8*)str,6,8);
 	
-	/*°´¼ü´¦Àí*/
+	/*æŒ‰é”®å¤„ç†*/
 	u8 keyState = getKeyState();
-	if(keyState == KEY_L_SHORT_PRESS)/*½ô¼±Í£»ú*/
+	if(keyState == KEY_L_SHORT_PRESS)/*ç´§æ€¥åœæœº*/
 	{
 		//To Do
 //		sendRmotorCmd(CMD_EMER_STOP, NULL);
 	}
-	else if(keyState==KEY_R_SHORT_PRESS)/*ÍË³öµ÷ÊÔ½çÃæ*/
+	else if(keyState==KEY_R_SHORT_PRESS)/*é€€å‡ºè°ƒè¯•ç•Œé¢*/
 	{
 		setShow_ui(MAIN_UI);
 	}

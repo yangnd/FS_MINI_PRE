@@ -3,7 +3,7 @@
 
 #include "gui_config.h"
 
-//¶¨ÒåÒ»¸ö¹ö¶¯ÌõÀàĞÍ
+//å®šä¹‰ä¸€ä¸ªæ»šåŠ¨æ¡ç±»å‹
 typedef  struct
 {
  uint32_t x;             
@@ -11,10 +11,10 @@ typedef  struct
  uint32_t width;
  uint32_t height;
 
- uint32_t totalitems;  	  	//×ÜÌõÄ¿Êı
- uint32_t itemsperpage;		//Ã¿Ò³ÏÔÊ¾µÄÌõÄ¿Êı
- uint32_t topitem;			//×î¶¥¶ËµÄÌõÄ¿
- uint32_t scbbarlen;		//¹öÌõ³¤¶È	
+ uint32_t totalitems;  	  	//æ€»æ¡ç›®æ•°
+ uint32_t itemsperpage;		//æ¯é¡µæ˜¾ç¤ºçš„æ¡ç›®æ•°
+ uint32_t topitem;			//æœ€é¡¶ç«¯çš„æ¡ç›®
+ uint32_t scbbarlen;		//æ»šæ¡é•¿åº¦	
 	
 }Scrollbar_Typedef;
 

@@ -1,27 +1,27 @@
 /****************************************************************************************
-* ÎÄ¼şÃû£ºMENU.H
-* ¹¦ÄÜ£º²Ëµ¥ÏÔÊ¾¼°²Ù×÷£¬Í·ÎÄ¼ş¡£
-* ×÷Õß£º»ÆÉÜ±ó
-* ÈÕÆÚ£º2004.02.26
-* ±¸×¢£º
+* æ–‡ä»¶åï¼šMENU.H
+* åŠŸèƒ½ï¼šèœå•æ˜¾ç¤ºåŠæ“ä½œï¼Œå¤´æ–‡ä»¶ã€‚
+* ä½œè€…ï¼šé»„ç»æ–Œ
+* æ—¥æœŸï¼š2004.02.26
+* å¤‡æ³¨ï¼š
 ****************************************************************************************/
 #ifndef  MENU_H
 #define  MENU_H
 #include <stdbool.h>
 #include "gui_config.h"
 
-//¶¨ÒåÍ¼±ê²Ëµ¥32X32
+//å®šä¹‰å›¾æ ‡èœå•32X32
 typedef struct MenuItem
 {  	
-	int8_t cursorPosition;			//²Ëµ¥ÏÔÊ¾Ê±¹â±êÎ»ÖÃ
-	uint8_t menuItemCount;			//²Ëµ¥°üº¬ÏîÄ¿Êı
-	bool isSelect;					//ÏÔÊ¾²Ëµ¥µÄ×´Ì¬ ÊÇ·ñÑ¡ÖĞ
-	const uint8_t *icoSelected;		//²Ëµ¥ÏîÄ¿Ñ¡ÖĞµÄICOÊı¾İµØÖ·
-	const uint8_t *icoUnselected;	//²Ëµ¥ÏîÄ¿Ã»Ñ¡ÖĞµÄICOÊı¾İµØÖ·
-	const uint8_t *title;			//²Ëµ¥ÏîÄ¿ÄÚÈİ
-	void (*Function)(void); 		//²Ëµ¥¶ÔÓ¦µÄ¶¯×÷
-	struct MenuItem* parentMenu;	//ÉÏÒ»¼¶²Ëµ¥
-	struct MenuItem* childrenMenu;	//ÏÂÒ»¼¶²Ëµ¥
+	int8_t cursorPosition;			//èœå•æ˜¾ç¤ºæ—¶å…‰æ ‡ä½ç½®
+	uint8_t menuItemCount;			//èœå•åŒ…å«é¡¹ç›®æ•°
+	bool isSelect;					//æ˜¾ç¤ºèœå•çš„çŠ¶æ€ æ˜¯å¦é€‰ä¸­
+	const uint8_t *icoSelected;		//èœå•é¡¹ç›®é€‰ä¸­çš„ICOæ•°æ®åœ°å€
+	const uint8_t *icoUnselected;	//èœå•é¡¹ç›®æ²¡é€‰ä¸­çš„ICOæ•°æ®åœ°å€
+	const uint8_t *title;			//èœå•é¡¹ç›®å†…å®¹
+	void (*Function)(void); 		//èœå•å¯¹åº”çš„åŠ¨ä½œ
+	struct MenuItem* parentMenu;	//ä¸Šä¸€çº§èœå•
+	struct MenuItem* childrenMenu;	//ä¸‹ä¸€çº§èœå•
 }MenuItem_Typedef;
 
 

@@ -19,14 +19,14 @@ enum dir_e
 	BACK_RIGHT,
 };
 
-//Ò¡¸Ëµ¥·½ÏòÁ¿³Ì²ÎÊı
+//æ‘‡æ†å•æ–¹å‘é‡ç¨‹å‚æ•°
 struct range_s
 {
-	s16 range_pos;	//Ò¡¸ËÕıÁ¿³Ì
+	s16 range_pos;	//æ‘‡æ†æ­£é‡ç¨‹
 	u16 mid;
-	s16 range_neg;	//Ò¡¸Ë¸ºÁ¿³Ì
+	s16 range_neg;	//æ‘‡æ†è´Ÿé‡ç¨‹
 };
-//Ò¡¸ËÁ¿³Ì²ÎÊı
+//æ‘‡æ†é‡ç¨‹å‚æ•°
 typedef struct
 {
 	struct range_s RH;
