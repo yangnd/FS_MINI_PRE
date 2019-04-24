@@ -63,7 +63,8 @@ int main(void)
 	BEEP_Init();															  //Beep初始化
 	RS485_Init(115200);															//rs485初始化
 	BrakeCb_Init();
-	RailCb_Init();
+//	RailCb_Init();
+	ChangerailInit();
 	CAN_Mode_Init(CAN_SJW_1tq, CAN_BS2_8tq, CAN_BS1_9tq, 8, CAN_Mode_Normal); //CAN初始化正常模式,波特率250Kbps
 	radiolinkInit();														  //检查无线模块并初始化
 	LED0 = 0;
