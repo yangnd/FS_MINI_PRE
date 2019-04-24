@@ -13,7 +13,9 @@ static u8 rs485rxbuf[8];
 static u16 rx_crc,cal_crc;
 static u8 rxlen;
 static u8 uRail=0;
+static u8 uLastRail=0;
 static u8 railState;
+static bool bComplete;
 static u8 keyState;
 static xSemaphoreHandle railrxIT;
 
@@ -21,68 +23,99 @@ static xSemaphoreHandle railrxIT;
 void ChangerailInit(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE); 				//使能PB,PE端口时钟
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE); 				//使能PF端口时钟
 
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13 ; 			//端口配置：12左到位/13右到位
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;                    	//输入上拉
     GPIO_Init(GPIOF, &GPIO_InitStructure);                              //根据设定参数初始化GPIOF
 	
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14 | GPIO_Pin_15;				 //端口配置6/8
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14 | GPIO_Pin_15;			//端口配置14 EN/15 DIR
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;                    //推挽输出
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;                   //IO口速度为10MHz
     GPIO_Init(GPIOF, &GPIO_InitStructure);                              //根据设定参数初始化GPIOF
 	GPIO_ResetBits(GPIOF,GPIO_Pin_14);									//输出口复位
 	GPIO_ResetBits(GPIOF,GPIO_Pin_15);	
 }
+static void getRailState(void)
+{
+	if((LEFT==1)&&(RIGHT==0))
+		railState=LEFTRAIL;
+	else if((LEFT==0)&&(RIGHT==1))
+		railState=RIGHTRAIL;
+	else if((LEFT==0)&&(RIGHT==0))
+		railState=MID;//MID
+	else
+		railState=ERRORRAIL;//error
+}
 void vChangeRailTask(void *param)
 {
 	while(1)
 	{
-		vTaskDelay(20);
-		if((LEFT==1)&&(RIGHT==0))
-			railState=LEFTRAIL;
-		else if((LEFT==0)&&(RIGHT==1))
-			railState=RIGHTRAIL;
-		else if((LEFT==0)&&(RIGHT==0))
-			railState=0;//idle
-		else
-			railState=3;//error
+		vTaskDelay(20);	
 		if(radioConnectStatus())
 			uRail=getRail();
 		else
 		{
 			keyState=0;
 			keyState=getKeyState();
-			if(keyState==0) uRail=0;
-			else if(keyState==KEY0_SHORT_PRESS)	uRail=1;			//手动
+			if(keyState==KEY0_SHORT_PRESS)	uRail=1;			//手动
 			else if(keyState==KEY1_SHORT_PRESS)	uRail=2;
 		}
-		while(uRail==1)
+		getRailState();
+		if(uRail!=uLastRail)		//到位完成后不再动作
 		{
-			vTaskDelay(5);
-			if(LEFT==1)
+			bComplete=false;
+			if(uRail==1)
 			{
-				CHANGE_EN=0;
-				break;
+				while(!bComplete)
+				{
+					getRailState();
+					vTaskDelay(5);
+					if(railState==LEFTRAIL)
+						getRailState();				//连续读取两次，都到位
+					if(railState==LEFTRAIL)
+					{
+						CHANGE_EN=0;						
+						uLastRail=uRail;
+						bComplete=true;
+					}
+					else if(railState==ERRORRAIL)
+					{
+						CHANGE_EN=0;
+						break;
+					}
+					else
+					{
+						CHANGE_EN=1;
+						TURN_RIGHT=0;
+					}
+				}
 			}
-			else
+			else if(uRail==2)
 			{
-				CHANGE_EN=1;
-				TURN_RIGHT=0;
-			}
-		}
-		while(uRail==2)
-		{
-			vTaskDelay(5);
-			if(RIGHT==1)
-			{
-				CHANGE_EN=0;
-				break;
-			}
-			else
-			{
-				CHANGE_EN=1;
-				TURN_RIGHT=1;;
+				while(!bComplete)
+				{
+					getRailState();
+					vTaskDelay(5);
+					if(railState==RIGHTRAIL)
+						getRailState();				//连续读取两次，都到位
+					if(railState==RIGHTRAIL)
+					{
+						CHANGE_EN=0;
+						uLastRail=uRail;
+						bComplete=true;
+					}
+					else if(railState==ERRORRAIL)
+					{
+						CHANGE_EN=0;
+						break;
+					}
+					else
+					{
+						CHANGE_EN=1;
+						TURN_RIGHT=1;;
+					}
+				}
 			}
 		}
 	}
