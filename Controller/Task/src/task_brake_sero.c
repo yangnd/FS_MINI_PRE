@@ -41,6 +41,7 @@ void BrakeCb_Init(void)
 	brakerxIT = xSemaphoreCreateBinary();
 	Brake_setIterruptCallback(rs485_interruptCallback);
 }
+#if 0
 void vBrakeServoTask(void *param)	//转矩、速度模式
 {
 	portBASE_TYPE state;
@@ -228,10 +229,37 @@ void vBrakeServoTask(void *param)	//转矩、速度模式
 		uLastBrake=uBrake;	
 	}
 }
-void vBrakeServoTask0(void *param)		//位置模式
+#endif
+
+#if 1
+void vBrakeServoTask(void *param)		//位置模式
 {
 	portBASE_TYPE state;
 	TickType_t xWakeTime,xLastWakeTime,xDeltaTime;
+	rs485txbuf[0]=0x01;
+	rs485txbuf[1]=0x06;
+	rs485txbuf[2]=0x00;
+	rs485txbuf[3]=0x44;		//Pn068
+	rs485txbuf[4]=0x00;		//高位：00
+	rs485txbuf[5]=0x01;		//低位：Son由通信控制
+	ModbusWriteSReg(rs485txbuf,8);
+	state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
+	rs485txbuf[0]=0x01;
+	rs485txbuf[1]=0x06;
+	rs485txbuf[2]=0x00;
+	rs485txbuf[3]=0x45;		//Pn069
+	rs485txbuf[4]=0x07;		//高位：ptriger/pos2/pos1由通信控制
+	rs485txbuf[5]=0x00;		//低位：00
+	ModbusWriteSReg(rs485txbuf,8);
+	state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
+	rs485txbuf[0]=0x01;
+	rs485txbuf[1]=0x06;
+	rs485txbuf[2]=0x00;
+	rs485txbuf[3]=0x75;		//Pn117
+	rs485txbuf[4]=0x00;		//高位：00
+	rs485txbuf[5]=0x01;		//低位：01 位置指令源：内部位置指令
+	ModbusWriteSReg(rs485txbuf,8);
+	state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
 	rs485txbuf[0]=0x01;
 	rs485txbuf[1]=0x06;
 	rs485txbuf[2]=0x00;
@@ -246,6 +274,14 @@ void vBrakeServoTask0(void *param)		//位置模式
 	rs485txbuf[3]=0x79;		//Pn121	内部位置0（个）
 	rs485txbuf[4]=0x00;		//高位
 	rs485txbuf[5]=0x00;		//低位
+	ModbusWriteSReg(rs485txbuf,8);
+	state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
+	rs485txbuf[0]=0x01;
+	rs485txbuf[1]=0x06;
+	rs485txbuf[2]=0x00;
+	rs485txbuf[3]=0x80;		//Pn128	内部位置指令0 运行速度
+	rs485txbuf[4]=0x0B;		//高位
+	rs485txbuf[5]=0xB8;		//低位	3000r/min
 	ModbusWriteSReg(rs485txbuf,8);
 	state=xSemaphoreTake(brakerxIT, MODBUS_TIME);
 	rs485txbuf[0]=0x01;
@@ -288,7 +324,7 @@ void vBrakeServoTask0(void *param)		//位置模式
 		if(servo_step!=uBrake)
 		{
 			pulseCount=uBrake-servo_step;
-			pulseCount=430*(uBrake-servo_step);		//原来450
+			pulseCount=4000*(uBrake-servo_step);		//原来4
 			pulseE4=pulseCount/10000;				//万位
 			pulseE0=pulseCount-10000*pulseE4;		//个位
 			while(1)
@@ -436,6 +472,7 @@ void vBrakeServoTask0(void *param)		//位置模式
 		}
 	}
 }
+#endif
 
 //获取减速度
 float getDec(void)
