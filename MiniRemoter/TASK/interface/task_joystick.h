@@ -53,6 +53,7 @@ typedef struct
 
 void joystickInit(void);
 void ADCtoCtrlDataPercent(fJoyStick *percent);
+void getCtrlDataADCValue(uJoyStick *adcValue);
 enum dir_e getJoystick1Dir(u8 mode);
 enum dir_e getJoystick2Dir(u8 mode);
 //enum dir_e getJoystick1DirD(void);

@@ -332,7 +332,7 @@
             <v6WtE>0</v6WtE>
             <v6Rtti>0</v6Rtti>
             <VariousControls>
-              <MiscControls></MiscControls>
+              <MiscControls>--locale=english</MiscControls>
               <Define>STM32F10X_MD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
               <IncludePath>..\USER;..\CORE;..\STM32F10x_FWLib\inc;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\COMMON\interface;..\TASK\interface;..\CONFIG\interface;..\FreeRTOS\include;..\FreeRTOS\portable\RVDS\ARM_CM3;..\GUI_APP\interface;..\GUI_DRV\interface;..\HARDWARE\interface;..\RTT;..\USB\STM32_USB-FS-Device_Driver\inc;..\USB\CONFIG</IncludePath>

@@ -1,5 +1,6 @@
 */Listings/
 */Objects/
+*/OBJ/
 */DebugConfig/
 
 # Prerequisites
@@ -55,3 +56,5 @@ Module.symvers
 Mkfile.old
 dkms.conf
 .vscode/
+MiniRemoter/USER/MiniRemoter.uvguix.user
+MiniRemoter/USER/MiniRemoter.uvoptx
