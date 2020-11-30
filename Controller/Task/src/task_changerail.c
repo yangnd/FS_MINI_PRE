@@ -49,7 +49,8 @@ static void getRailState(void)
 }
 void vChangeRailTask(void *param)
 {
-	while(1)
+	void ChangerailInit(void);
+	while (1)
 	{
 		vTaskDelay(20);	
 		if(radioConnectStatus())
@@ -143,7 +144,7 @@ void vChangeRailTask(void *param)
 	static u8 change_en=1;
 	static u8 SCount=0;
 	static u8 modbusCount=0;
-	
+	RailCb_Init();
 	while(1)
 	{
 		vTaskDelay(50);

@@ -14,6 +14,6 @@ void vBeepTask(void *param)
 		vTaskDelay(300);
 		uConnectStatus = radioConnectStatus();
 		if (!uConnectStatus)
-			BEEP = 1;
+			BEEP = 0;
 	}
 }

@@ -3,6 +3,7 @@
 
 static void (*interruptCbBrake)(void) = 0;
 static void (*interruptCbRail)(void) = 0;
+static void (*interruptCbAO)(void) = 0;
 
 /*设置RS485中断回调函数*/
 void Brake_setIterruptCallback(void (*cb)(void))
@@ -12,6 +13,10 @@ void Brake_setIterruptCallback(void (*cb)(void))
 void Rail_setIterruptCallback(void (*cb)(void))
 {
 	interruptCbRail = cb;
+}
+void AO_setInterruptCallback(void (*cb)(void))
+{
+	interruptCbAO = cb;
 }
 
 #ifdef EN_USART2_RX //如果使能了接收
@@ -35,29 +40,36 @@ void USART2_IRQHandler(void)
 			RS485_RX_CNT++;					  //接收数据增加1
 		}
 	}
-	else if(USART_GetITStatus(USART2, USART_IT_IDLE) != RESET)	//总线空闲
+	else if (USART_GetITStatus(USART2, USART_IT_IDLE) != RESET) //总线空闲
 	{
-		if(USART_GetFlagStatus(USART2, USART_FLAG_IDLE) != RESET)
+		if (USART_GetFlagStatus(USART2, USART_FLAG_IDLE) != RESET)
 		{
-			res=USART2->SR;				//先读SR
-			res=USART2->DR; 			//再读DR，清除IDLE位
+			res = USART2->SR; //先读SR
+			res = USART2->DR; //再读DR，清除IDLE位
 		}
-//		if (interruptCbBrake)
-//			{
-//				interruptCbBrake();				//接收完成给中断信号量
-//			}
-		if(RS485_RX_BUF[0]==1)
+		//		if (interruptCbBrake)
+		//			{
+		//				interruptCbBrake();				//接收完成给中断信号量
+		//			}
+		if (RS485_RX_BUF[0] == 1)
 		{
 			if (interruptCbBrake)
 			{
-				interruptCbBrake();				//接收完成给中断信号量
+				interruptCbBrake(); //接收完成给中断信号量
 			}
 		}
-		else if(RS485_RX_BUF[0]==2)
+		else if (RS485_RX_BUF[0] == 2)
 		{
 			if (interruptCbRail)
 			{
-				interruptCbRail();				//接收完成给中断信号量
+				interruptCbRail(); //接收完成给中断信号量
+			}
+		}
+		else if (RS485_RX_BUF[0] == 3)
+		{
+			if (interruptCbAO)
+			{
+				interruptCbAO();
 			}
 		}
 	}
@@ -88,7 +100,7 @@ void RS485_Init(u32 bound)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING; //浮空输入
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-	RCC_APB1PeriphResetCmd(RCC_APB1Periph_USART2, ENABLE);  //复位串口2
+	RCC_APB1PeriphResetCmd(RCC_APB1Periph_USART2, ENABLE);	//复位串口2
 	RCC_APB1PeriphResetCmd(RCC_APB1Periph_USART2, DISABLE); //停止复位
 
 #ifdef EN_USART2_RX																	//如果使能了接收
@@ -127,11 +139,13 @@ void RS485_Send_Data(u8 *buf, u8 len)
 	RS485_TX_EN = 1;		  //设置为发送模式
 	for (t = 0; t < len; t++) //循环发送数据
 	{
-		while (USART_GetFlagStatus(USART2, USART_FLAG_TC) == RESET);
+		while (USART_GetFlagStatus(USART2, USART_FLAG_TC) == RESET)
+			;
 		USART_SendData(USART2, buf[t]);
 	}
 
-	while (USART_GetFlagStatus(USART2, USART_FLAG_TC) == RESET);
+	while (USART_GetFlagStatus(USART2, USART_FLAG_TC) == RESET)
+		;
 	RS485_RX_CNT = 0;
 	RS485_TX_EN = 0; //设置为接收模式
 }
@@ -152,7 +166,7 @@ u8 RS485_Receive_Data(u8 *buf, u8 *len)
 			buf[i] = RS485_RX_BUF[i];
 		}
 		*len = RS485_RX_CNT; //记录本次数据长度
-		RS485_RX_CNT = 0;	//清零
+		RS485_RX_CNT = 0;	 //清零
 		rxFlag = 0;			 //接收成功
 	}
 	return rxFlag;
@@ -194,8 +208,30 @@ void ModbusWriteSReg(u8 *txbuf, u8 txlen)
 	txbuf[txlen - 1] = crc_reg >> 8;
 	RS485_Send_Data(txbuf, txlen);
 }
+/**
+ * @brief 写单个寄存器
+ * 
+ * @param devId 
+ * @param regAddress 
+ * @param val 
+ */
+void ModbusWriteSingleReg(u8 devId, u16 regAddress, u16 val)
+{
+	u16 crc_reg;
+	u8 modbusBuf[8];
+	modbusBuf[0] = devId;
+	modbusBuf[1] = 0x06; //function code
+	modbusBuf[2] = (regAddress >> 8) & 0xFF;
+	modbusBuf[3] = regAddress & 0xFF;
+	modbusBuf[4] = (val >> 8) & 0xFF;
+	modbusBuf[5] = val & 0xFF;
+	crc_reg = crc_chk(modbusBuf, 6); //计算CRC
+	modbusBuf[6] = crc_reg & 0xFF;
+	modbusBuf[7] = crc_reg >> 8;
+	RS485_Send_Data(modbusBuf, 8);
+}
 
-u8 ModbusReadMReg(u8 station,u16 address,u16 num,u8 *rxbuf,u8 *rxlen )
+u8 ModbusReadMReg(u8 station, u16 address, u16 num, u8 *rxbuf, u8 *rxlen)
 {
 	return 0;
 }

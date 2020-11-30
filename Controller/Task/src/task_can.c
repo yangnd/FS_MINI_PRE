@@ -30,6 +30,7 @@ void vCanSendTask(void *param)
 {
 	portTickType xLastWakeTime;
 	xLastWakeTime = xTaskGetTickCount();
+	CAN_Mode_Init(CAN_SJW_1tq, CAN_BS2_8tq, CAN_BS1_9tq, 8, CAN_Mode_Normal); //CAN初始化正常模式,波特率250Kbps
 	while (1)
 	{
 		connectStatus = radioConnectStatus();

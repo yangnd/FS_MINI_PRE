@@ -42,6 +42,7 @@
 #include "task_fdbkdata.h"
 #include "task_radio.h"
 #include "task_upload.h"
+#include "task_ao.h"
 
 static TaskHandle_t startTaskHandle;
 static void startTask(void *param);
@@ -61,16 +62,14 @@ int main(void)
 	KEY_Init();																  //按键初始化
 	LED_Init();																  //LED灯初始化
 	BEEP_Init();															  //Beep初始化
-	RS485_Init(115200);															//rs485初始化
-	BrakeCb_Init();
-//	RailCb_Init();
-	ChangerailInit();
-	CAN_Mode_Init(CAN_SJW_1tq, CAN_BS2_8tq, CAN_BS1_9tq, 8, CAN_Mode_Normal); //CAN初始化正常模式,波特率250Kbps
+	RS485_Init(9600);															//rs485初始化
+	
+	
 	radiolinkInit();														  //检查无线模块并初始化
 	LED0 = 0;
 	LED1 = 0;
-	while(LoRa_Init());
-	LoRa_Set();
+	// while(LoRa_Init());
+	// LoRa_Set();
 	LED0 = 1;
 	LED1 = 1;
 
@@ -87,8 +86,9 @@ void startTask(void *param)
 {
 	taskENTER_CRITICAL();											/*进入临界区*/
 //	xTaskCreate(vBrakeTask, "Brake", 100, NULL, 8, NULL);			/*创建brake任务*/
-	xTaskCreate(vBrakeServoTask, "BrakeServer", 100, NULL, 8, NULL);/*创建brakeServer任务*/	
+	xTaskCreate(vBrakeServoTask, "BrakeServo", 100, NULL, 8, NULL);/*创建brakeServer任务*/	
 	xTaskCreate(vChangeRailTask, "RailChange", 100, NULL, 7, NULL);	/*创建Change Rail任务*/
+	xTaskCreate(vAOTask, "AO", 100, NULL, 6, NULL);
 	xTaskCreate(vCanSendTask, "CanSend", 100, NULL, 6, NULL);		/*创建CAN发送任务*/
 	xTaskCreate(vCanReceiveTask, "CanReceive", 100, NULL, 5, NULL); /*创建CAN接收任务*/
 
@@ -97,7 +97,7 @@ void startTask(void *param)
 	xTaskCreate(vFdbkdataTask, "FdbkData", 100, NULL, 3, NULL); /*创建FdbkData组包任务*/
 
 	xTaskCreate(vKeyTask, "Key", 100, NULL, 2, NULL);   /*创建按键扫描任务*/
-	xTaskCreate(vUploadTask,"Upload",100,NULL,2,NULL);
+	// xTaskCreate(vUploadTask,"Upload",100,NULL,2,NULL);
 	xTaskCreate(vBeepTask, "Beep", 100, NULL, 1, NULL); /*创建beep任务*/
 
 	vTaskDelete(startTaskHandle); /* 删除开始任务 */
